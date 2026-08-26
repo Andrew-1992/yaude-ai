@@ -1,0 +1,4 @@
+id,task_type,difficulty,english_instruction,english_response,juba_arabic_instruction,juba_arabic_response,reviewer_name,reviewer_verified,notes
+ja-001,code_explanation,intro,,,,,,FALSE,
+ja-002,code_debugging,intro,,,,,,FALSE,
+ja-003,code_generation,intro,,,,,,FALSE,

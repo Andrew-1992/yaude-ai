@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+/* Sanadi AI design tokens — pure black/cream/white, no accent color.
+   Functional states use weight, underline, and border, never hue. */
+@theme {
+  --color-sanadi-black: #111111;
+  --color-sanadi-cream: #f5f1e8;
+  --color-sanadi-white: #ffffff;
+  --color-sanadi-ink-70: rgba(17, 17, 17, 0.7);
+  --color-sanadi-ink-40: rgba(17, 17, 17, 0.4);
+  --color-sanadi-ink-15: rgba(17, 17, 17, 0.15);
+  --color-sanadi-ink-08: rgba(17, 17, 17, 0.08);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-sanadi-white);
+  color: var(--color-sanadi-black);
+}
+
+/* Message entrance -- subtle, respects reduced-motion */
+@keyframes sanadi-rise {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sanadi-message-in {
+  animation: sanadi-rise 220ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sanadi-message-in {
+    animation: none;
+  }
+}
+
+/* Thinking indicator -- three dots, no color, just opacity pulse */
+@keyframes sanadi-pulse {
+  0%, 80%, 100% { opacity: 0.25; }
+  40% { opacity: 1; }
+}
+
+.sanadi-dot {
+  animation: sanadi-pulse 1.2s ease-in-out infinite;
+}
+.sanadi-dot:nth-child(2) { animation-delay: 0.15s; }
+.sanadi-dot:nth-child(3) { animation-delay: 0.3s; }
+
+/* Markdown content inside message bubbles */
+.sanadi-prose {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+.sanadi-prose p { margin: 0 0 0.75em; }
+.sanadi-prose p:last-child { margin-bottom: 0; }
+.sanadi-prose ul, .sanadi-prose ol { margin: 0 0 0.75em; padding-left: 1.25em; }
+.sanadi-prose li { margin-bottom: 0.25em; }
+.sanadi-prose strong { font-weight: 600; }
+.sanadi-prose h1, .sanadi-prose h2, .sanadi-prose h3 {
+  font-weight: 600;
+  margin: 0.9em 0 0.4em;
+}
+.sanadi-prose h1:first-child, .sanadi-prose h2:first-child, .sanadi-prose h3:first-child {
+  margin-top: 0;
+}
+.sanadi-prose code:not(pre code) {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-sanadi-ink-08);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+.sanadi-prose pre {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  background: var(--color-sanadi-black);
+  color: var(--color-sanadi-cream);
+  padding: 0.9em 1em;
+  border-radius: 10px;
+  overflow-x: auto;
+  margin: 0.75em 0;
+}
+.sanadi-prose pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}

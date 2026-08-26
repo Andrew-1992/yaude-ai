@@ -1,0 +1,28 @@
+# Base model configuration — phase 1
+base_model: "Qwen/Qwen2.5-Coder-1.5B-Instruct"
+trust_remote_code: false
+
+# Tokenizer inherits from base model — no custom tokenizer in phase 1.
+# (The from-scratch tokenizer built for the original foundation-model
+# direction is parked for phase 3, not used here.)
+
+lora:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+  bias: "none"
+  task_type: "CAUSAL_LM"
+
+quantization:
+  load_in_4bit: true
+  bnb_4bit_compute_dtype: "bfloat16"
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_use_double_quant: true
