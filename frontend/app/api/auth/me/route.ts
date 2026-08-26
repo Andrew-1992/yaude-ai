@@ -14,7 +14,10 @@ export async function GET(req: NextRequest) {
 
   try {
     const backendRes = await fetch(`${BACKEND_URL}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true",
+      },
     });
     if (!backendRes.ok) {
       return NextResponse.json({ user: null });

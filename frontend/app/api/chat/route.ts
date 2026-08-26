@@ -13,7 +13,14 @@ const API_KEY = process.env.SANADI_API_KEY; // server-only, never sent to the br
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    // Bypasses ngrok's free-tier browser-warning interstitial page, which
+    // would otherwise intercept every server-to-server request too, not
+    // just first-time browser visits -- breaking chat entirely once
+    // deployed behind an ngrok tunnel.
+    "ngrok-skip-browser-warning": "true",
+  };
   if (API_KEY) headers["X-API-Key"] = API_KEY;
 
   let backendRes: Response;

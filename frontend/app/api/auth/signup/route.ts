@@ -13,7 +13,10 @@ export async function POST(req: NextRequest) {
   try {
     backendRes = await fetch(`${BACKEND_URL}/auth/signup`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
       body: JSON.stringify(body),
     });
   } catch {
