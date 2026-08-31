@@ -31,7 +31,7 @@ export async function streamChat({
     throw new Error(detail?.error ?? "Chat request failed");
   }
 
-  const mode = res.headers.get("x-sanadi-mode") ?? "unknown";
+  const mode = res.headers.get("x-yaude-mode") ?? "unknown";
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
 

@@ -293,7 +293,7 @@ export default function AppShell() {
               />
             </svg>
           </button>
-          <span className="font-semibold text-sanadi-black text-sm">Sanadi AI</span>
+          <span className="font-semibold text-sanadi-black text-sm">Yaude</span>
         </div>
 
         <ChatWindow

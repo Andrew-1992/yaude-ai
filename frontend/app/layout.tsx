@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 // Used sparingly -- just the empty-state headline. Adds editorial warmth
-// where Claude/ChatGPT/Lovable lean on color instead; Sanadi stays
+// where Claude/ChatGPT/Lovable lean on color instead; Yaude stays
 // monochrome and differentiates through type and restraint.
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -22,7 +22,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Sanadi ai",
+  title: "Yaude ai",
   description:
     "AI coding and research assistant for African developers, students, and researchers.",
 };

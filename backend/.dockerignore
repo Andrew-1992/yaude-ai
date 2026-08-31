@@ -4,13 +4,13 @@ __pycache__/
 
 data/raw/
 data/processed/
+data/sanadi.db
+data/feedback.jsonl
 
 checkpoints/
 *.safetensors
 *.bin
 
 .env
-wandb/
-data/feedback.jsonl
-data/sanadi.db
-data/yaude.db
+.git/
+tests/

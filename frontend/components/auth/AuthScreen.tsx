@@ -41,7 +41,7 @@ export default function AuthScreen({ onAuthenticated }: AuthScreenProps) {
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center mb-8">
           <Monogram size={44} />
-          <h1 className="mt-4 text-xl font-semibold text-sanadi-black tracking-tight">Sanadi AI</h1>
+          <h1 className="mt-4 text-xl font-semibold text-sanadi-black tracking-tight">Yaude AI</h1>
           <p className="mt-1 text-sm text-sanadi-ink-40">Coding & research assistant</p>
         </div>
 

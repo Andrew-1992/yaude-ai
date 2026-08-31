@@ -1,9 +1,9 @@
 """
-SQLite-backed user store for Sanadi AI accounts.
+SQLite-backed user store for Yaude AI accounts.
 
 This is a genuinely small, file-based database -- appropriate for a
 phase-1 pilot with a handful of users, not a production-scale user base.
-If Sanadi AI grows past that, this is the seam to swap for a real hosted
+If Yaude AI grows past that, this is the seam to swap for a real hosted
 database (Postgres, etc.) without changing the auth logic that calls
 these functions.
 """
@@ -14,7 +14,7 @@ import uuid
 from pathlib import Path
 from typing import Optional
 
-DB_PATH = Path("data/sanadi.db")
+DB_PATH = Path("data/yaude.db")
 
 
 def get_connection() -> sqlite3.Connection:

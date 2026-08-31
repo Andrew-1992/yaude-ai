@@ -201,7 +201,7 @@ export default function Sidebar({
       >
         <div className="flex items-center gap-2.5 px-4 pt-5 pb-4">
           <Monogram size={28} />
-          <span className="font-semibold text-sanadi-black tracking-tight">Sanadi</span>
+          <span className="font-semibold text-sanadi-black tracking-tight">Yaude</span>
         </div>
 
         <div className="px-3 pb-3">

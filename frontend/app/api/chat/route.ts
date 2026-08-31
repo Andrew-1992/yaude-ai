@@ -46,12 +46,12 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const mode = backendRes.headers.get("x-sanadi-mode") ?? "unknown";
+  const mode = backendRes.headers.get("x-yaude-mode") ?? "unknown";
   return new Response(backendRes.body, {
     status: 200,
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
-      "X-Sanadi-Mode": mode,
+      "X-Yaude-Mode": mode,
     },
   });
 }

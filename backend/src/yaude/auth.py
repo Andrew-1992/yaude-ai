@@ -1,5 +1,5 @@
 """
-Password hashing and JWT session tokens for Sanadi AI accounts.
+Password hashing and JWT session tokens for Yaude AI accounts.
 
 Uses the `bcrypt` library directly rather than via passlib -- passlib is
 largely unmaintained and its bcrypt version-detection code breaks against

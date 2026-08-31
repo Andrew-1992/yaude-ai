@@ -1,5 +1,5 @@
 """
-Data schema for Sanadi AI phase 1 SFT examples.
+Data schema for Yaude AI phase 1 SFT examples.
 
 Every training example is one of two task types: coding or research. Both share
 a common envelope so the data pipeline, fine-tuning, and eval code can treat them

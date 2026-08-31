@@ -1,5 +1,5 @@
 """
-FastAPI inference server for Sanadi AI -- streaming chat, user accounts
+FastAPI inference server for Yaude AI -- streaming chat, user accounts
 (signup/login), API key auth on inference endpoints, per-key rate
 limiting, environment-driven CORS, structured logging, and a feedback
 endpoint.
@@ -23,14 +23,14 @@ Environment (.env file in backend/, or real environment variables):
                               return a clear error rather than silently
                               issuing insecure tokens.
 
-ACCOUNTS: user data lives in a small SQLite file (data/sanadi.db) -- fine
+ACCOUNTS: user data lives in a small SQLite file (data/yaude.db) -- fine
 for a phase-1 pilot's worth of users, not a production-scale store. See
-src/sanadi/db.py. Session tokens are bearer tokens (Authorization header),
+src/yaude/db.py. Session tokens are bearer tokens (Authorization header),
 not cookies -- the Next.js frontend is responsible for storing the token
 in an httpOnly cookie scoped to its own origin; this server never sees or
 sets browser cookies directly.
 
-STREAMING: /chat streams token-by-token as plain text. See src/sanadi/auth.py
+STREAMING: /chat streams token-by-token as plain text. See src/yaude/auth.py
 and the StopOnEvent class below for how "stop generating" actually
 interrupts generation server-side.
 
@@ -57,12 +57,12 @@ from threading import Event, Thread
 import torch
 from dotenv import load_dotenv
 
-load_dotenv()  # MUST run before importing sanadi.auth, which reads
+load_dotenv()  # MUST run before importing yaude.auth, which reads
 # SANADI_JWT_SECRET from the environment at import time.
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
-from sanadi import db as sanadi_db
-from sanadi import auth as sanadi_auth
+from yaude import db as yaude_db
+from yaude import auth as yaude_auth
 from fastapi import FastAPI, Request, HTTPException, Security, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -84,9 +84,9 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
 )
-logger = logging.getLogger("sanadi.serve")
+logger = logging.getLogger("yaude.serve")
 
-CHECKPOINT = os.environ.get("SANADI_CHECKPOINT", "checkpoints/sanadi-coder-v0")
+CHECKPOINT = os.environ.get("SANADI_CHECKPOINT", "checkpoints/yaude-coder-v0")
 BASE_MODEL = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
 API_KEY = os.environ.get("SANADI_API_KEY")
 ALLOWED_ORIGINS = [
@@ -110,10 +110,10 @@ class StopOnEvent(StoppingCriteria):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    sanadi_db.init_db()
-    logger.info(f"User database ready at {sanadi_db.DB_PATH}")
+    yaude_db.init_db()
+    logger.info(f"User database ready at {yaude_db.DB_PATH}")
 
-    if not sanadi_auth.JWT_SECRET:
+    if not yaude_auth.JWT_SECRET:
         logger.warning(
             "SANADI_JWT_SECRET is not set -- /auth/signup and /auth/login "
             "will return a clear error instead of working. Set it in "
@@ -168,7 +168,7 @@ async def lifespan(app: FastAPI):
 
 limiter = Limiter(key_func=get_remote_address)
 
-app = FastAPI(title="Sanadi AI Inference", lifespan=lifespan)
+app = FastAPI(title="Yaude AI Inference", lifespan=lifespan)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -196,10 +196,10 @@ def get_current_user(authorization: str = Header(None)) -> dict:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Not authenticated")
     token = authorization.removeprefix("Bearer ").strip()
-    user_id = sanadi_auth.decode_token(token)
+    user_id = yaude_auth.decode_token(token)
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid or expired session")
-    user = sanadi_db.get_user_by_id(user_id)
+    user = yaude_db.get_user_by_id(user_id)
     if not user:
         raise HTTPException(status_code=401, detail="Account no longer exists")
     return user
@@ -264,17 +264,17 @@ def health():
 @app.post("/auth/signup", response_model=AuthResponse)
 @limiter.limit("5/minute")
 def signup(request: Request, req: SignupRequest):
-    if not sanadi_auth.JWT_SECRET:
+    if not yaude_auth.JWT_SECRET:
         raise HTTPException(
             status_code=503,
             detail="Accounts aren't configured yet (SANADI_JWT_SECRET is unset).",
         )
-    if sanadi_db.get_user_by_email(req.email):
+    if yaude_db.get_user_by_email(req.email):
         raise HTTPException(status_code=409, detail="An account with that email already exists")
 
-    password_hash = sanadi_auth.hash_password(req.password)
-    user = sanadi_db.create_user(req.name.strip(), req.email, password_hash)
-    token = sanadi_auth.create_token(user["id"])
+    password_hash = yaude_auth.hash_password(req.password)
+    user = yaude_db.create_user(req.name.strip(), req.email, password_hash)
+    token = yaude_auth.create_token(user["id"])
     logger.info(f"New account created: {user['email']}")
     return AuthResponse(token=token, user=UserResponse(**user))
 
@@ -282,16 +282,16 @@ def signup(request: Request, req: SignupRequest):
 @app.post("/auth/login", response_model=AuthResponse)
 @limiter.limit("10/minute")
 def login(request: Request, req: LoginRequest):
-    if not sanadi_auth.JWT_SECRET:
+    if not yaude_auth.JWT_SECRET:
         raise HTTPException(
             status_code=503,
             detail="Accounts aren't configured yet (SANADI_JWT_SECRET is unset).",
         )
-    user = sanadi_db.get_user_by_email(req.email)
-    if not user or not sanadi_auth.verify_password(req.password, user["password_hash"]):
+    user = yaude_db.get_user_by_email(req.email)
+    if not user or not yaude_auth.verify_password(req.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Incorrect email or password")
 
-    token = sanadi_auth.create_token(user["id"])
+    token = yaude_auth.create_token(user["id"])
     return AuthResponse(
         token=token, user=UserResponse(id=user["id"], name=user["name"], email=user["email"])
     )
@@ -362,7 +362,7 @@ async def chat(request: Request, req: ChatRequest):
     return StreamingResponse(
         token_stream(),
         media_type="text/plain",
-        headers={"X-Sanadi-Mode": model_state.get("mode", "unknown")},
+        headers={"X-Yaude-Mode": model_state.get("mode", "unknown")},
     )
 
 
