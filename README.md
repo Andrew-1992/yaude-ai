@@ -1,4 +1,4 @@
-# Sanadi AI
+# Yaude AI
 
 AI coding and research assistant for African developers, students, and
 researchers — starting in South Sudan. Bilingual by design (Juba Arabic +
