@@ -1773,6 +1773,234 @@ It's worth keeping straight against the other status codes already covered: 404 
         difficulty="intro",
     )
 
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"This study investigates barriers to mobile banking adoption among rural households in three East African districts. Drawing on 420 household surveys, we find that network reliability concerns and unfamiliarity with digital transaction interfaces are stronger predictors of non-adoption than either income level or distance to the nearest bank branch, challenging the common assumption that mobile banking's main barrier is simply financial access.""",
+        response="Researchers surveyed 420 rural households across three East African districts to understand why some people don't use mobile banking. They found that the biggest reasons weren't about money or distance to a bank -- it was more about people not trusting the network to work reliably, and not being comfortable using the digital interface itself.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"We evaluate the reliability and cost-effectiveness of solar microgrids as an alternative to diesel generators for powering rural health clinics in off-grid regions. Across 18 installed sites over two years, solar microgrids reduced average monthly energy costs by 61% while maintaining comparable uptime, though upfront installation costs remained a significant adoption barrier for under-resourced facilities.""",
+        response="This study looked at 18 rural health clinics that switched from diesel generators to solar microgrids over two years. The clinics saved 61% on their monthly energy costs and had just as reliable power as before -- the main problem is that the upfront cost of installing solar power is still hard for many under-funded clinics to afford.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"This paper examines learning continuity among secondary school students during extended internet connectivity disruptions. Using interview data from 32 students and 12 teachers, we identify SMS-based assignment distribution and offline downloadable content as the two coping strategies most associated with sustained student engagement, compared to schools relying solely on live video instruction.""",
+        response="Researchers interviewed 32 students and 12 teachers about how schools kept students learning when the internet went down for extended periods. They found that schools using simple text-message assignments and content students could download ahead of time and use offline kept students more engaged than schools that depended entirely on live video classes.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"We assess the impact of community-managed borehole maintenance programs on water access reliability across 45 villages. Villages with locally trained maintenance technicians experienced 73% fewer multi-week service interruptions compared to villages relying on centralized government repair crews, suggesting that maintenance capacity, not initial infrastructure quality, is the primary determinant of long-term water access reliability.""",
+        response="This study compared 45 villages to see what kept their water boreholes running reliably. Villages that trained their own local technicians to do repairs had 73% fewer long water outages than villages that waited for government repair crews to come from elsewhere -- suggesting that having someone nearby who can fix problems matters more than how good the original equipment was.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"This study evaluates whether SMS-based prenatal health reminders improve clinic attendance among pregnant women in under-resourced districts. In a sample of 610 participants, women receiving weekly SMS reminders attended 34% more scheduled prenatal visits than the control group, with the effect strongest among first-time mothers.""",
+        response="Researchers tested whether sending pregnant women a weekly text message reminder would help them attend their prenatal checkups. Among 610 women studied, those who got the reminders attended 34% more of their scheduled visits than women who didn't -- and the reminders helped first-time mothers the most.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"We examine whether SMS-delivered agricultural advisories affect crop yield outcomes among smallholder maize farmers. Farmers receiving planting-season and pest-warning SMS alerts over two growing seasons achieved 19% higher average yields than a control group receiving no advisories, with the largest gains observed among farmers who had no prior access to an agricultural extension officer.""",
+        response="This study tested whether sending smallholder maize farmers text-message farming advice -- like when to plant and pest warnings -- actually helped their harvests. Over two growing seasons, farmers who got the advisory texts grew 19% more maize on average than farmers who didn't, and the benefit was biggest for farmers who'd never had access to an in-person agricultural advisor before.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="Help me write a thesis introduction paragraph about smallholder farmers' adoption of mobile agricultural advisory services. I want it to state the problem and why it matters.",
+        response="""Here's a draft introduction paragraph:
+
+"Despite growing mobile phone penetration across rural Africa, smallholder farmers' adoption of mobile agricultural advisory services remains inconsistent, with uptake varying significantly even among farmers facing similar access to network coverage. This gap matters because these services have demonstrated real potential to improve crop yields and reduce losses from pests and poor planting timing -- benefits that remain unrealized wherever adoption stalls. Understanding what actually drives or discourages adoption, beyond simple network availability, is essential for designing advisory programs that reach the farmers who could benefit most, rather than assuming access alone guarantees use."
+
+This structure states the problem (inconsistent adoption despite phone access), explains why it matters (real, unrealized yield benefits), and sets up your research question (what actually drives adoption). Swap in your specific region or crop focus as needed.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How should I structure the literature review section of my thesis?",
+        response="""A literature review isn't just a list of summaries -- it should build an argument for why your specific research is needed. A structure that works well for most theses:
+
+1. **Group studies by theme or approach**, not chronologically one-by-one. If several papers examine the same underlying question from different angles, discuss them together.
+2. **Move from broad to narrow.** Start with the general area of research, then progressively narrow toward your specific question.
+3. **Synthesize, don't just summarize.** For each theme, note where studies agree, where they conflict, and what's still unclear -- this is what makes it a *review*, not a list of abstracts.
+4. **End with the gap your research fills.** The final paragraph should make it explicit: here's what's known, here's what isn't, and here's how your study addresses that gap.
+
+A common mistake is writing this section as "Study A found X. Study B found Y. Study C found Z." with no connective analysis between them -- that reads as a summary, not a review, and doesn't build toward your own contribution.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="Help me write a methodology paragraph for a study that surveyed 300 university students about internet access and combined it with follow-up interviews.",
+        response="""Here's a draft methodology paragraph:
+
+"This study employed a mixed-methods design combining quantitative and qualitative data. In the first phase, a structured survey was administered to 300 university students to capture patterns in internet access frequency, device type, and connectivity-related academic disruptions. In the second phase, semi-structured follow-up interviews were conducted with a purposively selected subset of 20 survey respondents to explore the specific circumstances and coping strategies behind the patterns identified in the survey data. This sequential design allowed the qualitative interviews to be grounded in and informed by quantitative findings, rather than treating the two data sources independently."
+
+Notice the structure: state the overall design type first (mixed-methods), then walk through each phase in the order it happened, and end by explaining *why* you combined them this way -- reviewers specifically look for that justification, not just a description of what you did.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I turn a general interest in a topic into a specific, researchable research question?",
+        response="""A broad interest like "mobile technology and education" isn't researchable as-is -- it's a topic area, not a question. Narrowing it usually means adding three things:
+
+1. **A specific population or context** -- not "students" generally, but which students, where.
+2. **A specific outcome you're measuring** -- not "does it help," but help with *what*, measured *how*.
+3. **A relationship you're testing** -- between which two things, specifically.
+
+Applying that to the broad topic above: "How does SMS-based assignment delivery affect secondary school students' assignment completion rates during internet outages in Central Equatoria State?" is researchable -- it names the population (secondary students in a specific state), the outcome (completion rates), and the relationship being tested (effect of SMS delivery during outages specifically). If you can't identify what data would actually answer your question, it's usually a sign the question is still too broad.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="Help me write a 150-200 word abstract for a completed study on solar microgrid adoption in rural health clinics.",
+        response="""A strong abstract at this length typically has five short parts, one to two sentences each: the problem, your approach, your key finding, why it matters, and (optionally) a limitation. Here's a draft:
+
+"Rural health clinics in off-grid regions often rely on costly, unreliable diesel generators for power. This study evaluated solar microgrids as an alternative across 18 clinics over two years, tracking energy costs and uptime compared to their previous diesel systems. Clinics using solar microgrids reduced average monthly energy costs by 61% while maintaining comparable power reliability. These findings suggest solar microgrids are a financially viable alternative for off-grid health infrastructure, though high upfront installation costs remain a barrier for under-resourced facilities without external funding support. Future research should examine financing models that address this adoption barrier directly."
+
+Notice it front-loads the problem before your own contribution, states one concrete number rather than vague claims, and closes honestly with a limitation rather than overselling the result -- all standard expectations for an academic abstract.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this loop never end?
+
+```python
+def countdown(n):
+    while n > 0:
+        print(n)
+    return "done"
+```""",
+        response="""`n` is never actually changed inside the loop, so `n > 0` stays true forever once it starts true -- the loop has no way to reach its own exit condition.
+
+Fixed version:
+```python
+def countdown(n):
+    while n > 0:
+        print(n)
+        n -= 1
+    return "done"
+```
+Adding `n -= 1` decreases `n` by 1 on every iteration, so it eventually reaches 0 and the loop naturally stops. This is one of the most common infinite-loop causes: the condition being checked never actually gets updated inside the body of the loop.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""This is supposed to add 5 and the string version of a number, but gives a strange result. Why?
+
+```javascript
+let total = 5 + "3";
+console.log(total); // "53"
+```""",
+        response="""`+` in JavaScript does double duty: it's both numeric addition and string concatenation, and it picks based on the types involved. Since `"3"` is a string, JavaScript converts `5` to a string too and *concatenates* them instead of adding numbers -- so `5 + "3"` becomes `"53"`, not `8`.
+
+If you actually want numeric addition, convert the string first:
+```javascript
+let total = 5 + Number("3"); // 8
+// or: 5 + parseInt("3", 10);
+```
+This is a common source of quiet bugs specifically because it doesn't throw an error -- it just silently produces a string instead of a number, and the mistake only shows up later when something expects a number and gets `"53"` instead.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function sometimes skip the last valid item?
+
+```python
+def find_last_positive(numbers):
+    for i in range(len(numbers) - 1):
+        if numbers[i] > 0:
+            last = numbers[i]
+    return last
+```""",
+        response="""`range(len(numbers) - 1)` stops one index short of the end of the list, so the loop never checks the actual last element -- if that last element happens to be the only positive number, or the true last positive one, it gets missed entirely.
+
+Fixed version:
+```python
+def find_last_positive(numbers):
+    last = None
+    for i in range(len(numbers)):
+        if numbers[i] > 0:
+            last = numbers[i]
+    return last
+```
+Two changes: `range(len(numbers))` now checks every index including the last one, and `last` is initialized to `None` upfront so the function doesn't crash with an "undefined variable" error if the list contains no positive numbers at all.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I write a discussion section that actually connects my results back to existing research, instead of just restating my findings?",
+        response="""A discussion section that just repeats your results ("we found X, we found Y") is one of the most common weaknesses in student research writing. A structure that avoids this:
+
+1. **Restate your key finding briefly** -- one sentence, not a re-summary of your whole results section.
+2. **Compare it directly to specific prior studies.** Does it agree with what others found? Contradict it? Extend it to a new context? Name the studies and say explicitly how your result relates to theirs.
+3. **Explain a plausible reason for any disagreement**, if your results conflict with prior work -- different population, different method, different time period.
+4. **State the practical or theoretical implication** -- so what? Who should care about this finding, and why?
+5. **Acknowledge a real limitation**, briefly and honestly, rather than only in a separate limitations section.
+
+The difference between a weak and strong discussion section usually comes down to step 2: weak ones describe results in isolation, while strong ones actively argue for where this study fits into a larger, ongoing conversation in the field.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
 
 def split_and_write(examples: list[SFTExample], out_dir: Path, eval_fraction: float = 0.1) -> None:
     random.seed(42)
