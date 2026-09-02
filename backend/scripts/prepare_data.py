@@ -2819,6 +2819,1293 @@ If your study is meant to formally test a specific hypothesis with statistical s
         difficulty="intermediate",
     )
 
+    yield SFTExample(
+        instruction="Write a program that prints numbers 1 to 20, but prints 'Fizz' for multiples of 3, 'Buzz' for multiples of 5, and 'FizzBuzz' for multiples of both.",
+        response="""```python
+for i in range(1, 21):
+    if i % 3 == 0 and i % 5 == 0:
+        print("FizzBuzz")
+    elif i % 3 == 0:
+        print("Fizz")
+    elif i % 5 == 0:
+        print("Buzz")
+    else:
+        print(i)
+```
+
+The order of the checks matters here: multiples of both 3 and 5 (like 15) also pass the `i % 3 == 0` check on its own, so if that check came first without the combined `and` condition, "FizzBuzz" would never actually print -- only "Fizz". Checking the combined condition first, before the individual ones, is what makes the more specific case take priority over the more general ones.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="How do I sort a list of dictionaries by one of their fields, like sorting students by grade?",
+        response="""```python
+students = [
+    {"name": "Omol", "grade": 85},
+    {"name": "Andrew", "grade": 92},
+    {"name": "Sara", "grade": 78},
+]
+
+sorted_students = sorted(students, key=lambda s: s["grade"], reverse=True)
+```
+
+`sorted()`'s `key` argument tells it exactly what to compare -- here, `lambda s: s["grade"]` extracts just the grade from each dictionary, so Python sorts based on that number instead of trying (and failing) to compare entire dictionaries directly. `reverse=True` sorts highest first; leave it out (or set `False`) for ascending order. This `key=` pattern is the general tool for sorting by any specific field, not just grades -- swap in whatever field you actually need.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I read a secret API key from an environment variable instead of hardcoding it in my Python code?",
+        response="""```python
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # reads variables from a .env file into the environment
+
+api_key = os.environ.get("API_KEY")
+if not api_key:
+    raise RuntimeError("API_KEY is not set -- check your .env file")
+```
+
+`os.environ.get("API_KEY")` reads the value from the environment rather than a value written directly into your source code. `load_dotenv()` (from the `python-dotenv` package) is what lets a local `.env` file populate those environment variables during development, without needing to set them manually in your terminal every time.
+
+This matters for a real reason, not just style: hardcoded keys get committed to git history by accident constantly, and once something's in git history, it's very hard to fully remove even after you delete it -- keeping secrets in a `.env` file (and adding `.env` to `.gitignore`) keeps them out of your codebase entirely.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I get today's date and format it as a readable string in Python?",
+        response="""```python
+from datetime import date
+
+today = date.today()
+print(today.strftime("%B %d, %Y"))  # e.g. "September 1, 2026"
+```
+
+`date.today()` gives you the current date as a `date` object. `.strftime()` ("string format time") converts it into whatever text format you want, using format codes: `%B` is the full month name, `%d` is the day, `%Y` is the four-digit year. Change the format string to control the output -- `"%Y-%m-%d"` would give `"2026-09-01"` instead, the common format for sorting dates as plain text.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="How do I create and raise my own custom exception in Python, instead of using a generic one?",
+        response="""```python
+class InsufficientFundsError(Exception):
+    pass
+
+def withdraw(balance, amount):
+    if amount > balance:
+        raise InsufficientFundsError(f"Cannot withdraw {amount}, balance is only {balance}")
+    return balance - amount
+```
+
+A custom exception is just a class that inherits from `Exception` (or a more specific built-in exception type). Once defined, you `raise` it exactly like a built-in exception, and callers can catch it specifically:
+```python
+try:
+    withdraw(100, 150)
+except InsufficientFundsError as e:
+    print(f"Transaction failed: {e}")
+```
+The real benefit over just raising a generic `Exception` or `ValueError`: calling code can catch `InsufficientFundsError` specifically, without accidentally also catching unrelated errors that happen to be the same generic type -- your error handling gets more precise as your codebase grows.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this comparison return False even though the lists look identical?
+
+```python
+a = [1, 2, 3]
+b = [1, 2, 3]
+print(a is b)  # False
+```""",
+        response="""`is` checks whether two names point to the exact same object in memory -- not whether their contents look equal. `a` and `b` are two separate list objects that happen to contain the same values, so `a is b` is `False`, even though `a == b` would correctly be `True`.
+
+Use `==` when you want to compare values (almost always what you actually want):
+```python
+print(a == b)  # True -- same contents
+print(a is b)  # False -- different objects
+```
+`is` is the right tool specifically for checking identity -- most commonly, checking whether something `is None`, since there's genuinely only ever one `None` object in a Python program. For comparing whether two things have the same *value*, `==` is almost always the correct choice.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function not actually change the string?
+
+```python
+def uppercase_first(text):
+    text[0] = text[0].upper()
+    return text
+```""",
+        response="""This raises `TypeError: 'str' object does not support item assignment`. Strings in Python are immutable -- once created, their individual characters can never be changed in place, unlike a list.
+
+To get an uppercase first letter, you have to build a *new* string instead:
+```python
+def uppercase_first(text):
+    return text[0].upper() + text[1:]
+```
+This takes the uppercased first character and concatenates it with everything after the first character, producing a new string rather than trying to modify the original. Any string "modification" in Python actually works this way under the hood -- even something like `.replace()` returns a new string rather than changing the original, which is why you always need to assign the result: `text = text.replace(...)`, not just call `.replace()` on its own and expect `text` to have changed.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function always print the discount message, even for cheap items?
+
+```python
+def check_price(price):
+    if price > 100:
+        print("Regular price")
+    print("Discount available!")
+```""",
+        response="""The `print("Discount available!")` line isn't indented under the `if` block -- it's at the same indentation level as the `if` statement itself, so it runs every single time the function is called, completely independent of the price check above it.
+
+Fixed version, if the discount message should only show for cheaper items:
+```python
+def check_price(price):
+    if price > 100:
+        print("Regular price")
+    else:
+        print("Discount available!")
+```
+Python uses indentation itself to define which lines belong inside a block -- there are no curly braces `{}` marking the boundaries like some other languages use. This makes indentation mistakes genuinely capable of silently changing your program's logic, not just its formatting, which is worth remembering as a real, distinct category of bug to watch for.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this always print "Access granted", no matter what role is passed in?
+
+```python
+def check_access(role):
+    if role = "admin":
+        print("Access granted")
+    else:
+        print("Access denied")
+```""",
+        response="""This is actually a syntax error in real Python, not a silent logic bug -- `=` is assignment, not comparison, and Python doesn't allow assignment inside an `if` condition this way, so it would refuse to run at all with a `SyntaxError`.
+
+(In some other languages, like older C-style languages, `if (role = "admin")` *is* legal and this exact mistake silently always evaluates as true -- which is why it's worth knowing about even though Python catches it for you.)
+
+The fix in Python is using `==` for comparison:
+```python
+def check_access(role):
+    if role == "admin":
+        print("Access granted")
+    else:
+        print("Access denied")
+```
+`=` assigns a value to a variable; `==` checks whether two values are equal. Mixing them up is one of the most common typos across almost every programming language, which is exactly why Python treats it as an error rather than silently running with the wrong meaning.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does sorting this list of dictionaries crash with a TypeError?
+
+```python
+students = [{"name": "Omol", "grade": 85}, {"name": "Sara", "grade": 92}]
+sorted_students = sorted(students)
+```""",
+        response="""`sorted()` without a `key` argument tries to compare the dictionaries directly against each other using `<`, and Python has no defined way to say one dictionary is "less than" another -- there's no natural ordering for dictionaries, so it raises `TypeError: '<' not supported between instances of 'dict' and 'dict'`.
+
+Fix it by telling `sorted()` exactly what to compare, using `key`:
+```python
+sorted_students = sorted(students, key=lambda s: s["grade"])
+```
+Now `sorted()` compares the extracted grade values (which *do* have a natural ordering) instead of trying to compare the dictionaries as a whole. Any time you're sorting a list of complex objects -- dictionaries, or your own custom class instances -- you need a `key` function telling Python specifically what value to sort by.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I search academic databases effectively, instead of just typing my whole research question into the search box?",
+        response="""A whole research question typed directly into a search box usually returns poor results, since databases match on the specific words present, not on your underlying intent. A more effective approach:
+
+1. **Break your question into 3-4 key concepts.** "How does mobile banking affect financial inclusion in rural areas?" breaks down into: mobile banking, financial inclusion, rural.
+2. **List synonyms for each concept.** "Rural" might also appear as "remote," "underserved," or a specific region name in different papers.
+3. **Combine concepts with AND, and synonyms with OR.** Most academic databases support this: `("mobile banking" OR "mobile money") AND ("financial inclusion" OR "financial access") AND rural`.
+4. **Use the database's filters**, not just the search box -- publication date range, peer-reviewed only, and subject area filters cut out a lot of irrelevant results before you even start reading abstracts.
+
+This structured approach consistently returns more relevant results than a single long natural-language sentence, since it matches how the database's search index actually works, rather than how a conversational question is phrased.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I paraphrase a source properly, so it doesn't count as plagiarism, even if I cite it?",
+        response="""Citing a source tells the reader where an idea came from -- it doesn't automatically make copying that source's exact wording acceptable. Real paraphrasing means rewriting the idea in genuinely your own sentence structure and word choice, not just swapping a few synonyms into the original sentence.
+
+A test that catches weak paraphrasing: cover the original source and try to write the idea from memory, in your own words, based on your actual understanding of it -- rather than looking at the original sentence and editing it word by word. If your "paraphrase" still follows the same sentence structure as the original with just a few words changed, that's still too close, even with a citation attached.
+
+One more distinction worth knowing: if you want to use the source's exact original wording, that requires quotation marks *and* a citation -- paraphrasing (no quotation marks) and quoting (with quotation marks) are different, both legitimate tools, but using one while presenting it as the other is exactly what causes plagiarism problems, even when unintentional.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between an abstract and an executive summary?",
+        response="""Both summarize a longer document, but for different audiences and purposes. An abstract is written for other researchers in your field -- it can use technical terminology freely, and its job is to help someone decide whether the full academic paper is relevant to their own research.
+
+An executive summary is written for decision-makers who may not have your specialized background -- a policymaker, a funder, an organization's leadership. It leads with practical implications and recommendations rather than methodology, and generally avoids field-specific jargon or explains it immediately if used.
+
+A useful way to tell them apart: an abstract answers "what did you study, how, and what did you find?" An executive summary answers "what should I, the reader, actually do or understand as a result of this?" The same research project might need both documents, written quite differently, depending on who's going to read each one.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines e-waste disposal behavior among urban households, focusing on the relationship between awareness of environmental harm and actual disposal practices. Survey data from 400 households found that awareness of environmental risks did not predict proper disposal behavior; instead, the primary predictor was simple physical proximity to a designated e-waste collection point, suggesting that convenience -- not education campaigns alone -- drives behavior change."',
+        response="Researchers surveyed 400 urban households about how they dispose of old electronics. Surprisingly, knowing that e-waste is harmful to the environment didn't actually predict whether people disposed of it properly -- what mattered most was simply how close they lived to a proper collection point. This suggests that making disposal convenient matters more than just teaching people why it's important.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate the impact of a short financial literacy training program on savings behavior among informal-sector workers. Comparing 200 program participants to a matched control group three months later, participants opened formal savings accounts at more than triple the rate of non-participants, with the effect strongest among workers who had never previously used any formal financial institution."',
+        response="This study tested whether a short financial literacy course changes how informal-sector workers save money. Three months after 200 people took the course, they were more than three times as likely to have opened a formal savings account compared to people who didn't take it -- and the training helped most among workers who'd never used a bank or formal financial service before at all.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+    yield SFTExample(
+        instruction="What is a JWT, and why do apps use it for login sessions?",
+        response="""A JWT (JSON Web Token) is a compact, signed piece of text that represents "this user is logged in, and here's who they are" -- without the server needing to store session data in memory or a database for every logged-in user.
+
+A JWT has three parts, separated by dots: a header, a payload (the actual data, like a user ID and an expiration time), and a signature. The signature is the important part -- it's created using a secret key only the server knows, and lets the server verify the token hasn't been tampered with, without needing to look anything up. If someone edited the payload to claim a different user ID, the signature would no longer match, and the server would reject it.
+
+This is why JWTs are described as "stateless": the server doesn't need to remember anything about active sessions -- each request just carries its own proof of identity, verifiable on the spot. The trade-off is that once issued, a JWT is valid until it expires; unlike a traditional server-side session, there's no simple built-in way to instantly revoke one early.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="Why shouldn't I just store user passwords directly in my database?",
+        response="""If your database is ever breached -- and breaches happen even to careful teams -- storing plain-text passwords means every single user's actual password is immediately exposed, and since many people reuse passwords across sites, that damage extends far beyond just your own application.
+
+The standard fix is hashing: running the password through a one-way function (like bcrypt) that produces a fixed-length scrambled output you can't reverse back into the original password.
+
+```python
+import bcrypt
+hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+```
+
+To check a login attempt, you hash the attempted password the same way and compare the two hashes -- you never need to "un-hash" anything, or even store the real password at all. bcrypt specifically also adds a random "salt" to each password before hashing, which prevents attackers from using a precomputed table of common password hashes to crack many accounts at once.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is rate limiting, and why do APIs use it?",
+        response="""Rate limiting caps how many requests a single user, API key, or IP address can make in a given time window -- for example, "10 requests per minute." Once that limit is hit, further requests get rejected (usually with an HTTP 429 "Too Many Requests" response) until the window resets.
+
+It serves two real purposes: protecting the server from being overwhelmed by a bug that accidentally sends requests in a runaway loop, and preventing deliberate abuse -- someone trying to hammer an endpoint to scrape data or brute-force a password.
+
+A simple rate limit is usually enough for a small application; larger systems sometimes use more nuanced approaches, like different limits for different endpoints (a login endpoint might allow far fewer attempts per minute than a general read-only endpoint, since repeated login attempts are a common attack pattern worth limiting more aggressively).""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I check what type a variable is in Python before operating on it?",
+        response="""```python
+def process(value):
+    if isinstance(value, str):
+        return value.upper()
+    elif isinstance(value, (int, float)):
+        return value * 2
+    else:
+        return None
+```
+
+`isinstance(value, str)` checks whether `value` is a string (or a subclass of `str`). Passing a tuple of types, like `(int, float)`, checks against any of them at once. This is generally preferred over the older `type(value) == str` style, since `isinstance()` correctly handles subclasses -- if you ever create a custom class inheriting from `str`, `isinstance()` still recognizes it as a string, while `type() ==` would not.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="How do I combine two lists element-by-element in Python, like pairing names with scores?",
+        response="""```python
+names = ["Omol", "Andrew", "Sara"]
+scores = [85, 92, 78]
+
+paired = list(zip(names, scores))
+# [("Omol", 85), ("Andrew", 92), ("Sara", 78)]
+```
+
+`zip()` walks through both lists in parallel and pairs up elements at matching positions into tuples. It's commonly used directly in a loop without needing to build the full list first:
+```python
+for name, score in zip(names, scores):
+    print(f"{name}: {score}")
+```
+One thing worth knowing: if the two lists are different lengths, `zip()` stops at the shorter one -- it doesn't raise an error or pad the longer list, it just silently ignores the extra elements, which is worth being aware of if your lists might not always match in length.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this crash when the user enters something like "twenty"?
+
+```python
+age = int(input("Enter your age: "))
+print(f"You are {age} years old")
+```""",
+        response="""`int()` can only convert strings that look like valid numbers -- `"25"` works, but `"twenty"` raises `ValueError: invalid literal for int() with base 10: 'twenty'`, since there's no numeric interpretation of that text.
+
+Handle it gracefully with a try/except instead of letting the program crash:
+```python
+try:
+    age = int(input("Enter your age: "))
+    print(f"You are {age} years old")
+except ValueError:
+    print("Please enter a valid number")
+```
+Any time you're converting user-provided input to a number, assume it might not actually be a valid number -- users mistype, paste the wrong thing, or genuinely misunderstand what's being asked. Wrapping the conversion in error handling is standard practice, not excessive caution.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function call give unexpected results?
+
+```python
+def create_student(name, age, grade):
+    return {"name": name, "age": age, "grade": grade}
+
+student = create_student(22, "Omol", 85)
+```""",
+        response="""The arguments were passed in the wrong order. Python matches positional arguments strictly by position, not by their apparent meaning -- so `22` gets assigned to `name`, `"Omol"` to `age`, and `85` to `grade`, even though that clearly wasn't intended, and nothing about calling it this way raises an error.
+
+Two fixes, depending on preference:
+```python
+# Fix 1: just get the order right
+student = create_student("Omol", 22, 85)
+
+# Fix 2: use keyword arguments, which are self-documenting and order-independent
+student = create_student(name="Omol", age=22, grade=85)
+```
+Keyword arguments are worth using especially for functions with several parameters of the same type (several numbers or several strings in a row) -- they make the call itself readable, and they make this exact kind of silent misordering mistake far less likely to happen in the first place.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How should I structure a research proposal, before I've actually collected any data?",
+        response="""A research proposal argues for why a study is worth doing and how you'll do it -- it's forward-looking, unlike a finished paper's report of what you found. A structure that works for most proposals:
+
+1. **Background and problem statement** -- what's known, and what specific gap or problem your study addresses.
+2. **Research question(s)** -- stated precisely, the same way you would in a finished thesis.
+3. **Proposed methodology** -- how you plan to collect and analyze data, written in future tense ("will be surveyed," not "were surveyed").
+4. **Significance** -- who benefits from this research existing, and why it matters beyond satisfying a course requirement.
+5. **Timeline and feasibility** -- a realistic plan for actually completing the work, including any resource or access constraints you're aware of upfront.
+
+A proposal that skips feasibility is a common weakness reviewers flag -- it's not enough to describe an ideal study; you need to convince the reader that *you specifically*, with your actual available time and resources, can realistically carry it out.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between statistical significance and effect size, and why does it matter to report both?",
+        response="""Statistical significance (usually reported as a p-value) tells you whether an observed difference is likely to be a real pattern rather than random chance. Effect size tells you how *large* that difference actually is in practical terms. A result can be statistically significant while still being practically tiny -- especially with a large sample size, even a trivial difference can reach statistical significance.
+
+Concretely: a study of 50,000 people might find a "statistically significant" 0.5% improvement in test scores from some intervention. That's real (not chance), but a 0.5% improvement might not be worth the cost or effort of implementing the intervention at all.
+
+This is why strong research reports both numbers, not just "p < 0.05." A p-value alone tells a reader "this is probably real," while the effect size tells them "and here's whether it's actually worth caring about." Reporting significance without effect size is a common and genuinely misleading gap in weaker research writing.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I write an honest limitations section without making my whole study sound weak or unreliable?",
+        response="""Every study has limitations -- acknowledging them is a sign of rigor, not weakness, and reviewers actively look for this section. The goal is precision, not excessive apology: name the specific limitation, explain its likely impact, and move on, rather than hedging every single claim in your paper.
+
+A useful structure for each limitation:
+1. **State it plainly.** "This study relied on self-reported data, which may be subject to recall bias."
+2. **Explain the likely direction of impact**, if you can reasonably estimate it. "This may have led to overestimating actual usage frequency, if participants rounded up when recalling past behavior."
+3. **Note what would address it in future work**, briefly. "Future studies could pair self-report with usage logs to validate these estimates."
+
+What to avoid: vague blanket statements like "this study has several limitations and results should be interpreted with caution" without naming any of them specifically -- that reads as evasive rather than rigorous, and gives the reader no actual information about how much to trust which parts of your findings.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What makes a survey question 'leading', and how do I avoid writing them by accident?",
+        response="""A leading question is phrased in a way that nudges respondents toward a particular answer, rather than neutrally measuring their actual view. This often happens without the researcher intending it.
+
+Compare: "Don't you think the new library hours are more convenient?" versus "How would you rate the new library hours?" The first embeds an expected positive answer directly into the question's wording; the second leaves genuine room for any response.
+
+A few concrete things to watch for:
+- **Loaded words.** "Do you support this reasonable policy?" -- "reasonable" is doing persuasive work that doesn't belong in a neutral question.
+- **Assuming a premise.** "How much did the new system improve your workflow?" assumes it improved things at all, rather than first asking whether it did.
+- **Unbalanced options.** A scale from "good" to "excellent" gives no way to express a negative view at all.
+
+A useful check: have someone unfamiliar with your expected results read your questions and guess what answer you're hoping for. If they can guess it easily, the wording likely needs revising before you actually send the survey out.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study evaluates whether offering flexible micro-loan repayment schedules, aligned with seasonal agricultural income, improves repayment rates among smallholder farmers. Comparing 300 farmers on flexible schedules to 300 on fixed monthly schedules, flexible-schedule borrowers had a 38% lower default rate, with the effect concentrated almost entirely among farmers growing single-harvest crops rather than those with multiple harvests per year."',
+        response="This study compared 300 farmers repaying loans on a schedule matched to their harvest income against 300 farmers on a regular fixed monthly schedule. Farmers on the flexible schedule defaulted on their loans 38% less often -- and this benefit mostly applied to farmers who only harvest once a year, since a fixed monthly payment doesn't match how their income actually arrives.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine the relationship between class size and student participation in university computer science courses. Observational data from 40 course sections found that sections with fewer than 25 students had significantly higher rates of student-initiated questions during lectures, with no corresponding difference found in final exam performance between smaller and larger sections."',
+        response="Researchers looked at 40 university computer science classes to see how class size affects student participation. Smaller classes, with fewer than 25 students, had noticeably more students asking questions during lectures -- but interestingly, this didn't translate into better final exam scores; students in larger classes performed just as well despite asking fewer questions in class.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates whether offline-cached map data improves emergency response times for ambulance services operating in areas with unreliable mobile network coverage. Across 85 recorded emergency dispatches, teams using offline-cached routing reached the scene an average of 4.2 minutes faster than teams relying on live network-dependent navigation, with the gap widening substantially during confirmed network outage periods."',
+        response='This study looked at 85 ambulance emergency responses to see if having maps saved on the phone in advance -- rather than relying on a live internet connection -- helped ambulances get to the scene faster in areas with unreliable network coverage. Teams using the offline maps arrived 4.2 minutes faster on average, and that gap got even bigger specifically during times when the network was actually down.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We assess whether peer mentorship programs improve first-year retention rates among university students from first-generation college backgrounds. Comparing 150 mentored students to a matched group of 150 unmentored first-generation students, mentored students had a 19-percentage-point higher first-year retention rate, with the effect strongest among students matched with a mentor from a similar academic department."',
+        response="This study compared 150 first-generation college students who had a peer mentor to 150 similar students who didn't. Students with a mentor were 19 percentage points more likely to still be enrolled after their first year -- and the mentoring worked best when the student and mentor were studying in similar academic departments.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+    yield SFTExample(
+        instruction="What is the `useEffect` hook in React, and when should I use it?",
+        response="""`useEffect` lets a component run code in response to rendering -- typically for things that reach outside React itself, like fetching data, setting a timer, or subscribing to an external event.
+
+```jsx
+useEffect(() => {
+    fetchData();
+}, []);
+```
+
+The second argument (the "dependency array") controls when the effect re-runs. An empty array `[]` means "run once, after the first render, and never again." Including a variable, like `[userId]`, means "re-run whenever `userId` changes." Omitting the array entirely means "run after every single render," which is rarely what you actually want.
+
+A useful mental model: `useEffect` is for synchronizing your component with something *outside* React's own rendering system -- an API, a browser API like `setTimeout`, a subscription. If you're just computing a value from existing props or state, you usually don't need `useEffect` at all; a plain calculation during render is simpler and avoids an unnecessary extra render cycle.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between `null` and `undefined` in JavaScript?",
+        response="""`undefined` means a variable has been declared but never assigned a value -- it's JavaScript's own default for "nothing here yet." `null` means a value was deliberately set to represent "no value," as an explicit choice by whoever wrote the code.
+
+```javascript
+let a;
+console.log(a); // undefined -- never assigned
+
+let b = null;
+console.log(b); // null -- deliberately set to "nothing"
+```
+
+A function that doesn't explicitly return anything returns `undefined`; a function parameter that isn't passed in is `undefined`. `null`, on the other hand, only ever appears because someone wrote `= null` on purpose. `== ` treats them as equal (`null == undefined` is `true`), but `===` treats them as different types entirely (`null === undefined` is `false`) -- which is one more reason `===` tends to be the safer default for comparisons in JavaScript.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="Write a Python decorator that measures how long a function takes to run.",
+        response="""```python
+import time
+from functools import wraps
+
+def timed(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        elapsed = time.time() - start
+        print(f"{func.__name__} took {elapsed:.3f}s")
+        return result
+    return wrapper
+
+@timed
+def slow_calculation():
+    time.sleep(1)
+    return 42
+```
+
+A decorator is a function that takes another function and returns a modified version of it -- `@timed` above `def slow_calculation()` is shorthand for `slow_calculation = timed(slow_calculation)`. The `wrapper` function runs your timing code before and after calling the original function (`func(*args, **kwargs)`), then returns whatever the original function returned, so calling `slow_calculation()` behaves normally but now also prints its runtime. `@wraps(func)` preserves the original function's name and docstring, which would otherwise get overwritten by `wrapper`'s own metadata.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How does array destructuring work in JavaScript?",
+        response="""```javascript
+const scores = [85, 92, 78];
+const [first, second, third] = scores;
+console.log(first); // 85
+```
+
+Destructuring unpacks values from an array directly into named variables, based on their position -- `first` gets `scores[0]`, `second` gets `scores[1]`, and so on. It works the same way for function return values that come back as an array:
+```javascript
+function getMinMax(numbers) {
+    return [Math.min(...numbers), Math.max(...numbers)];
+}
+const [min, max] = getMinMax([3, 7, 1, 9]);
+```
+You can also skip elements you don't need with an empty slot: `const [first, , third] = scores;` grabs the 1st and 3rd elements while ignoring the 2nd entirely. This is mostly a readability improvement over accessing `scores[0]`, `scores[1]` individually -- functionally equivalent, but the intent reads more clearly at a glance.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do template literals in JavaScript compare to regular string concatenation?",
+        response="""```javascript
+const name = "Omol";
+const score = 85;
+
+const message = `Hello ${name}, your score is ${score}.`;
+```
+
+Template literals (backtick strings) let you embed expressions directly inside `${}`, evaluated and inserted into the string automatically -- similar to Python's f-strings. Compare this to concatenation:
+```javascript
+const message = "Hello " + name + ", your score is " + score + ".";
+```
+Both produce the same result, but template literals also support real multi-line strings without needing `\\n` escape codes or `+` continuation:
+```javascript
+const message = `Line one
+Line two`;
+```
+Regular strings with `"` or `'` can't span multiple lines this way at all -- that alone is often enough reason to reach for template literals whenever a string needs to include a variable or span more than one line.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="How do I join a list of words into a single sentence, and split it back apart in Python?",
+        response="""```python
+words = ["Yaude", "AI", "helps", "students", "learn"]
+sentence = " ".join(words)
+print(sentence)  # "Yaude AI helps students learn"
+
+back_to_words = sentence.split(" ")
+print(back_to_words)  # ["Yaude", "AI", "helps", "students", "learn"]
+```
+
+`.join()` is called on the *separator* string, not the list -- `" ".join(words)` reads as "join these words together, with a space between each one." This can feel backwards at first if you're expecting `words.join(" ")`, but it's this way because `.join()` works on any iterable of strings, not just lists specifically.
+
+`.split(" ")` does the reverse, breaking a string apart wherever it finds that separator. Calling `.split()` with no argument at all splits on any whitespace (spaces, tabs, newlines) and also collapses multiple consecutive spaces into one split point, which is usually what you want for cleaning up user-typed text.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this component keep fetching data forever, freezing the page?
+
+```jsx
+function StudentList() {
+    const [students, setStudents] = useState([]);
+
+    useEffect(() => {
+        fetchStudents().then(data => setStudents(data));
+    });
+
+    return <ul>{students.map(s => <li key={s.id}>{s.name}</li>)}</ul>;
+}
+```""",
+        response="""There's no dependency array on `useEffect` at all -- so it runs after *every* render, with no stopping condition. Here's the loop that creates: the effect runs, calls `setStudents(data)`, which triggers a re-render, which runs the effect again, which calls `setStudents` again, forever.
+
+Fix by adding an empty dependency array, so it only runs once after the first render:
+```jsx
+useEffect(() => {
+    fetchStudents().then(data => setStudents(data));
+}, []);
+```
+This is one of the most common real-world React bugs, specifically because the broken version often *looks* like it works at first glance in a quick test -- the infinite loop is a fetch happening rapidly in the background, not always an obvious visible crash, until it noticeably freezes the page or exhausts your API's rate limit.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this crash with 'cannot read properties of undefined'?
+
+```javascript
+const [name, age] = getStudentInfo();
+console.log(name.toUpperCase());
+```
+
+Assume `getStudentInfo()` returns a single object `{name: "Omol", age: 22}`, not an array.""",
+        response="""Array destructuring (`const [name, age] = ...`) expects the right side to be an array or another iterable, unpacking by *position*. But `getStudentInfo()` returns a plain object, not an array -- objects aren't iterable this way, so `name` and `age` don't get the values you expect (this specific case would actually throw a `TypeError` since objects aren't iterable at all).
+
+Since the data is an object, use object destructuring instead, which unpacks by *key name* rather than position:
+```javascript
+const { name, age } = getStudentInfo();
+console.log(name.toUpperCase());
+```
+The syntax looks similar (`{}` versus `[]`), but they match completely different things: `[]` destructuring matches by position in an array, `{}` destructuring matches by property name in an object. Mixing them up based on which one you saw most recently is a common, easy mistake.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this print with an extra space at the start?
+
+```python
+words = ["", "Hello", "world"]
+print(" ".join(words))
+```""",
+        response="""`words` starts with an empty string `""` as its first element, and `.join()` faithfully includes every element -- including empty ones -- separated by the given separator. Joining `["", "Hello", "world"]` with `" "` produces `" Hello world"`, with a leading space, because there's genuinely an empty string sitting before "Hello" in the list.
+
+This usually traces back to how the list was built -- often from splitting a string that itself started with the separator:
+```python
+text = " Hello world"
+words = text.split(" ")  # ["", "Hello", "world"] -- the leading space creates an empty first element
+```
+The fix is usually at the source: `text.strip().split(" ")` removes leading/trailing whitespace before splitting, which avoids creating that empty first element in the first place, rather than trying to filter it out afterward.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between a primary and secondary source, and why does it matter which I cite?",
+        response="""A primary source is original, first-hand material -- the actual study, the raw data, an original interview transcript, a firsthand account. A secondary source discusses, analyzes, or summarizes primary sources -- a textbook explaining a theory, a news article reporting on a study, a review paper synthesizing multiple studies.
+
+Why it matters: secondary sources can introduce errors or shifts in meaning as they summarize the original. If you cite a textbook's summary of a study's finding, and that summary is slightly imprecise, your paper inherits that imprecision without you realizing it. Where possible, especially for a specific factual claim or statistic, tracing back to the primary source and citing that directly is more rigorous and accurate.
+
+Secondary sources aren't inherently worse -- they're genuinely useful for background context and for surveying a wide body of literature efficiently. But for any specific finding you're building your own argument on, checking the primary source yourself rather than trusting a secondary summary is worth the extra effort.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between a cross-sectional and a longitudinal study design?",
+        response="""A cross-sectional study collects data from participants at a single point in time -- a snapshot. A longitudinal study follows the same participants over an extended period, collecting data at multiple points to track change over time.
+
+Cross-sectional studies are faster and cheaper, and are good for measuring the current state of something -- what percentage of students currently use a particular study tool. But they can't tell you about change or causation reliably, since you're only seeing one moment.
+
+Longitudinal studies can actually observe change -- did students who started using the tool improve their grades over the following year? This makes them much stronger for questions about cause and effect over time, but they cost more, take longer, and risk losing participants who drop out partway through ("attrition"), which can itself bias the results if the people who drop out differ systematically from those who stay.
+
+Choosing between them comes down to your actual research question: "what is the current state of X" fits cross-sectional; "how does X change, and why" fits longitudinal.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is a control group, and why do experimental studies need one?",
+        response="""A control group doesn't receive the intervention being tested -- it exists specifically to show what would have happened *without* the intervention, so you can attribute any difference to the intervention itself rather than to unrelated factors (like time passing, or a general trend affecting everyone).
+
+Without a control group, you can't actually isolate the intervention's effect. If students' test scores improve after a new teaching method, was that the teaching method -- or would scores have improved anyway that semester, for unrelated reasons? A control group (students not receiving the new method, otherwise as similar as possible to the treatment group) lets you compare the two and attribute the difference specifically to the intervention.
+
+The strongest designs randomly assign participants to treatment or control groups, which helps ensure the two groups are genuinely comparable at the start -- if participants choose their own group (like opting into a program), any observed difference later might reflect who chose to participate, not the program's actual effect.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether providing students with downloadable offline lecture recordings, rather than requiring live-streamed attendance, affects course completion rates in programs with unreliable internet access. Comparing 220 students given offline access to 220 requiring live attendance, offline-access students had a 26% higher course completion rate, with the gap widest among students living outside major urban centers."',
+        response="This study compared 220 students who could download lecture recordings to watch offline against 220 students who had to attend live streamed classes, in a program where internet access wasn't always reliable. The students with offline access completed the course 26% more often -- and this advantage was even bigger for students living outside major cities, where internet tends to be less reliable.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate the relationship between code review turnaround time and software defect rates in student software engineering projects. Analyzing 60 student teams, teams with a code review turnaround under 24 hours had 31% fewer post-submission bugs than teams with turnaround exceeding 48 hours, suggesting review speed itself -- not just review occurrence -- meaningfully affects code quality outcomes."',
+        response="Researchers studied 60 student software teams to see if how quickly team members reviewed each other's code affected how many bugs ended up in the final project. Teams that reviewed code within 24 hours had 31% fewer bugs than teams that took more than 48 hours -- suggesting that just doing code review isn't enough, doing it quickly actually matters for catching problems early.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper evaluates whether pairing new employees with a formal onboarding buddy affects 90-day retention rates in entry-level technology roles. Comparing 180 employees with an assigned onboarding buddy to 180 without, buddy-paired employees had a 23-percentage-point higher 90-day retention rate, with the effect strongest among employees who were the first in their family to work in a technology role."',
+        response="This study looked at whether pairing new tech employees with an onboarding buddy affected whether they were still at the company 90 days later. Employees who had a buddy stayed at a rate 23 percentage points higher than those who didn't -- and the buddy system helped the most for employees who were the first in their family to work in a tech job.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+    yield SFTExample(
+        instruction="How do I create a new Git branch and switch to it, to work on a feature without affecting main?",
+        response="""```
+git branch feature-login
+git checkout feature-login
+```
+
+Or as a single combined command:
+```
+git checkout -b feature-login
+```
+
+`-b` creates the branch and switches to it in one step. A branch is essentially a movable pointer to a commit -- creating one doesn't copy your files, it just gives you a separate line of history to commit to, starting from wherever you were when you created it. Work you commit on `feature-login` won't appear on `main` until you explicitly merge it back, which is exactly the point: you can experiment, break things, and commit freely without touching the stable `main` branch until you're ready.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="How do I merge a finished feature branch back into main?",
+        response="""```
+git checkout main
+git merge feature-login
+```
+
+You switch to the branch you want to merge *into* first (`main`), then run `merge` naming the branch you want to bring in (`feature-login`). Git combines the two histories -- if the changes don't overlap with anything that happened on `main` since the branches diverged, this completes automatically with no extra work.
+
+If both branches changed the same lines, Git can't automatically decide which version to keep, and you'll get a merge conflict -- Git marks the conflicting section directly in the affected file, you manually choose what the final version should be, then `git add` the resolved file and run `git commit` to complete the merge. Conflicts aren't a sign something went wrong; they're Git correctly asking you to make a judgment call it can't make on its own.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I check if a string looks like a valid phone number using a regular expression in Python?",
+        response="""```python
+import re
+
+def is_valid_phone(number):
+    pattern = r'^\\+?[\\d\\s-]{7,15}$'
+    return re.match(pattern, number) is not None
+```
+
+Breaking down the pattern: `\\+?` matches an optional leading `+`, `[\\d\\s-]` matches any digit, space, or hyphen, `{7,15}` requires between 7 and 15 of those characters, and `^`/`$` anchor the match to the entire string (without them, the pattern could match just part of a longer, invalid string).
+
+Like the email validation pattern, this catches obviously malformed input but doesn't guarantee the number is real or reachable -- phone number formats vary significantly by country, so a pattern this simple is meant to catch typos and obvious garbage, not to serve as a complete international phone number validator.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I reverse a string in Python without writing a recursive function?",
+        response="""```python
+text = "Yaude"
+reversed_text = text[::-1]
+print(reversed_text)  # "eduaY"
+```
+
+`[::-1]` is Python's slice notation with a step of `-1`, meaning "walk through the string backwards, one character at a time." The general slice syntax is `[start:stop:step]` -- leaving `start` and `stop` empty means "the whole string," and `-1` for `step` means "in reverse."
+
+This is both simpler and faster than the recursive version shown earlier -- recursion is genuinely useful for understanding the underlying technique, but for a real task like string reversal, Python's built-in slicing is the practical, idiomatic choice almost everyone actually uses.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="How do I get the unique values from a list, removing duplicates?",
+        response="""```python
+numbers = [1, 2, 2, 3, 3, 3, 4]
+unique = list(set(numbers))
+```
+
+A `set` can only contain each distinct value once -- converting the list to a set automatically drops duplicates, and converting it back to a list gives you a plain list again. One thing worth knowing: sets don't preserve order, so `unique` might not come out in the same sequence as the original list.
+
+If order matters, use a dictionary instead (in modern Python, dictionaries preserve insertion order):
+```python
+unique = list(dict.fromkeys(numbers))  # preserves original order
+```
+`dict.fromkeys(numbers)` creates a dictionary with each number as a key (again dropping duplicates automatically, since dict keys must be unique), and converting that back to a list gives you the unique values in their original order.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this crash when trying to add a grade?
+
+```python
+grades = (85, 92, 78)
+grades.append(95)
+```""",
+        response="""`grades` is a tuple, defined with `()` instead of `[]` -- and tuples are immutable, meaning they can't be changed after creation. `.append()` is a list method; tuples don't have it at all, so this raises `AttributeError: 'tuple' object has no attribute 'append'`.
+
+If you need to add items, either use a list from the start:
+```python
+grades = [85, 92, 78]
+grades.append(95)
+```
+Or, if you specifically need a tuple as the final result but want to build it up, create a new tuple by combining:
+```python
+grades = (85, 92, 78)
+grades = grades + (95,)  # creates a new tuple, doesn't modify the original
+```
+The general rule: use a list when the collection needs to change over time, and a tuple when it represents a fixed, unchanging group of values -- the immutability is often a deliberate feature (like preventing accidental modification of coordinates or a fixed configuration), not just an inconvenience.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this nested loop only ever compare the last row against itself?
+
+```python
+grid = [[1, 2], [3, 4], [5, 6]]
+for row in grid:
+    for row in grid:
+        print(row)
+```""",
+        response="""Both loops use the same variable name, `row` -- the inner loop's `row` overwrites the outer loop's `row` on every iteration, so by the time the inner loop finishes, the outer loop's own `row` has been silently changed out from under it too. This is a naming collision, not a logic error in the loop structure itself.
+
+Fix by giving each loop variable a distinct name:
+```python
+for outer_row in grid:
+    for inner_row in grid:
+        print(outer_row, inner_row)
+```
+Now each loop tracks its own position independently, without interfering with the other. This is a genuinely easy mistake to make when nesting nested loops over similar data -- always double-check that inner and outer loop variables have different names, especially when they're iterating over similarly-named collections.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this error handling hide the real problem instead of fixing it?
+
+```python
+def get_student_average(grades):
+    try:
+        return sum(grades) / len(grades)
+    except ZeroDivisionError:
+        return None
+    except Exception:
+        return None
+```""",
+        response="""Both `except` blocks do the exact same thing, which suggests the second one (`except Exception`) isn't really intentional -- it silently swallows *any* other error too, including genuine bugs elsewhere in the function that have nothing to do with an empty grades list. If `grades` accidentally contained a string instead of a number, this would silently return `None` instead of surfacing the real `TypeError` that would help you find the actual bug.
+
+Better to only catch the specific error you're actually expecting and know how to handle:
+```python
+def get_student_average(grades):
+    if not grades:
+        return None
+    return sum(grades) / len(grades)
+```
+This sidesteps the division entirely by checking upfront, rather than catching the error after the fact -- and it means genuinely unexpected errors (like bad data types in the list) still surface loudly instead of being silently converted into a misleading `None`.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What belongs in a 'future work' section, and how is it different from a limitations section?",
+        response="""A limitations section explains what your *current* study couldn't establish or address, given constraints you had. A future work section is forward-looking -- it proposes specific next steps that would build on what you found, for someone (possibly you) to actually pursue later.
+
+The key difference is direction: limitations look backward at what wasn't covered; future work looks forward at what should happen next. They often connect directly -- a limitation ("small sample size limits generalizability") frequently leads straight into a future work suggestion ("a larger-scale study across multiple regions would test whether these findings generalize").
+
+Avoid vague suggestions like "more research is needed" without specifics -- a strong future work section names a concrete next study, a specific population it should examine, or a specific methodological improvement, giving a reader (including future you) an actual starting point rather than a generic gesture at more research existing somewhere.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between reliability and validity when designing a way to measure something?",
+        response="""Reliability means your measurement is *consistent* -- if you measured the same thing again under the same conditions, you'd get a similar result. Validity means your measurement actually captures what you *intend* to measure, not something else entirely.
+
+A measurement can be reliable without being valid: a bathroom scale that's consistently 5kg off every single time is highly reliable (same result every time) but not valid for measuring true weight. A survey question that people interpret inconsistently, on the other hand, might be measuring the right concept in theory but unreliably in practice, since different people are effectively answering different questions.
+
+Both matter, but they fail differently: low reliability means your data is noisy and hard to trust at all; low validity means your data is consistent but consistently measuring the wrong thing. Before trusting a finding, it's worth asking both questions separately -- "would this measurement give the same result again?" and "does this measurement actually capture what I think it does?\"""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I interpret a confidence interval in plain terms, for someone who isn't a statistician?",
+        response="""A confidence interval gives you a range, rather than a single number, reflecting genuine uncertainty in an estimate based on sample data. If a study reports "average improvement: 12% (95% CI: 8%-16%)," that means the study's best estimate is 12%, but the true value in the broader population is plausibly anywhere in that 8%-16% range, given the data collected.
+
+A common misinterpretation worth avoiding: a 95% confidence interval does *not* mean "there's a 95% chance the true value falls in this range." The more precise (if less intuitive) interpretation is: if you repeated this exact study many times, about 95% of the confidence intervals you'd calculate would contain the true population value.
+
+Practically, the width of the interval matters as much as its center: a narrow interval (8%-9%) reflects a precise, confident estimate; a wide interval (2%-25%) reflects real uncertainty, even if the midpoint looks similar. A wide interval is honest information worth reporting, not a flaw to hide.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is thematic analysis, and how do I actually do it with interview data?",
+        response="""Thematic analysis is a common method for finding patterns ("themes") across qualitative data, like interview transcripts. A practical process:
+
+1. **Get familiar with the data.** Read (or re-read) all transcripts before starting any formal coding -- don't jump straight to labeling.
+2. **Code the data.** Go through systematically, tagging meaningful segments with short descriptive labels ("frustration with slow internet," "reliance on family for tech help"). One segment can get multiple codes if relevant.
+3. **Group codes into candidate themes.** Look for codes that cluster around a shared underlying idea -- several related codes might combine into one broader theme like "trust in technology."
+4. **Review themes against the full dataset.** Check whether each candidate theme genuinely holds up across your data, or whether it was really only reflecting one or two vivid quotes that aren't representative.
+5. **Name and define each final theme clearly**, and select representative quotes that illustrate it in your write-up.
+
+The most common shortcut that weakens thematic analysis is skipping step 4 -- claiming a theme based on a few memorable quotes without checking it against the dataset as a whole.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether providing new small-business owners with a structured financial record-keeping template affects loan approval rates. Comparing 130 businesses using the template to 130 using informal record-keeping, template users had a 44% higher loan approval rate, with lenders citing record clarity, rather than business size or revenue alone, as the deciding factor most often."',
+        response='Researchers compared 130 small businesses that used a structured template for keeping financial records against 130 that kept informal records, to see how it affected their chances of getting a loan. Businesses using the template got approved 44% more often -- and when lenders explained their decisions, they said it was mainly the clarity of the records that mattered, not just how big or profitable the business was.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether peer code review training for junior developers reduces production bug rates in their first six months on the job. Comparing 95 developers who received structured review training to 95 who did not, trained developers introduced 34% fewer production bugs, with the largest gap observed in the first two months of employment specifically."',
+        response="This study looked at whether teaching new junior developers how to properly review code helped reduce bugs in the software they wrote during their first six months on the job. Developers who got this training introduced 34% fewer bugs into production compared to those who didn't -- and the difference was biggest in just the first two months, when developers are typically still learning the ropes.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates the effect of bilingual technical documentation on tool adoption rates among non-native English-speaking developer communities. Comparing adoption of an open-source tool before and after bilingual documentation was introduced, weekly active users from the target language community increased by 58% over the following three months, with no corresponding increase observed in English-speaking user regions during the same period."',
+        response="Researchers tracked what happened when an open-source tool added documentation in a second language, alongside English. Weekly active users from that language community grew by 58% over the next three months -- and importantly, usage among English-speaking users didn't change at all during the same period, suggesting the growth was genuinely driven by the new language support, not some other unrelated factor.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+    yield SFTExample(
+        instruction="What is a lambda function in Python, and when is it actually useful?",
+        response="""```python
+square = lambda x: x * x
+print(square(5))  # 25
+```
+
+A lambda is a small, unnamed function defined inline, in a single expression -- `lambda x: x * x` is equivalent to writing:
+```python
+def square(x):
+    return x * x
+```
+Lambdas are mainly useful when you need a quick, throwaway function as an argument to something else, and defining a full named function would feel like unnecessary ceremony for something used once:
+```python
+students.sort(key=lambda s: s["grade"])
+```
+Here, the lambda exists purely to tell `.sort()` what to compare by, right where it's used. As a rule of thumb: if the logic is more than a single simple expression, or you're using it in more than one place, a regular named `def` function is usually clearer -- lambdas are for small, one-off cases, not a replacement for normal functions generally.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I write a one-line if/else to assign a value, instead of a full if/else block?",
+        response="""```python
+age = 16
+status = "adult" if age >= 18 else "minor"
+```
+
+This is a conditional expression (sometimes called a ternary operator) -- it reads as "status is 'adult' if age is 18 or older, otherwise 'minor'." It's equivalent to the longer form:
+```python
+if age >= 18:
+    status = "adult"
+else:
+    status = "minor"
+```
+Both do exactly the same thing; the one-line version is just more compact for simple value assignments. It's worth reaching for this specifically when you're assigning one of two values based on a condition -- for anything more complex than that (multiple conditions, or actions beyond a simple assignment), a regular `if`/`else` block stays more readable.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="How do I loop through a list while also keeping track of each item's position?",
+        response="""```python
+students = ["Omol", "Andrew", "Sara"]
+
+for index, name in enumerate(students):
+    print(f"{index + 1}. {name}")
+```
+
+`enumerate()` wraps a list so each iteration gives you both the position (`index`, starting from 0 by default) and the value (`name`) together, instead of just the value alone. `index + 1` here just shifts the display to start counting from 1, which reads more naturally for a numbered list than starting at 0.
+
+If you need it to start counting from something other than 0 directly, `enumerate()` accepts a `start` argument: `enumerate(students, start=1)` gives you `1, 2, 3` directly without needing the `+ 1` adjustment yourself.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="What is CORS, and why do browsers block requests because of it?",
+        response="""CORS (Cross-Origin Resource Sharing) is a browser security rule that blocks a webpage from making requests to a different domain than the one it was loaded from, unless that other domain explicitly allows it. "Different origin" means a different domain, protocol, or port -- `https://yaude-ai.vercel.app` and `https://overlook-unify-reboot.ngrok-free.dev` count as different origins from each other, for example.
+
+This exists to protect users: without it, any malicious website you visited could silently make authenticated requests to your bank or email in the background, using cookies your browser already holds for those sites. CORS forces the *target* server to explicitly say "yes, I allow requests from this specific origin" before the browser lets the response through.
+
+The server signals this permission via response headers, most importantly `Access-Control-Allow-Origin`. If that header doesn't list the requesting page's origin, the browser blocks the response from reaching your JavaScript code -- even if the server actually processed the request successfully, which is exactly why a CORS error can appear even when the backend logs show everything worked fine.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""My frontend request fails with a CORS error in the browser console, but my backend logs show the request succeeded. Why the mismatch, and how do I fix it?
+
+```python
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+)
+```
+
+The frontend is actually deployed at `https://my-app.vercel.app`, not localhost.""",
+        response="""This mismatch is normal, not a contradiction -- CORS is enforced by the *browser*, not the server. Your backend genuinely did process the request and send back a valid response; the browser then checked that response's headers, saw the requesting origin (`https://my-app.vercel.app`) wasn't in the allowed list, and blocked your JavaScript from ever seeing that response. The server did its job; the browser is the one refusing to hand over the result.
+
+The fix is adding the actual deployed origin to the allowed list:
+```python
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "https://my-app.vercel.app"],
+)
+```
+The allowed origin has to match *exactly* -- including the protocol (`http` vs `https`) and no trailing slash. This is a very common real deployment bug: code that works perfectly on `localhost` during development breaks once deployed, specifically because the deployed URL was never added to the backend's allowed origins list.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function crash when `discount` is 0, even though 0 is a valid discount?
+
+```python
+def apply_discount(price, discount):
+    if discount:
+        return price - (price * discount)
+    return price
+```
+
+Calling `apply_discount(100, 0)` returns `100` instead of raising an error, but the developer expected the `if discount:` branch to run since `0` was explicitly passed in.""",
+        response="""This isn't a crash, but it is a real logic bug -- and it's a classic one. `if discount:` treats `0` as falsy (Python considers `0`, `""`, `None`, and empty collections all falsy in a boolean context), so `if discount:` is `False` when `discount` is `0`, even though `0` is a perfectly valid, meaningful discount value the caller explicitly provided.
+
+The function happens to return the right answer here purely by coincidence (a 0% discount does leave the price unchanged), but the *logic* is wrong -- it's checking "is discount truthy" when it should be checking "was a discount value actually provided."
+
+Fix by explicitly checking against `None` instead of relying on truthiness:
+```python
+def apply_discount(price, discount=None):
+    if discount is not None:
+        return price - (price * discount)
+    return price
+```
+This distinguishes "no discount was given" from "a discount of exactly 0 was given" -- a distinction that matters whenever `0` (or an empty string, or an empty list) is a legitimate, meaningful value rather than a stand-in for "nothing." """,
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this still print the string with leading/trailing spaces?
+
+```python
+name = "  Omol  "
+name.strip()
+print(name)
+```""",
+        response="""`.strip()` doesn't modify `name` in place -- like other string methods, it returns a *new* string with the whitespace removed, and leaves the original completely unchanged. Since the result of `.strip()` was never assigned to anything, it's computed and immediately discarded.
+
+Fixed version:
+```python
+name = "  Omol  "
+name = name.strip()
+print(name)  # "Omol"
+```
+This is the exact same immutability principle behind why strings can't be modified in place at all -- every string method that seems to "change" a string (`.strip()`, `.replace()`, `.upper()`, and others) actually returns a new string, and you always need to capture that return value with `=` if you want to keep the result.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="How do I write interview questions that get genuine, detailed answers instead of a one-word response?",
+        response="""The core distinction is open-ended versus closed questions. A closed question can be answered in a word or two: "Do you use mobile banking?" invites a simple yes/no. An open-ended question requires the person to actually explain: "Can you walk me through the last time you used mobile banking?"
+
+A few practical techniques for writing stronger interview questions:
+1. **Start with "how," "what," or "tell me about"** rather than "do you" or "did you," which invite yes/no answers.
+2. **Ask about specific past experiences, not general opinions.** "Tell me about a time X happened" tends to get more concrete, useful detail than "what do you think about X."
+3. **Avoid stacking multiple questions into one.** "Do you use the app often, and if so, why, and what would you change?" -- pick one focus per question and follow up naturally based on what they say.
+4. **Save your most important questions for partway through**, not the very first question -- people often warm up and give more detailed answers a few minutes into a conversation, not immediately.
+
+A useful test while drafting: could this question honestly be answered with just "yes" or "no"? If so, it usually needs rephrasing before you actually use it.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What does it mean to 'operationalize' a variable in research, and why does it matter?",
+        response="""Operationalizing means turning an abstract concept into something concrete and measurable. "Student engagement" is an abstract idea -- you can't directly measure it. Operationalizing it means deciding, specifically, what you'll actually count as evidence of engagement: maybe attendance rate, number of questions asked per class, or time spent on course materials.
+
+This matters because different, reasonable operationalizations of the same abstract concept can produce genuinely different findings. If one study operationalizes "engagement" as attendance and another operationalizes it as questions asked, they might reach different conclusions about the same underlying concept -- not because either is wrong, but because they're actually measuring different things while using the same word.
+
+When writing your methodology, state your operational definition explicitly, not just the abstract concept: "engagement was measured as the number of discussion posts per student per week" tells a reader exactly what you counted, rather than leaving them to guess what "engagement" meant in your specific study.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is publication bias, and why should I be cautious about it when reviewing existing literature?",
+        response="""Publication bias is the tendency for studies with positive, statistically significant, or "interesting" results to get published more often than studies that found no effect or a null result. A researcher who runs a study and finds "no significant difference" is often less likely to submit it for publication, and journals are historically less likely to accept it even when submitted.
+
+The practical consequence: the published literature on a topic can look more consistently positive than reality actually is, simply because negative or null findings are underrepresented, not because the effect is genuinely as strong or consistent as the literature makes it appear.
+
+When reviewing literature for your own work, it's worth explicitly considering this: if you find five published studies all showing a positive effect, it's worth asking whether unpublished or unsuccessful studies on the same question might exist that you're not seeing. Some fields address this partly through "pre-registration" (researchers publicly commit to a study design before collecting data, regardless of outcome), which is worth mentioning if you're evaluating how much to trust a given body of literature.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is ecological validity, and why might a well-controlled lab study still have low ecological validity?",
+        response="""Ecological validity is the extent to which a study's findings generalize to real-world settings, outside the controlled conditions of the study itself. A study can be very rigorous internally -- well-controlled, minimal confounding variables -- while still having low ecological validity if the setting is too artificial to reflect how things actually work in practice.
+
+A concrete example: testing a new teaching method in a quiet lab with one researcher observing a single student is easier to control precisely, but that setting is quite different from a real classroom with 40 students, background noise, and normal daily distractions. The method might work beautifully in the lab and behave very differently once actually deployed in a real classroom.
+
+This creates a genuine trade-off researchers have to navigate: more controlled settings make it easier to isolate a specific cause, but often at the cost of how confidently you can claim the finding applies outside that controlled setting. Naming this trade-off honestly in your own methodology section -- rather than assuming lab results automatically transfer to real-world settings -- is a mark of careful research writing.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether requiring a cooling-off period before large mobile money transfers reduces fraud victimization among first-time users. Comparing transaction data before and after a 10-minute delay was introduced for transfers above a set threshold, reported fraud incidents dropped by 29% in the following quarter, with no measurable change in overall transfer volume, suggesting the delay deterred fraudulent transfers specifically rather than discouraging legitimate use."',
+        response="Researchers looked at what happened when a mobile money service added a 10-minute delay before large transfers went through, as a way to give people time to reconsider. Fraud reports dropped by 29% in the following months -- and importantly, the overall number of transfers people made didn't change at all, suggesting the delay specifically stopped fraudulent transfers rather than just discouraging people from using the service.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether providing students with worked example solutions, in addition to standard assignment instructions, improves first-attempt completion rates on introductory programming assignments. Comparing 260 students given worked examples to 260 given instructions only, worked-example students had a 37% higher first-attempt success rate, with no significant difference in final course grades between the two groups by semester end."',
+        response='This study tested whether giving beginner programming students a fully worked example, in addition to the assignment instructions, helped them succeed on their first try. Students with the worked example succeeded on their first attempt 37% more often -- but by the end of the semester, both groups ended up with similar final grades, suggesting the worked examples helped students get started faster without necessarily changing how much they ultimately learned.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper evaluates the effect of open-source contribution requirements in a university software engineering course on students\' post-graduation employment outcomes. Comparing 140 students who completed a contribution requirement to 140 who took the standard course without it, contribution-requirement students reported job offers within three months of graduation at a rate 21 percentage points higher, with the strongest effect among students without prior internship experience."',
+        response="Researchers compared university software engineering students who were required to contribute to open-source projects as part of their coursework to students who took a standard version of the course without that requirement. The students with the open-source requirement got job offers within three months of graduating at a rate 21 percentage points higher -- and this benefit was strongest specifically for students who hadn't already done an internship.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine whether displaying estimated wait times affects patient dropout rates in public health clinic queues. Comparing 15 clinics that introduced estimated wait time displays to 15 that did not, clinics with wait time displays saw an 18% reduction in patients leaving before being seen, with the effect concentrated among patients waiting longer than 45 minutes."',
+        response='This study looked at whether showing patients an estimated wait time in public health clinics reduced how often people gave up and left before being seen. Clinics that added wait time displays saw 18% fewer patients leave early -- and this effect was strongest specifically among patients who ended up waiting more than 45 minutes, suggesting that just knowing how long the wait will be helps people decide to stick it out.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
 
 def split_and_write(examples: list[SFTExample], out_dir: Path, eval_fraction: float = 0.1) -> None:
     random.seed(42)
