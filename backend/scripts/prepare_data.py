@@ -4106,6 +4106,1276 @@ This creates a genuine trade-off researchers have to navigate: more controlled s
         difficulty='intro',
     )
 
+    yield SFTExample(
+        instruction="How do I pass a variable number of arguments to a Python function?",
+        response="""```python
+def total(*numbers):
+    return sum(numbers)
+
+print(total(1, 2, 3))       # 6
+print(total(1, 2, 3, 4, 5)) # 15
+```
+
+`*numbers` collects any number of positional arguments into a tuple inside the function -- you can call `total()` with 2 arguments or 20, and it just works. For keyword arguments, `**kwargs` does the same thing but collects them into a dictionary:
+```python
+def describe(**details):
+    for key, value in details.items():
+        print(f"{key}: {value}")
+
+describe(name="Omol", age=22)
+```
+The names `*args` and `**kwargs` are just convention, not required -- what matters is the `*` and `**`. Use `*args` when the caller might pass a varying number of plain values, and `**kwargs` when they might pass a varying number of named options.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I build a dictionary from a list, transforming each value, in one line?",
+        response="""```python
+names = ["omol", "andrew", "sara"]
+capitalized = {name: name.capitalize() for name in names}
+# {"omol": "Omol", "andrew": "Andrew", "sara": "Sara"}
+```
+
+This is a dictionary comprehension -- the same idea as a list comprehension, but building key-value pairs instead of a flat list. `name: name.capitalize()` defines what each key and value should be, evaluated for every `name` in the list.
+
+Equivalent to the longer form:
+```python
+capitalized = {}
+for name in names:
+    capitalized[name] = name.capitalize()
+```
+Both produce the same dictionary; the comprehension is just more compact once you're comfortable reading them. As with list comprehensions, if the transformation logic gets complex, a regular loop is usually more readable than forcing it into one dense line.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What's the difference between using `print()` statements and a proper logging library for debugging?",
+        response="""`print()` is fine for a quick, temporary check while you're actively writing code, but it has real limitations in anything beyond a small script: there's no way to turn print statements off without deleting them, no indication of severity (a routine status update looks identical to a serious error), and no record kept after the program exits.
+
+Python's built-in `logging` module addresses all three:
+```python
+import logging
+logging.basicConfig(level=logging.INFO)
+
+logging.info("Server started")
+logging.warning("Config file not found, using defaults")
+logging.error("Failed to connect to database")
+```
+Each call has a severity level, and you can globally control which levels actually get shown (`level=logging.WARNING` would hide `.info()` calls entirely, without deleting them from the code). Logging can also write to a file automatically, so you have a real record to review later, not just whatever happened to be visible in the terminal when it scrolled by.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this crash with a KeyError even though I checked the key exists first?
+
+```python
+config = {"api_url": "https://api.example.com"}
+
+if "api_key" in config:
+    key = config["api_key"]
+print(config["api_key"])
+```""",
+        response="""The `if "api_key" in config:` check only guards the line inside that block -- `key = config["api_key"]` never actually runs, since `"api_key"` genuinely isn't in the dictionary. But the last line, `print(config["api_key"])`, is completely outside that `if` block (notice it's not indented under it), so it runs unconditionally regardless of whether the key exists, and raises `KeyError: 'api_key'`.
+
+This is really an indentation/scope issue: the check only protects code that's actually indented inside it. Fix by either indenting the print statement into the same block, or using `.get()` to handle the missing case gracefully:
+```python
+print(config.get("api_key", "not set"))
+```
+Whenever you write a defensive check like `if key in dict:`, double-check that everything depending on that key's existence is genuinely inside the protected block -- a line sitting just outside it, even by accident, completely defeats the purpose of the check.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does `git stash` sometimes seem to make my changes disappear?
+
+```
+git stash
+git checkout other-branch
+```
+
+After switching back, the developer can't find their work.""",
+        response="""`git stash` doesn't delete your changes -- it temporarily sets them aside, restoring your working directory to match your last commit, and saves the actual changes in a separate stash list. They're not gone; they're just not visible in your files anymore until you bring them back.
+
+To see what's stashed and restore it:
+```
+git stash list
+git stash pop
+```
+`git stash list` shows every stashed set of changes (you can stash multiple times). `git stash pop` re-applies the most recent stash and removes it from the list; `git stash apply` re-applies it *without* removing it from the list, useful if you want to apply the same stashed changes to more than one branch.
+
+The confusion usually happens because `git stash` genuinely does make your working directory look clean -- that's the entire point, so you can safely switch branches without losing uncommitted work, but it's easy to forget the stash exists if you don't check `git stash list` afterward.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is the purpose of a `.gitignore` file?",
+        response="""`.gitignore` tells Git which files or folders to never track, even if they exist in your project directory -- Git simply won't show them as changes, won't let you accidentally `git add` them by wildcard, and won't include them in commits.
+
+```
+# .gitignore
+node_modules/
+.env
+__pycache__/
+*.log
+```
+
+This matters for a few real, distinct reasons: `node_modules/` and similar dependency folders are huge and fully regeneratable from a manifest file (`package.json`), so committing them bloats your repository for no benefit. `.env` often contains real secrets (API keys, database passwords) that should never end up in git history at all. Log files and compiled bytecode (`__pycache__/`) are machine-generated and just create noise in your commit history. A well-maintained `.gitignore` keeps your repository focused on the actual source code that needs version control.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="What does `requirements.txt` do in a Python project?",
+        response="""`requirements.txt` lists every external package your project depends on, usually with specific version numbers, so anyone else (including you, on a different machine) can install the exact same dependencies with one command:
+```
+pip install -r requirements.txt
+```
+
+A typical file looks like:
+```
+fastapi==0.115.0
+requests==2.32.3
+bcrypt==4.2.0
+```
+
+Pinning specific versions (`==0.115.0` rather than just `fastapi`) matters because a newer version of a dependency might change behavior in ways that break your code -- pinning ensures everyone installs the exact version your code was actually built and tested against, rather than whatever happens to be newest at install time. This is part of why setting up a fresh virtual environment and reinstalling from `requirements.txt` is the standard way to get a project running on a new machine, rather than trying to manually recreate someone's installed packages.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="How does inheritance work in Python, and when should I actually use it?",
+        response="""```python
+class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        return f"{self.name} makes a sound"
+
+class Dog(Animal):
+    def speak(self):
+        return f"{self.name} barks"
+```
+
+`Dog(Animal)` means `Dog` inherits from `Animal` -- it automatically gets `Animal`'s `__init__` and any methods it doesn't define itself. Here, `Dog` overrides `speak()` with its own version, while still inheriting `__init__` unchanged.
+
+```python
+d = Dog("Rex")
+print(d.speak())  # "Rex barks"
+```
+
+Inheritance is genuinely useful when several classes share real common structure and behavior, with some specific differences -- multiple animal types sharing a `name` and basic structure, but differing in how they `speak()`. It's easy to overuse, though: if two classes don't actually share meaningful behavior, forcing an inheritance relationship between them just to avoid repeating a little code usually creates more confusion than it saves.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between a null hypothesis and the hypothesis I'm actually trying to support?",
+        response="""The null hypothesis is the default assumption of "no effect" or "no difference" -- your study's job is to gather enough evidence to reject it, not to directly prove your own hypothesis true. This might feel backwards at first, but it reflects a genuinely important principle: you can accumulate evidence against "no effect," but you can never fully prove a positive claim true with statistics alone -- only make it more or less likely.
+
+Concretely: if you're testing whether a new teaching method improves scores, the null hypothesis is "the teaching method has no effect on scores." Your alternative hypothesis is "the teaching method does affect scores." Your statistical test doesn't directly test the alternative hypothesis -- it calculates how likely your observed data would be *if* the null hypothesis were actually true. A small enough probability (typically below 0.05) leads you to reject the null hypothesis, which is treated as support for the alternative, not direct proof of it.
+
+This is why research papers say "we reject the null hypothesis" or "we failed to reject the null hypothesis" rather than "we proved our hypothesis" -- the language reflects genuine statistical humility about what a single study can actually establish.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between a Type I and Type II error in research?",
+        response="""A Type I error is a false positive -- concluding there's a real effect when there actually isn't one (incorrectly rejecting a true null hypothesis). A Type II error is a false negative -- concluding there's no effect when there actually is one (failing to reject a false null hypothesis).
+
+A useful analogy: think of a court trial. A Type I error is convicting an innocent person (concluding guilt when there was none). A Type II error is acquitting a guilty person (concluding innocence when guilt was real).
+
+These two error types trade off against each other in a real, practical way: making your significance threshold stricter (say, requiring p < 0.01 instead of p < 0.05) reduces Type I errors but increases Type II errors, since you're now requiring stronger evidence before concluding an effect is real -- genuine effects that produce moderate evidence get missed more often. Which error matters more depends on context: in medical testing, a Type II error (missing a real disease) is often considered far worse than a Type I error (a false alarm that gets ruled out by follow-up testing), which is why different fields sometimes use different conventional significance thresholds.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is inter-rater reliability, and why does it matter when coding qualitative data?",
+        response="""Inter-rater reliability measures how consistently different people, coding the same qualitative data independently, arrive at the same codes or categories. If two researchers read the same set of interview transcripts and apply your coding scheme, but consistently disagree on how to categorize the same passages, that suggests your coding categories are too ambiguous, or too dependent on individual judgment, to trust as objective findings.
+
+A common practical approach: have two people independently code a sample of the same data, then calculate agreement (sometimes using a statistic like Cohen's Kappa, which adjusts for the agreement you'd expect by chance alone). Low agreement means the coding scheme needs refining -- clearer definitions, more examples of what does and doesn't count as each category -- before applying it to the full dataset.
+
+This matters because a reader can't verify your coding decisions themselves the way they could check a numeric calculation -- reporting inter-rater reliability is how you demonstrate that your qualitative analysis wasn't just one person's individual, potentially idiosyncratic interpretation, even though qualitative analysis inherently involves more judgment than a purely quantitative measurement.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="Should I write my research paper in active or passive voice?",
+        response="""Modern academic writing across most fields has shifted toward preferring active voice in most cases, though passive voice still has legitimate specific uses. Compare:
+
+- **Passive:** "The survey was administered to 200 participants."
+- **Active:** "We administered the survey to 200 participants."
+
+Active voice is generally more direct and easier to read -- it's clearer who did what. Passive voice was traditionally favored in scientific writing partly to sound more "objective" by removing the researcher from the sentence, but this convention has weakened considerably; many journals and style guides now actively encourage active voice for clarity.
+
+Passive voice still makes sense when the actor genuinely doesn't matter or isn't known: "Participants were recruited through community health clinics" works fine in passive, since who specifically did the recruiting isn't the point of the sentence. The practical guidance: default to active voice, and use passive deliberately when it genuinely serves the sentence, not habitually because it "sounds more academic." """,
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether including a progress bar in multi-step online forms affects completion rates among first-time users. Comparing 400 form submissions with a visible progress indicator to 400 without, forms with progress bars had a 33% higher completion rate, with the largest drop-off in both groups occurring specifically at the payment information step."',
+        response='Researchers compared 400 people filling out a multi-step online form that showed a progress bar to 400 filling out the same form without one. Forms with the progress bar were completed 33% more often -- though in both versions, most people who gave up did so at the same specific step: entering payment information.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether requiring students to explain their code aloud before submitting an assignment (a technique known as rubber duck debugging) affects the number of bugs found before submission. Comparing 90 students required to explain their code to a peer before submitting to 90 who submitted directly, the explanation group caught 41% more bugs prior to submission, with no significant difference in time spent on the assignment overall."',
+        response="This study tested whether making students explain their code out loud to another person before submitting -- a technique sometimes called rubber duck debugging -- helped them catch more of their own bugs. Students who explained their code first caught 41% more bugs before submitting, and interestingly, this didn't even take them significantly more total time to finish the assignment.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction="""Why does this loop only process every other item in the list?
+
+```python
+items = ["a", "b", "c", "d", "e"]
+i = 0
+while i < len(items):
+    print(items[i])
+    i += 2
+```""",
+        response="""`i += 2` increments by 2 each time, not 1 -- so the loop visits indices 0, 2, 4 and skips 1 and 3 entirely, printing "a", "c", "e" while missing "b" and "d".
+
+If the intent was to process every item, the fix is straightforward:
+```python
+i = 0
+while i < len(items):
+    print(items[i])
+    i += 1
+```
+If skipping every other item was actually intentional (a real, valid pattern sometimes used deliberately), then the original code is correct as written -- the "bug" here is really about mismatched intent versus implementation. Whenever a loop produces fewer results than expected, checking the increment step size is one of the first things worth verifying, especially in a `while` loop where the increment isn't as visually obvious as it is in a `for i in range(...)` loop.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+    yield SFTExample(
+        instruction="How do I make a POST request with a JSON body using Python's requests library?",
+        response="""```python
+import requests
+
+payload = {"name": "Omol", "email": "omol@example.com"}
+response = requests.post("https://api.example.com/students", json=payload)
+
+if response.status_code == 201:
+    print("Created:", response.json())
+else:
+    print("Failed:", response.status_code, response.text)
+```
+
+Passing `json=payload` does two things automatically: it serializes your Python dictionary into a JSON string, and it sets the `Content-Type: application/json` header so the server knows how to interpret the request body -- you don't need to do either step manually. `201 Created` is the conventional success status for a POST that created a new resource (as opposed to `200 OK`, more typical for a successful GET). Checking `response.status_code` before trusting the response is worth doing here too, same as with GET requests -- a failed request can still return a body, just one describing the error rather than the data you expected.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I combine two dictionaries in Python, with the second one's values taking priority on any overlapping keys?",
+        response="""```python
+defaults = {"theme": "light", "font_size": 12}
+user_settings = {"font_size": 16}
+
+merged = {**defaults, **user_settings}
+# {"theme": "light", "font_size": 16}
+```
+
+`{**defaults, **user_settings}` unpacks both dictionaries into a new one -- keys from `user_settings` overwrite matching keys from `defaults` since it's listed second, while keys unique to either dictionary are kept as-is. This pattern is common for applying user overrides on top of default settings, without needing to manually check and overwrite each key one at a time.
+
+In Python 3.9+, there's also a dedicated merge operator that does the same thing:
+```python
+merged = defaults | user_settings
+```
+Both approaches produce identical results; `|` is newer and arguably more readable once you know what it means, while `{**a, **b}` works on older Python versions too.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I check if a number falls within a range in Python, without writing two separate comparisons?",
+        response="""```python
+age = 20
+if 18 <= age <= 65:
+    print("Working age")
+```
+
+Python supports chained comparisons directly -- `18 <= age <= 65` reads naturally as "18 is less than or equal to age, and age is less than or equal to 65," evaluated as a single combined check. This is equivalent to, but cleaner than:
+```python
+if age >= 18 and age <= 65:
+```
+Both work identically, but the chained version reads closer to how you'd actually say the range out loud, and avoids writing `age` twice. This chaining works with any comparison operators, not just `<=` -- `a < b < c`, `a == b == c`, and mixed chains are all valid, though mixing very different operators in one chain can get confusing to read and is worth avoiding even when technically legal.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="What is caching, and why would I use it in a web application?",
+        response="""Caching means storing the result of an expensive operation so a future request for the same thing can reuse the stored result instead of redoing the work. If computing something (a database query, an API call, a complex calculation) takes real time, and the same request comes in repeatedly with the same result each time, caching that result can turn a slow repeated operation into a near-instant lookup.
+
+A simple example: a page showing "top 10 most popular courses" might be recalculated from the database every single time someone visits, even though the answer barely changes minute to minute. Caching that result for, say, 5 minutes means the expensive calculation runs once every 5 minutes instead of on every single page load, while still staying reasonably up to date.
+
+The real trade-off is staleness: a cached value can become outdated if the underlying data changes before the cache refreshes. Deciding how long to cache something, and when to explicitly invalidate a cache early (like right after data actually changes), is often the harder design question -- the caching mechanism itself is usually the easy part.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is API pagination, and why do APIs return results in pages instead of all at once?",
+        response="""Pagination breaks a large result set into smaller chunks ("pages"), returned one page at a time, rather than sending everything in a single response. If an endpoint has 50,000 records, returning all of them in one request would be slow, use a huge amount of memory and bandwidth, and likely time out before completing anyway.
+
+A typical paginated API response includes the current page's data, plus metadata for getting more:
+```json
+{
+  "results": [...],
+  "page": 1,
+  "total_pages": 340,
+  "next": "/api/students?page=2"
+}
+```
+
+Client code typically requests one page, processes it, then requests the next using the provided link or page number, repeating until there are no more pages left. This keeps each individual request fast and predictable in size, regardless of how large the total dataset actually is -- a well-designed API stays equally responsive whether the underlying table has 100 rows or 100 million.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function silently return the wrong total when an item is missing its price?
+
+```python
+def cart_total(items):
+    total = 0
+    for item in items:
+        total += item["price"]
+    return total
+
+cart = [{"name": "Book"}, {"name": "Pen", "price": 2}]
+print(cart_total(cart))
+```""",
+        response="""The first item, `{"name": "Book"}`, has no `"price"` key at all -- so `item["price"]` raises `KeyError: 'price'` the moment the loop reaches it. This isn't a silent wrong answer; it's a crash, which is actually the better outcome here, since a silently wrong total would be far more dangerous in something handling money.
+
+If missing prices should be treated as a specific case (skip the item, or default to 0), handle it explicitly rather than letting the crash happen:
+```python
+def cart_total(items):
+    total = 0
+    for item in items:
+        total += item.get("price", 0)
+    return total
+```
+`.get("price", 0)` defaults to `0` for any item missing a price, rather than crashing. Whether that's actually the *correct* behavior depends on your application -- silently treating a missing price as free could hide a real data problem. Sometimes the crash is actually more useful than a silent wrong number, since it forces you to notice and fix the missing data rather than quietly computing an incorrect total.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""This code is supposed to retry a failed request up to 3 times, but it only ever tries once. Why?
+
+```python
+def fetch_with_retry(url, attempts=3):
+    for i in range(attempts):
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response
+        return None
+    return None
+```""",
+        response="""The `return None` inside the loop runs on the *first* failed attempt, before the loop ever gets a chance to try again -- it exits the function immediately rather than continuing to the next iteration. So even though the loop is set up to run 3 times, a single failure ends the function on attempt 1.
+
+Fixed version -- only give up after all attempts are exhausted:
+```python
+def fetch_with_retry(url, attempts=3):
+    for i in range(attempts):
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response
+    return None  # only reached after all attempts failed
+```
+Moving the final `return None` outside the loop (matching the loop's indentation level, not nested inside it) means it only executes once the loop has genuinely finished all its iterations without succeeding. This is a good example of how indentation in Python directly determines control flow, not just visual formatting -- the exact same code with a `return` shifted one level of indentation behaves completely differently.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is the DRY principle in software development, and can following it too strictly cause problems?",
+        response="""DRY stands for "Don't Repeat Yourself" -- the idea that a piece of logic or knowledge should exist in exactly one place in your codebase, rather than copy-pasted in multiple spots. If you find yourself writing nearly identical code in three different functions, DRY suggests extracting that logic into one shared function all three can call instead.
+
+The real benefit: when that logic needs to change, you update it in one place, instead of hunting down every copy and hoping you found them all -- missed copies are a genuine, common source of bugs.
+
+That said, DRY can be followed too aggressively. Two pieces of code that look similar right now, but represent genuinely different concepts that just happen to coincide today, can become a real problem if you prematurely merge them into one shared function -- a later change needed for one use case might now incorrectly affect the other. A useful check before extracting shared code: are these two things the same because they're conceptually the same thing, or just because they currently happen to look alike? Only the first case is a good candidate for genuine DRY refactoring.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="Why do style guides recommend avoiding 'magic numbers' in code?",
+        response="""A magic number is an unexplained literal value embedded directly in code, with no indication of what it represents or why that specific value was chosen:
+```python
+if age > 17:
+    print("Eligible")
+```
+What does `17` mean here? Is it a legal age threshold? An arbitrary business rule? A typo for `18`? Nothing in the code itself answers that.
+
+Giving it a name fixes this:
+```python
+MINIMUM_AGE = 18
+if age >= MINIMUM_AGE:
+    print("Eligible")
+```
+Now the code explains itself, and if the age threshold ever needs to change, there's one obvious place to update it, rather than hunting through the codebase for every place `17` or `18` might appear (some of which might be unrelated numbers that just happen to share the same value). This matters more as codebases grow -- a magic number that's obvious to you today, writing it, is often genuinely mysterious to someone else reading it six months later, including future you.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is snowball sampling, and when is it an appropriate method to use?",
+        response="""Snowball sampling recruits initial participants, then asks them to refer other potential participants who fit your study's criteria -- the sample grows outward from an initial small group through referrals, like a snowball picking up more snow as it rolls.
+
+It's particularly useful for reaching populations that are hard to identify or contact through standard sampling methods -- people in a specific informal profession, members of a tight-knit community without a public directory, or people who might be reluctant to be identified through a public recruitment call but are more willing to participate if referred by someone they trust.
+
+The real limitation: because participants come through personal networks, the resulting sample tends to reflect the characteristics of your starting participants and their social circles specifically, rather than representing the broader population evenly. Findings from a snowball sample generally shouldn't be treated as generalizable to the whole population the way a proper random sample's findings could be -- it's a practical tool for reaching hard-to-access groups, with that generalizability trade-off clearly acknowledged in how you frame your findings.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between purposive sampling and random sampling, and why would a researcher choose purposive sampling deliberately?",
+        response="""Random sampling gives every member of a population an equal, known chance of being selected -- it's the standard approach when you want findings that generalize confidently to the whole population. Purposive sampling deliberately selects specific participants based on characteristics relevant to your research question, rather than selecting randomly.
+
+A researcher chooses purposive sampling when they specifically need participants with particular relevant experience or characteristics that random sampling might miss entirely, or select too few of to study meaningfully. If you're studying the experience of first-generation university students specifically, randomly sampling the entire student body would likely give you very few first-generation students in your sample -- purposively selecting participants who are first-generation students ensures your sample actually contains the population you need to study.
+
+The trade-off is the same generalizability limitation as snowball sampling: a purposive sample is chosen to answer a specific question well, not to represent the broader population proportionally. This is a legitimate, common, and often necessary choice for research questions focused on a particular group's experience -- it's not a lesser method, just one suited to a different kind of research question than random sampling is.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether requiring version control usage from day one in an introductory programming course affects students\' later comfort with collaborative software projects. Comparing 150 students taught with git from the first week to 150 taught without it until a later course, early-git students reported significantly higher confidence in group project settings, though no significant difference was found in individual assignment grades."',
+        response="Researchers compared 150 students who learned git version control from their very first week of an intro programming course to 150 students who didn't learn it until a later course. The students who learned git early felt much more confident working on group projects later on -- though it didn't seem to affect their grades on individual assignments either way.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether providing real-time typing feedback (highlighting syntax errors as they occur) versus feedback only at compile time affects debugging skill development among beginner programmers over a semester. Comparing 110 students using real-time feedback tools to 110 using compile-time-only feedback, the compile-time-only group showed stronger independent debugging skills by semester end, despite slower initial progress."',
+        response='This study compared beginner programmers who got instant feedback on syntax errors as they typed to students who only found out about errors when they tried to compile their code. Surprisingly, the students who had to wait and debug errors themselves ended up with stronger independent debugging skills by the end of the semester, even though they were slower to get started -- suggesting that struggling with errors a bit actually helped them learn to debug better in the long run.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates whether pair programming, compared to solo programming, affects code quality in introductory software engineering coursework. Analyzing 200 submitted projects, pair-programmed submissions had 27% fewer post-submission defects than solo submissions, with no significant difference in total development time between the two approaches."',
+        response="Researchers compared code quality between student projects built by pairs of programmers working together versus students working alone. The pair-programmed projects had 27% fewer bugs found after submission -- and notably, working in pairs didn't actually take any longer overall than working solo, despite involving two people on the same work.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction="What is a code review, and what should I actually look for when reviewing someone else's pull request?",
+        response="""A code review is a check by someone other than the author before code gets merged -- catching bugs, design issues, or unclear logic while it's still cheap to fix, rather than after it's already part of the shared codebase.
+
+A few concrete things worth checking, beyond just "does it run":
+1. **Does it actually solve the stated problem?** Not just "does this code work," but "is this the right fix for what was reported."
+2. **Are there obvious edge cases unhandled?** Empty input, very large input, unexpected types -- the kinds of bugs covered throughout this conversation.
+3. **Is the code readable to someone who didn't write it?** If you have to ask the author to explain what a section does, that's worth flagging, even if the logic itself is correct.
+4. **Does it introduce duplication that already exists elsewhere?** Sometimes worth pointing out even if it's not blocking.
+
+A good review comment explains *why*, not just *what*: "this will break if the list is empty" is more useful than just "fix this." The goal is a better outcome for the code and a better understanding for the author, not just approval or rejection.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+    yield SFTExample(
+        instruction="How do I flatten a nested list in Python, like turning [[1,2],[3,4]] into [1,2,3,4]?",
+        response="""```python
+nested = [[1, 2], [3, 4], [5, 6]]
+flat = [item for sublist in nested for item in sublist]
+# [1, 2, 3, 4, 5, 6]
+```
+
+This is a nested list comprehension -- read it left to right: "for each `sublist` in `nested`, for each `item` in that `sublist`, include `item`." It's equivalent to:
+```python
+flat = []
+for sublist in nested:
+    for item in sublist:
+        flat.append(item)
+```
+This only flattens one level deep -- if your list contains lists of lists (three levels or more), this specific pattern won't fully flatten it, and you'd need a recursive approach instead. For the common two-level case, though, this compact version is the standard idiomatic way to do it in Python.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I safely access a value that might be several levels deep in a nested dictionary, without it crashing if a level is missing?",
+        response="""```python
+data = {"user": {"profile": {"name": "Omol"}}}
+
+name = data.get("user", {}).get("profile", {}).get("name")
+```
+
+Chaining `.get()` calls means each step returns an empty dictionary as a fallback if that key is missing, so the *next* `.get()` call has something safe to operate on instead of crashing with `AttributeError: 'NoneType' object has no attribute 'get'`. If any level is genuinely missing, the final result is simply `None`, rather than a crash partway through.
+
+For deeply nested structures, this chaining gets visually noisy -- at that point, a small helper function is often cleaner:
+```python
+def safe_get(d, *keys):
+    for key in keys:
+        if not isinstance(d, dict):
+            return None
+        d = d.get(key)
+    return d
+
+name = safe_get(data, "user", "profile", "name")
+```
+Both approaches solve the same problem; which one's worth using depends on how deep the nesting actually goes and how often this pattern repeats in your code.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I use a `try`/`finally` block, and how is it different from just `try`/`except`?",
+        response="""```python
+file = open("data.txt")
+try:
+    data = file.read()
+    process(data)
+finally:
+    file.close()
+```
+
+`finally` runs no matter what happens in the `try` block -- whether it completes successfully, raises an exception, or even hits a `return` statement partway through. This makes it the right tool for cleanup code that absolutely must run regardless of outcome, like closing a file or releasing a lock.
+
+The key difference from `except`: `except` only runs if a *specific* error occurs, and it can prevent that error from propagating further. `finally` runs unconditionally, and doesn't stop an exception from continuing to propagate after it finishes -- it just guarantees the cleanup code executes first. In modern Python, a `with` statement (like `with open("data.txt") as file:`) handles this exact file-closing pattern automatically, which is why you'll see `with` used far more often than manual `try`/`finally` for resource cleanup specifically -- but `finally` is still the right tool for other kinds of guaranteed cleanup that don't fit the `with` pattern.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is the single responsibility principle, and how do I recognize when a function is violating it?",
+        response="""The single responsibility principle says a function (or class) should have one clear job, not several unrelated ones bundled together. A function that does too much becomes harder to test, harder to reuse, and harder to change without accidentally affecting unrelated behavior.
+
+A warning sign: if describing what a function does requires the word "and" more than once, it's often doing too much:
+```python
+def process_order(order):
+    validate_order(order)
+    save_to_database(order)
+    send_confirmation_email(order)
+    update_inventory(order)
+```
+This function validates, saves, emails, *and* updates inventory -- four distinct responsibilities in one function. Splitting it into four smaller functions, each doing one thing, makes each piece independently testable and reusable -- you could reuse `send_confirmation_email` elsewhere without dragging along the database or inventory logic.
+
+This doesn't mean every function should be one line -- it means each function's job should be describable in one clear sentence without an "and" connecting unrelated tasks.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What's the difference between camelCase and snake_case, and does it actually matter which I use?",
+        response="""`camelCase` (`studentName`) and `snake_case` (`student_name`) are both ways of writing multi-word variable names, since spaces aren't allowed in most languages' identifiers. Which one to use is mostly a convention question, not a technical one -- code runs identically either way.
+
+What actually matters is consistency with your language's established convention: Python's community standard is `snake_case` for variables and functions (`student_name`, `calculate_total`), while JavaScript's community standard is `camelCase` (`studentName`, `calculateTotal`). Mixing conventions within the same codebase -- some functions in `snake_case`, others in `camelCase`, in the same Python file -- reads as inconsistent and makes a codebase feel less professional, even though it doesn't cause any actual bugs.
+
+The practical rule: follow whatever convention is standard for the language and codebase you're working in, even if you personally prefer the other style -- consistency with everyone else's code matters more than your own preference here.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function work fine the first time but break on the second call?
+
+```python
+def add_student(name, roster=[]):
+    roster.append(name)
+    return roster
+
+print(add_student("Omol"))   # ["Omol"]
+print(add_student("Andrew")) # ["Omol", "Andrew"] -- but expected just ["Andrew"]
+```""",
+        response="""This is the mutable default argument trap: `roster=[]` creates the default empty list *once*, when the function is first defined -- not fresh on every call. Every call that doesn't explicitly pass its own `roster` shares that same single list, which is why it keeps growing across calls instead of starting fresh each time.
+
+Fixed version:
+```python
+def add_student(name, roster=None):
+    if roster is None:
+        roster = []
+    roster.append(name)
+    return roster
+```
+Using `None` as the default, and creating a genuinely new list inside the function body when needed, means each call that doesn't pass its own `roster` gets its own fresh list. This specific bug is common enough that it's worth remembering as a named pattern: never use a mutable object (list, dict, set) directly as a default argument value in Python.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this crash with a RecursionError instead of finishing?
+
+```python
+def countdown(n):
+    print(n)
+    countdown(n - 1)
+
+countdown(5)
+```""",
+        response="""There's no base case -- no condition that stops the recursion. `countdown` keeps calling itself with a smaller `n` forever: 5, 4, 3, 2, 1, 0, -1, -2... it never reaches a point where it decides to stop, so it keeps recursing until Python's built-in recursion depth limit is hit, raising `RecursionError: maximum recursion depth exceeded`.
+
+Fixed version, with an explicit stopping condition:
+```python
+def countdown(n):
+    if n < 0:
+        return
+    print(n)
+    countdown(n - 1)
+```
+Every recursive function needs exactly this: a base case that stops the recursion, reached in a finite number of steps from any valid starting input. Forgetting the base case entirely, or writing one that the recursive calls never actually reach, are both common causes of this exact error.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I write a strong topic sentence that actually previews what a paragraph is about?",
+        response="""A strong topic sentence states the paragraph's main claim clearly, so a reader knows what to expect before reading the supporting details. A weak topic sentence either states a fact with no real claim attached, or is so vague it could open almost any paragraph on the topic.
+
+Compare:
+- **Weak:** "Mobile banking is used in many countries." (a fact, but no argument -- what's this paragraph actually about?)
+- **Strong:** "Despite widespread mobile banking availability, adoption remains low among informal-sector workers due to persistent trust concerns." (states a specific claim the rest of the paragraph will support)
+
+A useful test: read only your topic sentences, in order, skipping everything else. If they form a coherent outline of your overall argument on their own, they're doing their job. If they read as a disconnected list of facts, or you can't tell what most paragraphs are actually arguing just from their opening sentence, that's worth revising -- the topic sentence should carry the weight of "here's this paragraph's job," not just introduce a general subject.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is hedging language in academic writing, and how much of it is actually appropriate to use?",
+        response="""Hedging language qualifies a claim's certainty -- words like "suggests," "may," "appears to," "tends to" -- rather than stating something as an absolute fact. Used well, it accurately reflects genuine uncertainty; used poorly, it either overstates confidence (no hedging where real uncertainty exists) or undermines every claim with excessive qualification.
+
+Overstated confidence: "This intervention improves outcomes" -- when your actual evidence is one modest study, this claims more certainty than the evidence supports.
+
+Reasonable hedging: "This intervention appears to improve outcomes, though further research across different populations would strengthen this conclusion" -- this accurately reflects what a single study can and can't establish.
+
+Excessive hedging (the opposite problem): "It might perhaps be somewhat possible that this intervention could potentially have some effect on outcomes in certain cases" -- stacking multiple hedges on the same claim reads as weak and evasive rather than appropriately cautious.
+
+The right amount of hedging matches your actual confidence level, stated once clearly -- not zero hedging on strong claims, and not multiple redundant hedges piled onto the same sentence.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How should I structure my discussion section around my original research questions, rather than just writing generally about what I found?",
+        response="""A discussion section organized directly around your original research questions is usually clearer than one that wanders through findings in whatever order feels natural. If you had three research questions, structuring your discussion in three matching sections -- each addressing one question directly -- helps the reader track how your evidence actually answers what you set out to ask.
+
+A structure that works well per question:
+1. **Restate the question briefly.**
+2. **State what you found, connecting it back to the question directly** -- "In answer to this question, we found..."
+3. **Situate it against existing literature** -- does it align, conflict, extend prior work?
+4. **Note any relevant limitation specific to this particular finding.**
+
+This structure also makes it much easier for a reader (or a reviewer) to check that you actually answered every question you originally posed -- a common weakness in student research writing is posing three research questions in the introduction, then discussing findings in a way that doesn't clearly map back to answering each one directly, leaving the reader to piece together which finding answers which original question themselves.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether displaying a live word count while students write essays affects final essay length and quality. Comparing 180 students with a visible word counter to 180 without one, the word-counter group produced essays averaging 15% longer, but graders found no significant difference in essay quality scores between the two groups."',
+        response="Researchers tested whether showing students a live word count while writing essays changed how much they wrote and how good the essays were. Students who could see the word counter wrote essays that were 15% longer on average -- but when graders scored the essays, there was no real difference in quality between the two groups, suggesting the extra length didn't actually translate into better writing.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether requiring students to write unit tests before writing their actual implementation code (test-driven development) affects final code quality in an introductory software course. Comparing 85 students using test-driven development to 85 writing tests afterward or not at all, the test-first group\'s final submissions had 22% fewer defects, though students reported the test-first approach felt slower initially."',
+        response='This study tested whether having beginner programmers write their tests before writing the actual code -- a practice called test-driven development -- led to better final code. Students who wrote tests first ended up with 22% fewer bugs in their final submissions, even though many of them said the approach felt slower to start with.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper examines whether university writing centers\' use of structured feedback rubrics, compared to open-ended written comments, affects student revision quality on research papers. Comparing 120 papers receiving rubric-based feedback to 120 receiving open-ended comments, rubric-fed students made more substantive revisions to their argument structure specifically, while open-ended-feedback students made more surface-level wording changes."',
+        response='Researchers compared two ways university writing centers give feedback on research papers: a structured rubric versus open-ended written comments. Students who got rubric-based feedback tended to make more meaningful revisions to their actual argument and structure, while students who got open-ended comments tended to focus more on surface-level wording changes instead.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether displaying peer code quality scores publicly within a classroom affects individual code quality in a way that differs by initial skill level. Comparing 60 higher-initial-skill and 60 lower-initial-skill students under a public-scoring system, higher-skill students showed modest quality improvement, while lower-skill students showed no significant change and reported increased anxiety about the visible comparison."',
+        response="This study looked at what happened when a classroom made students' code quality scores visible to their peers, and whether the effect differed based on students' starting skill level. Students who already had stronger coding skills improved a bit under the public scoring system -- but students with weaker starting skills didn't improve at all, and instead reported feeling more anxious about being compared publicly to their classmates.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+
+    yield SFTExample(
+        instruction="""Why does this configuration loading code break in production but work fine locally?
+
+```python
+import os
+API_KEY = os.environ["API_KEY"]
+```""",
+        response="""`os.environ["API_KEY"]` requires the environment variable to already exist -- if it's not set, this raises `KeyError: 'API_KEY'` immediately when the module loads. Locally, this probably works because a `.env` file (loaded by something like `python-dotenv`) or your shell already has `API_KEY` set. In production, if that same variable was never configured on the actual server or hosting platform, the app crashes on startup.
+
+Two improvements worth making: use `.get()` with a clear error message instead of letting a raw `KeyError` surface, and fail loudly with an explanation rather than a cryptic built-in error:
+```python
+API_KEY = os.environ.get("API_KEY")
+if not API_KEY:
+    raise RuntimeError("API_KEY environment variable is not set")
+```
+This produces a much clearer error message when something's missing, and more importantly, it's worth double-checking that every environment variable your code depends on is actually configured on each environment you deploy to -- "works on my machine" often means exactly this: an environment variable set locally that was never set on the actual server.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+    yield SFTExample(
+        instruction="How do I write a Python function that accepts either a single item or a list of items, and always processes it as a list internally?",
+        response="""```python
+def notify(recipients):
+    if not isinstance(recipients, list):
+        recipients = [recipients]
+    for r in recipients:
+        print(f"Notifying {r}")
+
+notify("Omol")                    # works
+notify(["Omol", "Andrew", "Sara"]) # also works
+```
+
+`isinstance(recipients, list)` checks whether the caller already passed a list; if not, wrapping the single value in a list (`[recipients]`) normalizes it to the same shape before the rest of the function runs. This means the actual processing logic only ever has to deal with one case (a list), rather than branching its behavior throughout the function based on which form was passed in.
+
+This pattern is genuinely convenient for callers -- they don't need to remember to wrap a single value in a list themselves -- but it's worth using deliberately, not by default: it can make a function's expected input less obvious from its signature alone, so it's most appropriate for utility functions where this flexibility is a clear, documented convenience, not a surprise.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I write a function with a default parameter value in Python, and how do I override it when needed?",
+        response="""```python
+def greet(name, greeting="Hello"):
+    return f"{greeting}, {name}!"
+
+print(greet("Omol"))                    # "Hello, Omol!"
+print(greet("Omol", "Welcome"))         # "Welcome, Omol!"
+print(greet("Omol", greeting="Hi"))     # "Hi, Omol!"
+```
+
+`greeting="Hello"` gives that parameter a default value used whenever the caller doesn't provide one. It can still be overridden either positionally (the second call) or by name (the third call) -- both work identically here since there's no ambiguity, though using the keyword form (`greeting="Hi"`) becomes more valuable for readability once a function has several parameters.
+
+One rule worth knowing: default parameters must come *after* any parameters without defaults in the function's definition -- `def greet(greeting="Hello", name):` would raise a `SyntaxError`, since Python needs to know unambiguously which arguments are required before it can allow optional ones.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="What is semantic versioning, and what do the three numbers in a version like 2.4.1 actually mean?",
+        response="""Semantic versioning (semver) is a convention for version numbers in the format MAJOR.MINOR.PATCH, where each part signals something specific about what changed:
+
+- **MAJOR** (the first number) increases for breaking changes -- code written for the old version might not work with the new one without modification.
+- **MINOR** (the second number) increases for new features that don't break existing usage -- old code should keep working fine.
+- **PATCH** (the third number) increases for bug fixes that don't add features or break anything.
+
+So going from `2.4.1` to `2.5.0` means new features were added, but your existing code should still work unchanged. Going from `2.4.1` to `3.0.0` is a signal to actually read the changelog before upgrading, since something breaking almost certainly changed.
+
+This convention is why `requirements.txt` sometimes uses version ranges like `requests>=2.28,<3.0` instead of pinning one exact version -- it allows automatic updates for new features and bug fixes (safe, since MAJOR didn't change) while blocking a MAJOR version bump that might break your code unexpectedly.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What should a good README file actually include for a project other people might use or contribute to?",
+        response="""A README is usually the first thing anyone sees when they find your project, so it should answer the questions a new visitor actually has, roughly in this order:
+
+1. **What does this project do?** One or two sentences, before anything else.
+2. **How do I install/run it?** Concrete, copy-pasteable commands, not vague instructions.
+3. **How do I use it?** A minimal working example, if applicable.
+4. **How do I contribute** (if it's open to contributions), including how to set up a development environment.
+5. **What license is it under?**
+
+A common mistake is leading with implementation details or a long history of the project before explaining what it actually does or how to get started -- a new visitor deciding whether this project is relevant to them shouldn't have to read several paragraphs before finding out. Treat the top of your README as the highest-value real estate in the whole project: the most important, immediately useful information belongs there, with deeper detail further down.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function return the wrong average when the list contains a mix of ints and strings?
+
+```python
+def average(numbers):
+    return sum(numbers) / len(numbers)
+
+print(average([10, 20, "30"]))
+```""",
+        response="""`sum()` tries to add all the elements together, but Python can't add an integer and a string directly -- `10 + 20 + "30"` raises `TypeError: unsupported operand type(s) for +: 'int' and 'str'`, since addition between a number and text isn't a defined operation. This isn't a silently wrong average; the function crashes entirely once it hits the mismatched type.
+
+If the input might legitimately contain numeric strings that should be treated as numbers, convert explicitly before summing:
+```python
+def average(numbers):
+    numbers = [float(n) for n in numbers]
+    return sum(numbers) / len(numbers)
+```
+`float(n)` works whether `n` is already a number or a numeric string, normalizing everything to the same type before the math happens. If the data is expected to always be clean numbers and a string appearing represents a real data problem elsewhere, letting it crash loudly (rather than silently converting) might actually be the more appropriate behavior -- which is the right fix depends on whether mixed types are expected and valid, or a sign something upstream is wrong.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does calling this function twice with the same input give different results the second time?
+
+```python
+def get_next_id(ids=[]):
+    new_id = len(ids) + 1
+    ids.append(new_id)
+    return new_id
+
+print(get_next_id())  # 1
+print(get_next_id())  # 2 -- but expected 1 again, since no ids were passed either time
+```""",
+        response="""This is the mutable default argument bug again, in a slightly different shape than usual -- `ids=[]` is created once at function definition time, and every call that doesn't pass its own `ids` shares that same persistent list. The first call appends `1` to it; the second call sees a list that already has one item in it (from the first call), so it computes `len(ids) + 1` as `2` instead of `1`.
+
+Fixed the same way as before:
+```python
+def get_next_id(ids=None):
+    if ids is None:
+        ids = []
+    new_id = len(ids) + 1
+    ids.append(new_id)
+    return new_id
+```
+This bug is worth recognizing by its symptom, not just its code shape: if a function's behavior seems to depend on how many times it's been called before, even with what looks like identical fresh input each time, a mutable default argument is one of the first things worth checking.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I write a strong methodology section that a reader could actually replicate, not just skim?",
+        response="""Replicability is the real test of a methodology section -- another researcher, with access to your paper alone, should be able to run essentially the same study. That's a higher bar than just describing generally what you did.
+
+Concrete things that often go missing:
+1. **Exact sample size and how participants were selected**, not just "a group of students."
+2. **Precise wording or a reference to the actual instrument used** -- if you used a survey, either include it in an appendix or cite the validated instrument you drew from.
+3. **The exact time period and setting** data was collected in -- context that could plausibly affect results.
+4. **The specific analysis method and any software/tools used**, including version numbers where it might matter (a statistical test run in one software package can occasionally produce slightly different output than another).
+
+A useful test while drafting: could someone unfamiliar with your specific study read only this section and set up an attempt to replicate it, without needing to guess or ask you for missing details? If they'd have to ask "wait, how exactly did you select participants?" or "what did the actual survey questions say?", the section needs more specificity.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What does reproducibility mean in research, and why has it become such a significant concern across many fields?",
+        response="""Reproducibility means that if another researcher takes your same data and same analysis approach, they arrive at the same results. This is a narrower concept than replicability (which involves collecting new data): reproducibility asks "can someone get the same answer from the same data," while replicability asks "does a new, independent study find the same thing."
+
+Concerns about this have grown because a meaningful number of published findings, when other researchers have attempted to reproduce or replicate them, haven't held up -- sometimes because of outright errors, but more often because of subtle issues like unclear analysis choices, small sample sizes that produced results that don't generalize, or selective reporting of only the analyses that "worked."
+
+Practical steps that support reproducibility in your own work: share your actual data and analysis code where possible (not just a written description of your method), document every analysis decision as you make it rather than reconstructing your reasoning afterward, and pre-register your hypotheses and planned analysis before collecting data, if your field and study design support doing so. These practices make it possible for others to actually verify your work, rather than simply trusting your written description of it.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is triangulation in research, and how is it different from just using multiple data sources for convenience?",
+        response="""Triangulation means deliberately using multiple methods, data sources, or perspectives to examine the same research question, specifically to check whether they converge on a consistent answer -- strengthening confidence in a finding if they agree, or revealing something genuinely more complex if they don't.
+
+This is different from just having multiple data sources incidentally. True triangulation is a deliberate design choice: if you're studying student stress, you might combine a survey (quantitative, broad reach), interviews (qualitative, depth), and objective data like library usage logs (behavioral, no self-report bias) -- specifically because each method has different strengths and blind spots, and agreement across all three gives you more confidence than any single method alone.
+
+When the different sources *don't* agree, that's not a failure of the method -- it's often the most interesting finding, worth exploring rather than discarding. If your survey shows low reported stress but interview participants describe significant stress, that discrepancy itself might reveal something real, like a gap between how people describe their experience on a quick survey versus in a more reflective conversation.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether assigning students to fixed project groups for an entire semester, versus rotating group membership every few weeks, affects both project outcomes and individual skill development. Comparing 12 fixed-group and 12 rotating-group course sections, fixed groups produced higher-rated final projects, while rotating groups showed broader individual skill development across different technical roles."',
+        response="Researchers compared students who stayed in the same project group all semester to students who rotated between different groups every few weeks. The students who stayed in fixed groups produced better final projects overall -- but students who rotated between groups developed broader skills across different technical roles, since they weren't stuck doing the same type of work with the same teammates the whole time.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether providing sample past exam questions, without answers, affects study time allocation and exam performance compared to providing a general study guide. Comparing 140 students given past exam questions to 140 given a general topic list, the past-questions group reported more targeted study time and scored 11% higher on the actual exam."',
+        response='This study compared students given actual sample questions from past exams (without answers) to students given a general list of topics to study. Students with the sample questions reported studying in a more focused way, and scored 11% higher on the real exam -- suggesting that seeing the actual question format helped students prepare more effectively than a general topic list did.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper evaluates whether providing students with a rubric before starting an assignment, rather than only after submission, affects final submission quality. Comparing 160 students given the rubric upfront to 160 receiving it only alongside their graded feedback, upfront-rubric students scored 14% higher on average, with the largest gains observed on assignment criteria that were easy to overlook without explicit guidance."',
+        response='Researchers tested whether giving students the grading rubric before they started an assignment, instead of only seeing it after grading, changed their results. Students who saw the rubric upfront scored 14% higher on average -- and the biggest improvements were on parts of the assignment that were easy to miss without knowing exactly what was being graded for.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine whether requiring students to write a one-paragraph reflection after each programming assignment affects long-term retention of programming concepts, tested three months later. Comparing 100 students who wrote reflections to 100 who did not, the reflection group scored 19% higher on a delayed concept-retention test, despite no difference in scores on the original assignments themselves."',
+        response="This study tested whether having students write a short reflection after each programming assignment helped them remember the concepts three months later. Even though both groups scored about the same on the original assignments, the students who wrote reflections scored 19% higher on a test of the same concepts given three months afterward -- suggesting the reflection helped the learning stick, even if it didn't show up in the immediate assignment grade.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study investigates whether providing a searchable archive of previously answered student questions reduces duplicate questions asked in a course\'s help forum. Comparing forum activity six weeks before and after the archive was introduced, duplicate question volume dropped by 52%, while questions genuinely not covered in the archive continued at a stable rate."',
+        response="Researchers looked at what happened when a course added a searchable archive of previously answered student questions to its help forum. Duplicate questions -- ones that had already been answered before -- dropped by 52% after the archive was introduced, while genuinely new questions that weren't already covered kept coming in at the same steady rate as before.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We assess whether allowing students to resubmit a corrected version of a failed assignment, for partial credit recovery, affects their performance on subsequent related assignments. Comparing 90 students given a resubmission option to 90 without one, resubmission-eligible students scored 16% higher on the next related assignment, with the effect strongest among students who had never previously failed an assignment in the course."',
+        response="This study tested whether letting students resubmit a corrected version of a failed assignment, for partial credit, helped them do better on later related assignments. Students who had the resubmission option scored 16% higher on the next related assignment -- and this benefit was strongest for students who hadn't failed an assignment before, suggesting the chance to fix and understand their mistake helped it actually sink in.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+    yield SFTExample(
+        instruction="How do I convert a list of numbers into a comma-separated string, and back again?",
+        response="""```python
+numbers = [1, 2, 3, 4]
+text = ",".join(str(n) for n in numbers)
+print(text)  # "1,2,3,4"
+
+back_to_numbers = [int(n) for n in text.split(",")]
+print(back_to_numbers)  # [1, 2, 3, 4]
+```
+
+`.join()` requires strings specifically, so `str(n) for n in numbers` converts each number first -- `.join()` can't directly combine a list of integers, since it doesn't know how you'd want a number represented as text. Going back, `.split(",")` breaks the string apart at each comma, and `int(n)` converts each resulting piece back to a number, since everything from `.split()` comes back as strings regardless of what the original data looked like.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="How do I check whether a list contains any items matching a condition, without writing a full loop?",
+        response="""```python
+grades = [65, 72, 58, 90]
+has_failing = any(g < 60 for g in grades)
+all_passing = all(g >= 60 for g in grades)
+
+print(has_failing)  # True
+print(all_passing)  # False
+```
+
+`any()` returns `True` if at least one element satisfies the condition; `all()` returns `True` only if every element does. Both take a generator expression (like `g < 60 for g in grades`) and short-circuit -- `any()` stops checking as soon as it finds one match, `all()` stops as soon as it finds one failure, so neither has to check the entire list unnecessarily in the common case. This is generally cleaner than writing a manual loop with a flag variable:
+```python
+has_failing = False
+for g in grades:
+    if g < 60:
+        has_failing = True
+        break
+```
+Both do the same thing; `any()` expresses the intent directly rather than building it up manually.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is the purpose of a webhook, and how is it different from an API my app calls directly?",
+        response="""When your app calls an API, your app initiates the request and waits for a response -- you're asking "has anything happened?" A webhook flips this: instead of you repeatedly asking, the other service calls *your* app automatically, the moment something relevant actually happens.
+
+A concrete example: instead of your app repeatedly polling a payment processor every minute asking "has this payment completed yet?", you register a webhook URL with the payment processor. The moment the payment actually completes, the processor sends a request directly to your webhook URL, notifying you immediately -- no polling, no wasted requests asking about things that haven't happened yet.
+
+This matters for both efficiency and timeliness: polling wastes requests checking on things that usually haven't changed, and introduces delay (you only find out at your next poll, not the moment it happens). Webhooks push information to you the instant it's available, at the cost of your app needing a publicly reachable endpoint for the other service to actually call.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this API client work fine for one request but fail on rapid repeated requests?
+
+```python
+import requests
+
+def fetch_all_pages(base_url, total_pages):
+    results = []
+    for page in range(1, total_pages + 1):
+        response = requests.get(f"{base_url}?page={page}")
+        results.extend(response.json())
+    return results
+```
+
+Fetching 200 pages quickly triggers a wave of 429 "Too Many Requests" errors partway through.""",
+        response="""This function fires off requests as fast as the network allows, with no pause between them -- which is exactly what a rate limit (discussed earlier) exists to catch. The API is enforcing its own limit on requests per minute, and this loop blows straight through it without any awareness that a limit exists.
+
+Fix by adding a small delay between requests, and handling the case where a limit is still hit anyway:
+```python
+import requests
+import time
+
+def fetch_all_pages(base_url, total_pages):
+    results = []
+    for page in range(1, total_pages + 1):
+        response = requests.get(f"{base_url}?page={page}")
+        if response.status_code == 429:
+            time.sleep(5)  # back off and retry
+            response = requests.get(f"{base_url}?page={page}")
+        results.extend(response.json())
+        time.sleep(0.2)  # small pause between every request
+    return results
+```
+Real production code often uses a more sophisticated approach (reading the `Retry-After` header some APIs return, or exponential backoff), but the core idea is the same: don't assume an API will accept requests as fast as you can send them, and handle the rate-limit response explicitly rather than letting it crash your data collection partway through.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this dictionary lookup crash intermittently, only for some students?
+
+```python
+def get_letter_grade(score, grade_scale):
+    for threshold, letter in grade_scale.items():
+        if score >= threshold:
+            return letter
+```
+
+`grade_scale` is `{90: "A", 80: "B", 70: "C", 60: "D"}`. Scores below 60 sometimes cause the function to return `None` instead of "F".""",
+        response="""This isn't actually intermittent or a crash -- it's a real logic gap the function has for every single score below 60, it just wasn't obvious until someone happened to test with a failing score. The loop only returns a value if the score meets one of the defined thresholds (90, 80, 70, 60); for any score below 60, none of the `if score >= threshold:` checks are ever true, so the loop finishes without hitting any `return`, and the function implicitly returns `None`.
+
+Fix by adding an explicit fallback after the loop:
+```python
+def get_letter_grade(score, grade_scale):
+    for threshold, letter in sorted(grade_scale.items(), reverse=True):
+        if score >= threshold:
+            return letter
+    return "F"
+```
+Also worth noting: dictionaries in Python do preserve insertion order, but that's not the same as being *sorted* -- `sorted(grade_scale.items(), reverse=True)` explicitly sorts by threshold, from highest to lowest, which this function actually depends on to check the highest applicable grade first. Without that explicit sort, the loop's behavior would depend on the dictionary's insertion order, which is easy to get wrong by accident.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I choose a good research question -- what separates a strong one from a weak one?",
+        response="""A strong research question is specific, answerable with evidence you can realistically gather, and genuinely uncertain -- meaning you don't already know the answer with confidence before starting. A weak question tends to fail one of these three tests.
+
+**Too broad, not specific:** "How does technology affect education?" -- this could be an entire book, not a single study.
+
+**Not answerable with available evidence:** "Is online learning better than in-person learning?" -- "better" needs to be defined in measurable terms (test scores? engagement? completion rates?) before this is actually researchable.
+
+**Not genuinely uncertain:** "Do students who never attend class perform worse than students who attend regularly?" -- this is close to definitionally true and unlikely to produce an interesting or informative finding.
+
+A useful revision process: start broad, then keep asking "specifically what, measured how, in which population?" until you reach something like "Does weekly use of a specific study app improve quiz scores among first-year computer science students, compared to students who don't use it?" -- specific, measurable, and not a foregone conclusion.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I write a strong conclusion for a research paper, without just repeating my abstract?",
+        response="""A conclusion that just restates the abstract wastes an opportunity -- by this point, the reader already knows what you found. A stronger conclusion does something the abstract can't: it reflects on what the findings actually mean, in a broader sense, now that the reader has seen your full argument and evidence.
+
+A structure that works well:
+1. **Briefly restate the core finding** -- one sentence, not a re-summary.
+2. **Connect it to the bigger picture.** Why does this matter beyond your specific study? What broader question does it speak to?
+3. **State the practical implication**, if there is one -- who should do something differently as a result of this finding?
+4. **End with a genuine, forward-looking thought** -- not just "more research is needed" (too generic), but something specific this finding opens up.
+
+Avoid introducing entirely new evidence or arguments in the conclusion -- anything substantive enough to change how a reader interprets your findings belongs earlier, in the discussion. The conclusion's job is to land the point you've already made, not to make a new one at the last minute.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is member checking in qualitative research, and how do I actually do it?",
+        response="""Member checking means sharing your interpretation of a participant's data back with them, to check whether your understanding actually reflects what they meant -- a way of validating your analysis directly against the people whose experience you're describing, rather than relying solely on your own interpretation.
+
+A practical approach: after coding interview data and identifying themes, share a summary of your interpretation (not necessarily the full analysis) with participants, and ask something like "does this capture your experience accurately? Is there anything here that doesn't feel right, or that you'd want to add?"
+
+This isn't just a courtesy -- it's a real check against a genuine risk in qualitative analysis: a researcher's own framework or assumptions shaping how they interpret what someone said, in a way the original speaker wouldn't actually recognize or agree with. If several participants push back on the same interpretation, that's a real signal to revisit your analysis, not just note the disagreement and move on. Member checking works best when done specifically enough that participants can meaningfully react to it -- vague summaries ("participants generally felt positive") don't give anyone enough to actually confirm or challenge.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether university career centers\' use of mock technical interviews affects actual interview outcomes for computer science students. Comparing 130 students who completed at least two mock interviews to 130 who completed none, mock-interview students received job offers at a rate 28 percentage points higher, with the largest gains among students who had no prior professional interview experience."',
+        response="Researchers compared computer science students who practiced with at least two mock technical interviews through their university career center to students who did none. The students who practiced got job offers at a rate 28 percentage points higher -- and this benefit was biggest for students who'd never been through a professional interview before at all.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether embedding short, low-stakes quizzes throughout online course video lectures, rather than only at the end of each module, affects concept retention. Comparing 175 students with embedded quizzes to 175 with end-of-module quizzes only, embedded-quiz students scored 24% higher on a comprehensive final assessment, despite spending roughly the same total time watching lecture content."',
+        response='This study compared students who got short quiz questions embedded throughout online video lectures to students who only got a quiz at the end of each module. Students with the embedded quizzes scored 24% higher on the final comprehensive test -- even though both groups spent about the same total time watching the lectures, suggesting the more frequent quizzing helped concepts stick better along the way.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates whether providing students with access to anonymized examples of previous top-scoring submissions affects their own submission quality on a capstone project. Comparing 95 students given access to past examples to 95 without, the examples group scored 13% higher on average, though instructors noted a modest increase in submissions following overly similar structural patterns to the shared examples."',
+        response="Researchers looked at whether giving students access to anonymized examples of previous top-scoring capstone projects helped their own work. Students who saw the examples scored 13% higher on average -- though instructors also noticed a downside: some students' projects ended up following the structure of the example projects a bit too closely, rather than developing their own approach.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine whether scheduling optional office hours in the evening, rather than only during standard daytime hours, affects attendance among students who work part-time jobs. Comparing attendance data across 20 course sections before and after evening office hours were introduced alongside existing daytime hours, overall office hours attendance increased by 45%, driven almost entirely by students who self-identified as working 15 or more hours per week."',
+        response="This study looked at what happened when a course added evening office hours in addition to the usual daytime ones. Overall attendance at office hours went up by 45% -- and almost all of that increase came from students who worked 15 or more hours a week at part-time jobs, suggesting the evening option specifically helped students who couldn't make it during the day because of work.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study evaluates whether requiring students to estimate their expected grade before receiving actual feedback affects their engagement with that feedback afterward. Comparing 110 students who predicted their grade first to 110 who did not, prediction-first students spent 37% more time reviewing detailed feedback comments, with the effect strongest among students whose prediction was significantly higher than their actual grade."',
+        response='Researchers tested whether having students guess their own grade before seeing the real one changed how much attention they paid to the feedback afterward. Students who predicted their grade first spent 37% more time actually reading through the detailed feedback -- and this effect was strongest for students whose guess was way higher than the grade they actually got, suggesting the surprise made them want to understand what happened.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether students who use a personal coding portfolio website during their studies have different early-career job search outcomes than students who do not. Comparing 200 students with an active portfolio site to 200 without one, portfolio-owning students received their first interview request an average of 3.2 weeks earlier, with no significant difference in the number of applications submitted between the two groups."',
+        response="This study compared computer science students who maintained a personal coding portfolio website to those who didn't, looking at their job search outcomes. Students with a portfolio site got their first interview request 3.2 weeks earlier on average -- and interestingly, both groups submitted roughly the same number of job applications, suggesting the portfolio made each application more effective rather than the students simply applying to more jobs.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper examines whether short daily coding practice sessions (15 minutes) produce different skill outcomes than fewer, longer weekly sessions (roughly 105 minutes total) among self-taught programmers. Comparing 80 participants in each condition over eight weeks, the daily-short-session group showed stronger consistency in applying concepts to new problems, while the weekly-long-session group reported covering more distinct topics overall."',
+        response="Researchers compared self-taught programmers who practiced coding for 15 minutes every day to those who practiced in fewer, longer weekly sessions adding up to about the same total time. After eight weeks, the daily-practice group was better at consistently applying what they'd learned to new problems, while the weekly-session group had covered a wider range of topics overall -- suggesting each approach has a real trade-off rather than one being simply better than the other.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
 
 def split_and_write(examples: list[SFTExample], out_dir: Path, eval_fraction: float = 0.1) -> None:
     random.seed(42)
