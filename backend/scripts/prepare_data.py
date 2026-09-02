@@ -2001,6 +2001,824 @@ The difference between a weak and strong discussion section usually comes down t
         difficulty="advanced",
     )
 
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"This study evaluates the effect of a six-week digital literacy training program on employment outcomes among unemployed youth in urban centers. Comparing 280 program graduates to a matched control group six months post-training, graduates were 2.3 times more likely to be employed, with the strongest effect observed among participants who completed the program's job-application component specifically, rather than the general computer skills modules alone.""",
+        response="Researchers followed 280 unemployed young people who completed a six-week digital literacy course and compared them to similar people who didn't. Six months later, the graduates were more than twice as likely to have found a job -- and the part of the training that mattered most wasn't general computer skills, it was the specific module on how to apply for jobs online.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"We examine how transaction fee structures affect mobile money usage frequency among informal market traders. Survey data from 350 traders across two urban markets shows that flat per-transaction fees, rather than percentage-based fees, are associated with significantly lower usage frequency for small transactions, suggesting that fee structure -- not just fee level -- shapes adoption among low-margin traders.""",
+        response="This study surveyed 350 market traders to see how mobile money fees affect how often they use it. Traders faced with a flat fee per transaction used mobile money less often for small purchases than traders paying a percentage-based fee -- meaning it's not just how much the fee costs, but how it's structured, that discourages traders with tight profit margins from using it.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"This paper assesses the effectiveness of SMS-based flood early-warning alerts in reducing property losses among riverside communities. Comparing 12 villages with SMS alert systems to 12 without, alerted villages reported 42% lower average property losses during flood events, with response time -- not just alert receipt -- identified as the key mediating factor.""",
+        response="Researchers compared 12 villages that received flood warnings by text message to 12 similar villages that didn't. The villages with SMS alerts had 42% less property damage during floods -- but the study found it wasn't just about getting the warning, it was about how quickly people actually acted on it that made the real difference.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"This study investigates the relationship between internet connectivity disruptions and self-reported academic stress among university students. Survey responses from 540 students indicate that unpredictable, rather than lengthy, outages are most strongly associated with elevated stress, suggesting that outage predictability -- allowing students to plan around it -- may matter more for wellbeing than outage duration itself.""",
+        response="This study surveyed 540 university students about how internet outages affect their stress levels. Surprisingly, it wasn't the length of the outages that stressed students out the most -- it was not knowing when they'd happen. Predictable outages, even long ones, were less stressful than short, unexpected ones, since students could at least plan around a schedule they knew.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"We compare community radio broadcasts and SMS messaging as channels for public health information delivery in rural areas with mixed literacy levels. Radio broadcasts reached a broader audience overall, but SMS messages showed significantly higher message recall accuracy one week later, suggesting the two channels may be complementary rather than substitutes for reaching different program goals.""",
+        response="This study compared two ways of sharing public health information in rural areas: community radio and text messages. Radio reached more people overall, but people who got the information by text remembered it more accurately a week later. The takeaway is that these aren't really competing methods -- radio is better for reaching a wide audience, while text messages are better when you need people to actually remember and act on specific information.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I write a results section without accidentally slipping into interpreting what the results mean?",
+        response="""The most common mistake in a results section is mixing reporting with interpretation -- saving interpretation for the discussion section is what keeps a paper's logic clear and lets readers evaluate your evidence before your argument about it.
+
+A concrete test: if a sentence uses "because," "suggests," "indicates," or "shows that this means," it's probably interpretation, not reporting, and belongs in the discussion instead. Compare these two versions of the same finding:
+
+- **Interpretation (wrong section):** "Graduates were more likely to be employed because the training gave them confidence."
+- **Reporting (correct for results):** "Program graduates were employed at a rate of 68%, compared to 29% among the control group (p < 0.01)."
+
+The results section states what you found, with the actual numbers, and lets the discussion section argue about why. Keeping this separation disciplined makes both sections stronger -- results reads as objective evidence, and discussion reads as a genuine argument built on that evidence, rather than the two blurring together.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What's the general principle behind citing sources correctly, even if I'm not sure which specific citation style my program requires?",
+        response="""Regardless of the specific style (APA, MLA, Chicago, IEEE, and others all have different exact formatting rules), citations exist to do two things: let a reader trace any claim back to where it came from, and give credit for ideas that aren't your own.
+
+Two things matter more than getting the exact punctuation right on day one:
+1. **Consistency.** Pick one style and apply it identically throughout the whole document -- a mix of styles looks like carelessness even if each individual citation is technically well-formed.
+2. **Cite the specific claim, not just the general topic.** If you state a specific number or finding, that exact sentence needs a citation attached to it -- not just a general reference somewhere in the paragraph.
+
+Once you know which style your program or journal actually requires, most word processors and reference managers (like Zotero or Mendeley) can auto-format citations for you -- the harder discipline is remembering to cite as you write, rather than trying to reconstruct where every claim came from after the fact.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="I need to summarize my thesis findings for a general audience, not other researchers. How should that be different from my academic abstract?",
+        response="""The core content stays the same, but three things change for a general audience:
+
+1. **Cut jargon or define it immediately.** "Mixed-methods design" means nothing to a general reader -- either say "we combined a survey with follow-up interviews" or explain the term the first time you use it.
+2. **Lead with why it matters, not with your method.** Academic writing often opens with methodology; general audiences want the practical significance first -- what does this actually change for someone?
+3. **Use concrete numbers sparingly, and round them.** "61% cost reduction" is fine; a precise p-value or confidence interval usually isn't meaningful to a non-specialist and can be dropped entirely.
+
+A useful test: read your summary aloud to someone outside your field. If they have to ask "what does that mean?" more than once, it still needs another editing pass -- the goal is that a policymaker or a curious relative could read it and understand what you found and why it's useful, without needing your academic training to follow it.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="A reviewer might question why my study only surveyed 40 people. How do I address a small sample size honestly in my methodology section?",
+        response="""Don't try to hide or minimize it -- acknowledging a limitation directly, with reasoning, reads as far more credible than hoping a reviewer won't notice.
+
+A workable approach:
+1. **State the number plainly**, without apologizing excessively for it.
+2. **Explain the practical constraint that led to it** -- limited time, budget, or access to the population you needed, if that's genuinely why.
+3. **Frame what the sample size does and doesn't support.** A small sample can still support a genuine, real finding -- it just can't claim broad generalizability the way a larger, randomly sampled study could.
+
+Example: "Due to time and resource constraints, this study surveyed 40 participants from a single university. While this sample size limits the generalizability of findings to the broader student population, it provides an initial exploratory basis for identifying patterns that future, larger-scale studies could test more broadly." That framing turns a limitation into an honest, defensible scope statement, rather than an unaddressed weakness a reviewer has to point out themselves.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What makes a strong thesis title, versus a weak one?",
+        response="""A weak title is usually either too vague ("A Study of Mobile Technology in Africa") or just restates the general topic without saying what the study actually found or examined. A strong title typically does two things: names the specific relationship being studied, and names the specific population or context.
+
+Compare:
+- **Weak:** "Mobile Banking in Rural Areas"
+- **Stronger:** "Network Reliability and Digital Literacy as Predictors of Mobile Banking Adoption Among Rural Households in East Africa"
+
+The stronger version tells a reader, before they even open the paper, exactly what relationship is being tested (reliability and literacy as predictors) and in what specific context (rural East African households). A good test: could your title apply equally well to five other unrelated studies? If yes, it's probably still too generic and needs the specific variables or population named directly.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does `x` end up being 3 in both print statements, when I expected different values?
+
+```python
+functions = []
+for x in range(3):
+    functions.append(lambda: print(x))
+
+for f in functions:
+    f()
+```""",
+        response="""All three lambdas share the *same* variable `x`, not separate snapshots of its value at the time each lambda was created. By the time the loop finishes, `x` is `2` (the last value it took), and since every lambda looks up `x` fresh each time it's called -- not when it was defined -- they all print `2`, not `0`, `1`, `2` as you might expect.
+
+Fix by capturing the current value as a default argument, which *does* get evaluated at definition time:
+```python
+functions = []
+for x in range(3):
+    functions.append(lambda x=x: print(x))
+```
+`x=x` creates a new parameter that copies the current value of `x` into the lambda's own local scope at the moment it's defined, so each lambda genuinely gets its own frozen snapshot instead of sharing the loop variable.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function return `undefined` instead of the sum?
+
+```javascript
+function sum(a, b) {
+    if (a > 0 && b > 0) {
+        a + b;
+    }
+}
+```""",
+        response="""There's no `return` statement, so the function computes `a + b` and immediately throws the result away -- JavaScript functions return `undefined` by default unless you explicitly return something.
+
+Fixed version:
+```javascript
+function sum(a, b) {
+    if (a > 0 && b > 0) {
+        return a + b;
+    }
+}
+```
+Worth also noticing: this function still returns `undefined` if `a` or `b` isn't positive, since there's no `else` branch -- whether that's intentional depends on what you want the function to do for negative inputs, but it's worth deciding on purpose rather than by accident.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this comparison sometimes fail even though the math looks correct?
+
+```python
+result = 0.1 + 0.2
+if result == 0.3:
+    print("Equal")
+else:
+    print("Not equal")  # this prints!
+```""",
+        response="""This prints "Not equal" because `0.1 + 0.2` actually evaluates to `0.30000000000000004`, not exactly `0.3`. Floating-point numbers can't represent most decimal fractions with perfect precision in binary, so small rounding errors like this are a normal, expected part of floating-point arithmetic -- not a bug in Python itself.
+
+The fix is to compare with a small tolerance instead of exact equality:
+```python
+result = 0.1 + 0.2
+if abs(result - 0.3) < 1e-9:
+    print("Equal")
+```
+`abs(result - 0.3) < 1e-9` checks that the difference is negligibly small, rather than demanding a perfect match. This is a genuinely common trap across almost every programming language, not specific to Python -- exact equality checks on floats are usually the wrong tool.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this SQL query fail with an error about `name` not being in the GROUP BY clause?
+
+```sql
+SELECT department, name, COUNT(*)
+FROM students
+GROUP BY department;
+```""",
+        response="""When you use `GROUP BY`, every column in `SELECT` has to either be part of the `GROUP BY` list, or be wrapped in an aggregate function like `COUNT()`, `SUM()`, or `AVG()`. Here, `name` is neither -- it's not in `GROUP BY department`, and it's not aggregated, so the database can't determine which single `name` value to show for a department that might contain many different students.
+
+Two ways to fix it, depending on what you actually want:
+```sql
+-- Option 1: count students per department, drop name entirely
+SELECT department, COUNT(*)
+FROM students
+GROUP BY department;
+
+-- Option 2: include name in the grouping (now grouped by department AND name)
+SELECT department, name, COUNT(*)
+FROM students
+GROUP BY department, name;
+```
+Option 2 changes the meaning of the query -- it now counts per unique department-name combination, not per department overall -- so pick the one that actually answers your real question.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why do these print statements come out in the wrong order?
+
+```javascript
+console.log("1");
+fetchData().then(() => console.log("2"));
+console.log("3");
+```""",
+        response="""This prints `1`, `3`, `2` -- and that's actually correct behavior, not a bug, once you understand why. `fetchData()` returns a Promise, and `.then()`'s callback only runs once that Promise resolves, which happens *later*, after the current code finishes running. JavaScript doesn't pause and wait at that line; it keeps executing `console.log("3")` immediately, and only comes back to run the `.then()` callback once the asynchronous work is actually done.
+
+If you genuinely need `"2"` to print before `"3"`, you have to explicitly wait for it with `await`, inside an `async` function:
+```javascript
+async function run() {
+    console.log("1");
+    await fetchData();
+    console.log("2");
+    console.log("3");
+}
+```
+Now execution genuinely pauses at `await` until `fetchData()` resolves, giving you the order `1`, `2`, `3` instead.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+    yield SFTExample(
+        instruction="""Why is this login query dangerous, and how do I fix it?
+
+```python
+def login(username, password):
+    query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
+    cursor.execute(query)
+```""",
+        response="""This is vulnerable to SQL injection. Because `username` and `password` are inserted directly into the query string, an attacker can type something like `' OR '1'='1` as the username, turning your intended query into one that's always true, bypassing the login check entirely -- no valid password needed.
+
+Fix it with parameterized queries, which send the values separately from the query structure instead of building them into the string:
+```python
+def login(username, password):
+    query = "SELECT * FROM users WHERE username = %s AND password = %s"
+    cursor.execute(query, (username, password))
+```
+The database driver handles escaping safely here, so user input can never change the query's actual structure, no matter what characters someone types in. This is a hard rule worth internalizing: never build a SQL query with string formatting or concatenation when any part of it comes from user input.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function drop the last character of the string?
+
+```python
+def remove_first_char(text):
+    return text[1:len(text) - 1]
+```""",
+        response="""`text[1:len(text) - 1]` slices from index 1 up to, but not including, `len(text) - 1` -- which cuts off both the first character *and* the last one. The intent was clearly just to drop the first character.
+
+Fixed version:
+```python
+def remove_first_char(text):
+    return text[1:]
+```
+Leaving the end of the slice empty means "go all the way to the end of the string" -- there's no need to calculate `len(text)` manually at all here, and doing so is exactly what introduced the off-by-one mistake.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this print `undefined` instead of the greeting?
+
+```javascript
+function greet() {
+    console.log(message);
+    var message = "Hello!";
+}
+greet();
+```""",
+        response="""This is caused by `var`'s "hoisting" behavior: `var message` is moved to the top of the function during compilation, but its *value* assignment (`= "Hello!"`) stays right where it was written. So at the point `console.log(message)` runs, `message` already exists but hasn't been assigned yet -- it's `undefined`, not an error, which makes this bug easy to miss.
+
+Using `let` instead makes this mistake throw a clear error instead of silently printing `undefined`:
+```javascript
+function greet() {
+    console.log(message); // ReferenceError: Cannot access 'message' before initialization
+    let message = "Hello!";
+}
+```
+This is one of several real reasons modern JavaScript style prefers `let`/`const` over `var` -- `var`'s hoisting behavior hides genuine ordering bugs instead of surfacing them.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this code never show me what actually went wrong?
+
+```python
+try:
+    result = risky_calculation()
+except:
+    print("Something went wrong")
+```""",
+        response="""A bare `except:` catches *every* exception -- including ones you didn't anticipate, and even ones like `KeyboardInterrupt` that you almost never want to silently swallow. Worse, it discards the actual error entirely, so "something went wrong" is all you'll ever know, even if the real cause was a simple typo you could have fixed in seconds.
+
+Better version:
+```python
+try:
+    result = risky_calculation()
+except Exception as e:
+    print(f"Something went wrong: {e}")
+```
+This still catches unexpected errors, but keeps the actual exception message so you can see what really happened. Even better, when you know what specific error you're guarding against, catch that specific exception type (like `except ValueError:`) rather than the broad `Exception` -- that way, genuinely unexpected errors still surface instead of being silently swallowed too.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function only remove every other matching item instead of all of them?
+
+```python
+def remove_zeros(numbers):
+    for i, n in enumerate(numbers):
+        if n == 0:
+            numbers.pop(i)
+    return numbers
+```""",
+        response="""Modifying a list while you're iterating over it shifts every later element's index down by one -- so the loop's internal position and the list's actual current contents fall out of sync, and some elements get skipped entirely.
+
+Fix by building a new list instead of mutating the original while iterating:
+```python
+def remove_zeros(numbers):
+    return [n for n in numbers if n != 0]
+```
+This sidesteps the problem completely, since you're never modifying the list you're currently looping over -- you're building a fresh one from scratch. As a general rule, mutating a list (or dict) while iterating over it is almost always a source of subtle, hard-to-spot bugs, regardless of the specific operation.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"This study examines completion rates for scheduled telemedicine consultations in regions with intermittent internet connectivity. Analyzing 890 scheduled appointments across six clinics, consultations scheduled with a text-based fallback option (allowing the visit to continue via SMS if video connection failed) had a 31% higher completion rate than video-only appointments, with no significant difference in patient-reported satisfaction between the two formats.""",
+        response="Researchers looked at 890 telemedicine appointments in areas where the internet doesn't always work reliably. Appointments that had a backup option to switch to text messaging if the video call failed were completed 31% more often than video-only appointments -- and patients were just as satisfied either way, suggesting the fallback option is a low-cost way to keep more appointments from failing entirely.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"We investigate whether SMS payment reminders improve microloan repayment rates among small business borrowers. In a sample of 1,200 borrowers, those receiving reminders three days before their payment due date had a 22% lower late-payment rate than borrowers receiving no reminders, with reminders sent on the due date itself showing no measurable effect.""",
+        response="This study tested whether text-message reminders help small business owners repay their microloans on time. Among 1,200 borrowers, those reminded three days before their payment was due were 22% less likely to pay late -- but sending the reminder on the actual due date, once it was already too late to plan ahead, made no real difference at all.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"This paper evaluates the impact of a year-long teacher professional development program on student mathematics test scores. Comparing 45 participating schools to 45 matched non-participating schools, students in participating schools scored on average 8% higher, with the effect concentrated almost entirely in schools that maintained consistent teacher attendance throughout the program, rather than schools with high teacher turnover during it.""",
+        response="This study compared 45 schools whose teachers went through a year-long training program to 45 similar schools that didn't. Students in the trained schools scored 8% higher on math tests on average -- but that benefit mostly only showed up in schools where the same teachers stayed through the whole program; schools with a lot of teacher turnover during the training saw little to no benefit.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="When should I present data in a table versus describing it in prose in my results section?",
+        response="""A useful rule: if a reader would need to hold more than two or three numbers in their head at once to follow your sentence, it belongs in a table instead.
+
+Prose works well for a single key comparison: "Program graduates were employed at more than double the rate of the control group (68% vs. 29%)." That's easy to read as a sentence.
+
+A table becomes clearer once you're presenting multiple related figures at once -- say, employment rates broken down by five different age groups, or results across three different survey waves. Cramming that into a paragraph forces the reader to do the organizing work themselves; a table does it for them.
+
+A common mistake to avoid: don't present the same numbers in *both* a table and a full paragraph restating every value -- that's redundant. If you have a table, your prose should reference and interpret its key findings, not just repeat every cell.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I respond professionally to peer review comments that feel overly critical, without sounding defensive?",
+        response="""Even a harshly-worded review is usually pointing at something real underneath the tone -- treating every comment as worth a genuine response, rather than dismissing the ones that sting, tends to produce a stronger revised paper either way.
+
+A structure that works well for each point:
+1. **Acknowledge what the reviewer is asking**, in your own words, so they can see you actually understood the concern.
+2. **State what you changed**, specifically -- point to the actual section or page, not just "we addressed this."
+3. **If you disagree, explain why, respectfully** -- reviewers can be wrong, but "we chose not to change this because..." with real reasoning is very different from ignoring the comment or arguing back defensively.
+
+Avoid language like "the reviewer clearly misunderstood" even when you believe that's true -- it reads as combative regardless of whether it's accurate, and it's rarely necessary: you can address the substance of a misunderstanding without characterizing the reviewer's competence at all.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I write a simple unit test in Python?",
+        response="""```python
+def add(a, b):
+    return a + b
+
+# test_add.py
+def test_add_positive_numbers():
+    assert add(2, 3) == 5
+
+def test_add_negative_numbers():
+    assert add(-1, -1) == -2
+```
+
+Using `pytest`, any function starting with `test_` in a file that matches `test_*.py` gets automatically discovered and run. Each test calls your actual function and uses `assert` to check the result matches what you expect -- if the assertion is false, `pytest` reports that specific test as failed, showing you exactly which case broke.
+
+Run all tests in a project with:
+```
+pytest
+```
+Writing a test for both a normal case and an edge case (like the negative-number example here) is good practice -- it's easy to write code that works for the "obvious" input but breaks on something you didn't think to try manually.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="Write a function that validates whether a string looks like a properly formatted email address.",
+        response="""```python
+import re
+
+def is_valid_email(email):
+    pattern = r'^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
+```
+
+This uses a regular expression: `[\\w.+-]+` matches one or more word characters, dots, plus signs, or hyphens (the part before `@`), `@` matches the literal symbol, `[\\w-]+` matches the domain name, and `\\.[a-zA-Z]{2,}` requires a dot followed by at least two letters (the extension, like `.com` or `.org`).
+
+Worth knowing honestly: this catches obviously malformed input, but fully validating an email address per the official spec is notoriously complex -- the only way to be *certain* an email actually works is to send a verification email to it and see if someone confirms receipt. Use pattern checks like this to catch typos early, not as a substitute for that real verification step.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="Write a simple Python class representing a student, with a name, a list of grades, and a method to compute their average grade.",
+        response="""```python
+class Student:
+    def __init__(self, name):
+        self.name = name
+        self.grades = []
+
+    def add_grade(self, grade):
+        self.grades.append(grade)
+
+    def average(self):
+        if not self.grades:
+            return 0
+        return sum(self.grades) / len(self.grades)
+
+student = Student("Omol")
+student.add_grade(85)
+student.add_grade(92)
+print(student.average())  # 88.5
+```
+
+`__init__` is the constructor -- it runs automatically when you create a new `Student`, setting up that instance's starting state (`name` and an empty `grades` list). `self` refers to the specific instance the method is being called on, which is how each `Student` object keeps its own independent `grades` list rather than sharing one across every student. The `if not self.grades` check in `average()` avoids a `ZeroDivisionError` for a student with no grades recorded yet.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I read a CSV file and extract just one column of values in Python?",
+        response="""```python
+import csv
+
+names = []
+with open("students.csv", newline="") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        names.append(row["name"])
+
+print(names)
+```
+
+`csv.DictReader` reads each row as a dictionary keyed by the header row's column names, so `row["name"]` grabs just that column's value for each row without you needing to track column positions by number. This is generally more readable and less fragile than plain `csv.reader`, which gives you rows as plain lists indexed by position -- if someone reorders the CSV's columns later, `DictReader`-based code still works correctly, while position-based code would silently start reading the wrong column.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="Write a function that reverses a string using recursion.",
+        response="""```python
+def reverse(text):
+    if len(text) <= 1:
+        return text
+    return reverse(text[1:]) + text[0]
+```
+
+The base case is a string of length 0 or 1 -- already its own reverse, nothing to do. The recursive case takes everything except the first character, reverses *that* (via the recursive call), and then appends the first character to the end -- moving it from the front of the original string to the back of the reversed one.
+
+For `"cat"`: `reverse("at") + "c"` → `(reverse("t") + "a") + "c"` → `("t" + "a") + "c"` → `"tac"`. Worth noting honestly: this is a clean way to demonstrate recursion, but Python's built-in `text[::-1]` is both faster and simpler for actually reversing a string in real code -- recursion here is for understanding the technique, not the most practical solution to this specific problem.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+    yield SFTExample(
+        instruction="How do I read data from a JSON file and access a specific field in Python?",
+        response="""```python
+import json
+
+with open("students.json") as f:
+    data = json.load(f)
+
+print(data["name"])
+```
+
+`json.load()` reads the file and converts its JSON structure directly into Python objects -- JSON objects become dictionaries, JSON arrays become lists, so `data["name"]` works exactly like accessing any regular Python dict once loaded. The reverse direction uses `json.dump()`:
+```python
+with open("output.json", "w") as f:
+    json.dump(data, f, indent=2)
+```
+`indent=2` makes the output file human-readable with actual line breaks and spacing, instead of one dense unbroken line -- worth using whenever a human might need to open and read the file directly.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="Write a function that counts how many times each word appears in a sentence.",
+        response="""```python
+def word_frequency(sentence):
+    counts = {}
+    for word in sentence.lower().split():
+        counts[word] = counts.get(word, 0) + 1
+    return counts
+```
+
+`.split()` breaks the sentence into a list of words on whitespace, and `.lower()` first ensures "The" and "the" count as the same word rather than two different ones. `counts.get(word, 0)` is the key trick: it looks up the word's current count, defaulting to `0` if the word hasn't been seen yet, so you can safely add 1 without a separate check for "is this word already in the dictionary." This pattern -- a dictionary counting occurrences -- comes up constantly in real code, well beyond just counting words.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I make a GET request to an API and read the response in Python?",
+        response="""```python
+import requests
+
+response = requests.get("https://api.example.com/students")
+data = response.json()
+print(data)
+```
+
+`requests.get()` sends the request and waits for a response. `response.json()` parses the response body as JSON and hands it back as a regular Python dict or list, ready to use directly. It's worth checking the request actually succeeded before trusting the data:
+```python
+if response.status_code == 200:
+    data = response.json()
+else:
+    print(f"Request failed: {response.status_code}")
+```
+Skipping this check is a common source of confusing crashes later on -- if the request failed, `response.json()` might not contain what you expect, or might fail outright, and the error you see then won't obviously point back to the real cause.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="Write a function that builds a formatted greeting message using an f-string.",
+        response="""```python
+def build_greeting(name, course):
+    return f"Hello {name}, welcome to {course}!"
+```
+
+An f-string (prefixed with `f`) lets you embed variables and expressions directly inside `{}` within the string, evaluated at runtime -- `{name}` gets replaced with the actual value of the `name` variable. This is generally clearer than building the same string with concatenation:
+```python
+return "Hello " + name + ", welcome to " + course + "!"
+```
+The concatenation version works, but gets harder to read as more variables get added, and it's easy to miss a space or forget a `+`. F-strings also handle non-string values automatically -- `f"Score: {score}"` works even if `score` is a number, without needing to convert it with `str()` first.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this crash with a KeyError?
+
+```python
+student = {"name": "Omol", "age": 22}
+print(student["email"])
+```""",
+        response="""`student` doesn't have an `"email"` key -- only `"name"` and `"age"` -- so trying to access it directly with `[...]` raises `KeyError: 'email'`. Dictionaries only let you access keys that actually exist this way.
+
+If a key might legitimately be missing sometimes, `.get()` handles it gracefully instead of crashing:
+```python
+print(student.get("email"))       # None, no error
+print(student.get("email", "N/A")) # "N/A" -- your own custom default
+```
+`.get()` returns `None` (or a default value you specify) instead of raising an error when the key isn't found. Use direct `[...]` access when a missing key genuinely represents a bug you want to catch loudly; use `.get()` when a missing key is an expected, normal possibility.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this crash with a TypeError, and the error points somewhere confusing?
+
+```python
+def get_bonus(score):
+    if score > 90:
+        return 10
+
+total = 50 + get_bonus(85)
+```""",
+        response="""`get_bonus(85)` runs, but since `85` isn't greater than `90`, the function falls through without hitting any `return` statement -- so it implicitly returns `None`. The actual crash then happens one line later, at `50 + None`, which raises `TypeError: unsupported operand type(s) for +: 'int' and 'NoneType'`.
+
+The fix is to give the function an explicit path for every case, not just the one you were thinking about:
+```python
+def get_bonus(score):
+    if score > 90:
+        return 10
+    return 0
+```
+This bug is worth recognizing as a pattern: whenever an error mentions `NoneType` unexpectedly, it's very often a function that forgot to return a value on some path -- the error appears far from the actual missing `return`, which is what makes it confusing to trace at first.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""This error handling doesn't actually catch the real error being thrown -- why not?
+
+```python
+try:
+    age = int(student_input)
+except ValueError:
+    print("Please enter a valid number")
+```
+
+The actual crash reported is `TypeError: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'`.""",
+        response="""`except ValueError` only catches `ValueError` -- it does nothing for other exception types. Here, `student_input` is apparently `None` (perhaps a form field that wasn't filled in), and calling `int(None)` raises `TypeError`, not `ValueError`, so your `except` block never triggers at all; the error propagates up and crashes the program.
+
+Catch both, if both are genuinely expected possibilities:
+```python
+try:
+    age = int(student_input)
+except (ValueError, TypeError):
+    print("Please enter a valid number")
+```
+The broader lesson: `except SomeSpecificError` only catches that exact type (and its subclasses) -- it's not a general safety net. Before writing exception handling, it's worth actually checking what exception type your specific failure case raises, rather than guessing.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between correlation and causation, and why does it matter for interpreting research findings?",
+        response="""Correlation means two variables tend to change together -- when one goes up, the other tends to go up (or down) too. Causation means one variable actually *produces* the change in the other. Correlation on its own never proves causation, because a third, unmeasured factor could be driving both.
+
+A classic example: ice cream sales and drowning deaths both rise in the summer -- they're correlated, but ice cream doesn't cause drowning. The real cause behind both is a third variable: hot weather, which increases both ice cream purchases and swimming (and therefore drowning risk).
+
+This matters directly for how you write about your own findings: "Students who used the tutoring program scored higher" is a correlational claim, even if it sounds causal. To claim the program *caused* the improvement, you'd need to rule out other explanations -- maybe more motivated students were the ones who chose to use tutoring in the first place. Being precise about this distinction in your own writing (using words like "associated with" rather than "caused" unless your study design actually supports a causal claim) is one of the most common things reviewers check for.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What does informed consent actually require when collecting data from research participants?",
+        response="""Informed consent means a participant genuinely understands what they're agreeing to before they agree to it -- not just that they signed something. At minimum, that generally means participants should clearly know:
+
+1. **What they're being asked to do**, concretely -- not a vague description.
+2. **How the data will be used**, including who sees it and what it's used for.
+3. **That participation is voluntary**, and they can withdraw without penalty.
+4. **Any real risks or limitations**, stated honestly rather than glossed over -- including things like whether their contribution can later be removed once it's part of a larger dataset or trained system.
+5. **Who to contact** with questions or concerns.
+
+A consent form that's technically signed but full of dense legal language a participant didn't actually understand doesn't meet the spirit of informed consent, even if it meets a narrow legal bar. The goal is a participant who could accurately explain back to you what they agreed to -- if they couldn't, the consent process didn't really work, regardless of the paperwork.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between qualitative and quantitative research, and how do I know which one fits my question?",
+        response="""Quantitative research measures things numerically and looks for patterns across a (usually larger) group -- surveys with rating scales, test scores, counts of an event. It answers questions like "how much" or "how many," and supports statistical comparison.
+
+Qualitative research explores meaning, experience, and context in depth -- interviews, open-ended responses, observation -- usually with a smaller number of participants studied more thoroughly. It answers questions like "why" or "how does this feel to the people experiencing it."
+
+A rough test for which fits your question: if you're asking "does X happen more than Y, and by how much," that's quantitative. If you're asking "why do people choose X over Y" or "what is this experience actually like for them," that's qualitative. Many strong studies use both together (a "mixed-methods" design) -- quantitative data to establish a pattern exists, and qualitative interviews to understand why it exists, each answering a different part of the same underlying question.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I decide on an appropriate sample size for my study, given I don't have resources for a huge survey?",
+        response="""There's no single "correct" sample size that fits every study -- it depends on your population size, how much variation you expect in responses, and how confident you need to be in the result. That said, a few practical principles help even without formal statistical power calculations:
+
+1. **Bigger isn't automatically better if it's not representative.** A well-selected sample of 100 people, covering the real diversity of your target population, often produces more trustworthy findings than a poorly-selected sample of 500 drawn entirely from one convenient location.
+2. **Be honest about what your sample size can and can't support.** A sample of 40 can identify a genuine pattern worth investigating further; it usually can't support strong claims about an entire national population.
+3. **State your reasoning for the number you chose**, even if it's a practical constraint like time or budget -- reviewers respond much better to an honestly justified small sample than an unexplained one.
+
+If your study is meant to formally test a specific hypothesis with statistical significance, a proper power calculation (which estimates the minimum sample needed to detect an effect of a given size) is worth doing before you start collecting data, not after.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"This study explores barriers to entrepreneurship among women operating informal market businesses, drawing on in-depth interviews with 25 traders across two markets. Participants consistently identified lack of access to formal credit -- rather than lack of business skill or market knowledge -- as the primary constraint on business growth, with informal lending networks serving as an insufficient substitute for accessing capital needed to expand inventory.""",
+        response="Researchers interviewed 25 women running informal market businesses to understand what holds their businesses back from growing. The women themselves said the biggest problem wasn't a lack of business knowledge or skill -- it was not being able to get formal loans. The informal lending networks they relied on instead just weren't enough to help them buy more inventory and actually expand.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"We evaluate the effectiveness of a community-led handwashing behavior change campaign in reducing diarrheal disease incidence among children under five. Comparing 20 villages with the campaign to 20 without over a six-month period, campaign villages saw a 27% reduction in reported diarrheal cases, with community-led messaging (delivered by trained local volunteers) outperforming an earlier pilot that used only printed posters.""",
+        response="This study tested whether a handwashing campaign run by trained local volunteers could reduce diarrhea cases in young children. Comparing 20 villages that had the campaign to 20 that didn't, the campaign villages saw diarrhea cases drop by 27% over six months -- and having local volunteers deliver the message worked much better than an earlier attempt that just used printed posters.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"This paper examines why scheduled remote consultations are abandoned mid-session in regions with unreliable electricity access. Analyzing 310 dropped sessions, device battery depletion -- rather than network failure -- was the single largest identified cause, accounting for 44% of dropped calls, suggesting that power access, not just connectivity, is a critical and often overlooked constraint on remote service delivery.""",
+        response="Researchers looked at 310 remote consultation calls that got cut off partway through, in areas where electricity isn't always reliable. The single biggest reason calls dropped wasn't a bad internet connection -- it was people's phones running out of battery, accounting for 44% of the dropped calls. This suggests that just having internet access isn't enough; having a way to actually keep your device charged matters just as much for these services to work.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Summarize this abstract in plain language, in 2-3 sentences:
+
+"This study examines academic performance differences between university students who own a personal computer and those who rely on shared computer labs or borrowed devices. Controlling for prior academic performance, students relying on shared devices reported 40% less time available for assignment completion due to scheduling constraints, though final grades showed no statistically significant difference between the two groups once study time itself was accounted for.""",
+        response="Researchers compared university students who own their own computer to students who rely on shared computer labs or borrowed devices. Students relying on shared devices had 40% less available time to work on assignments because of scheduling limits -- but once you account for actual study time, their final grades ended up about the same as students with their own computer, suggesting the students without personal devices were working just as effectively with the more limited time they had.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
 
 def split_and_write(examples: list[SFTExample], out_dir: Path, eval_fraction: float = 0.1) -> None:
     random.seed(42)
