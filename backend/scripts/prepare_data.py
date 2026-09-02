@@ -5376,6 +5376,1202 @@ This isn't just a courtesy -- it's a real check against a genuine risk in qualit
         difficulty='intermediate',
     )
 
+    yield SFTExample(
+        instruction="What's the difference between PUT, PATCH, and POST in a REST API, and when should each be used?",
+        response="""`POST` creates a new resource -- calling it repeatedly typically creates multiple new records, which is why it's not idempotent. `PUT` replaces an entire existing resource with the data you send -- if you omit a field, it's often treated as cleared, since you're sending the complete new state. `PATCH` updates only the specific fields you include, leaving everything else on the resource unchanged.
+
+```
+POST /students          -- create a new student
+PUT /students/5         -- replace student 5 entirely with the sent data
+PATCH /students/5       -- update only the fields included in the request
+```
+
+A common mistake is using `PUT` when you only want to change one field -- if your `PUT` request only sends `{"name": "Omol"}` but the resource also has an `email` field, a strict `PUT` implementation might clear the email, since it interprets the request as "this is the complete new resource." `PATCH` avoids that risk by design, since it's explicitly meant for partial updates.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is the N+1 query problem, and why does it slow down applications so much?",
+        response="""The N+1 problem happens when code fetches a list of N items with one query, then separately queries the database once *per item* to get related data -- resulting in 1 + N total queries instead of a single efficient one.
+
+```python
+students = db.query("SELECT * FROM students")  # 1 query
+for student in students:
+    grades = db.query(f"SELECT * FROM grades WHERE student_id = {student.id}")  # N more queries
+```
+
+For 500 students, this fires 501 separate database queries where a single well-written query could return everything at once:
+```python
+results = db.query("SELECT students.*, grades.* FROM students JOIN grades ON students.id = grades.student_id")
+```
+Each database round-trip has real overhead beyond just the query execution itself -- network latency, connection handling -- so 501 small queries are almost always dramatically slower than 1 larger one, even though the total amount of data returned is similar. This is a genuinely common performance bug, especially in code that uses an ORM, where the extra queries can be hidden behind convenient-looking syntax that doesn't obviously reveal it's making N separate database calls.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I write a Python class with a custom string representation, so printing an instance shows something readable instead of a memory address?",
+        response="""```python
+class Student:
+    def __init__(self, name, grade):
+        self.name = name
+        self.grade = grade
+
+    def __str__(self):
+        return f"{self.name} (grade: {self.grade})"
+
+s = Student("Omol", 85)
+print(s)  # "Omol (grade: 85)"
+```
+
+Without `__str__`, printing an object shows something unhelpful like `<__main__.Student object at 0x7f8b2c0a1d90>` -- a memory address, not useful information. Defining `__str__` tells Python exactly what to show instead whenever the object is converted to a string, whether by `print()`, `str()`, or an f-string.
+
+There's also `__repr__`, a related method meant for a more precise, often code-like representation useful for debugging (ideally one that could recreate the object if evaluated). If you only define one, `__str__` is usually the more immediately useful choice for everyday printing, though defining both is common practice in more polished code.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I round a number to two decimal places in Python, and format it consistently for display?",
+        response="""```python
+price = 19.9
+print(f"{price:.2f}")  # "19.90"
+
+total = 19.876
+print(round(total, 2))  # 19.88
+```
+
+`:.2f` inside an f-string is a format specifier -- `f` means fixed-point notation, `.2` means two digits after the decimal point. This is specifically for *display* formatting; the underlying number isn't changed, just how it's shown as text. `round(total, 2)` actually rounds the number itself to two decimal places, returning a new number rather than a formatted string.
+
+The difference matters for output consistency: `f"{price:.2f}"` on `19.9` always shows `"19.90"` (with the trailing zero), while `round(19.9, 2)` gives back `19.9` (Python doesn't display trailing zeros on a plain number). For anything meant to look consistent to a user -- like prices -- the format specifier approach is usually what you actually want.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="What is a static method in Python, and how is it different from a regular instance method?",
+        response="""```python
+class MathHelper:
+    @staticmethod
+    def add(a, b):
+        return a + b
+
+print(MathHelper.add(2, 3))  # 5 -- no instance needed
+```
+
+A regular instance method automatically receives `self` (the specific object it's called on) as its first argument, and typically reads or modifies that object's own data. A `@staticmethod` doesn't receive `self` at all -- it behaves like a plain function that just happens to live inside the class, usually because it's logically related to the class even though it doesn't need any specific instance's data to do its job.
+
+Use a static method when the logic genuinely doesn't depend on any particular instance's state -- a validation helper, a conversion utility -- and a regular instance method whenever the logic needs to actually read or change `self`'s own data. If you find yourself writing a method that never uses `self`, that's usually a sign it should be a static method instead.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this event listener only ever show the first item's name, no matter which button is clicked?
+
+```javascript
+const items = document.querySelectorAll(".item");
+for (var i = 0; i < items.length; i++) {
+    items[i].addEventListener("click", function() {
+        console.log(items[i].name);
+    });
+}
+```""",
+        response="""`var` isn't block-scoped -- by the time any button is actually clicked (after the loop has already finished running), `i` has settled at its final value (`items.length`), and every single click handler shares that same `i`, which is now out of bounds, not the value it "was" during that specific loop iteration.
+
+Fixed by using `let` instead, which creates a fresh, separate `i` for each iteration:
+```javascript
+const items = document.querySelectorAll(".item");
+for (let i = 0; i < items.length; i++) {
+    items[i].addEventListener("click", function() {
+        console.log(items[i].name);
+    });
+}
+```
+This is the same underlying `var`-versus-`let` scoping issue that caused the earlier hoisting bug, showing up in a different, very common real-world context: event listeners created inside a loop. It's specifically why modern JavaScript style strongly prefers `let`/`const` over `var` -- this exact bug pattern was extremely common back when `var` was the only option.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this code proceed as if all three requests succeeded, even though one of them actually failed?
+
+```javascript
+async function loadDashboard() {
+    const [students, grades, attendance] = await Promise.all([
+        fetchStudents(),
+        fetchGrades(),
+        fetchAttendance()
+    ]);
+    render(students, grades, attendance);
+}
+```
+
+`fetchGrades()` actually threw an error, but `render()` still ran with `undefined` data.""",
+        response="""This description doesn't quite match how `Promise.all` actually behaves -- if any one of the promises passed to it rejects, `Promise.all` itself rejects immediately, and none of the results (including the successful ones) are returned; `render()` should never run at all in that case. If `render()` did run with `undefined` data, the more likely explanation is that `fetchGrades()` didn't actually *throw*, but instead resolved successfully with `undefined` as its value -- a silent failure inside `fetchGrades()` itself, not a `Promise.all` behavior issue.
+
+Either way, this is worth wrapping in proper error handling regardless of the exact cause:
+```javascript
+async function loadDashboard() {
+    try {
+        const [students, grades, attendance] = await Promise.all([
+            fetchStudents(),
+            fetchGrades(),
+            fetchAttendance()
+        ]);
+        render(students, grades, attendance);
+    } catch (error) {
+        console.error("Failed to load dashboard:", error);
+    }
+}
+```
+Worth knowing as a related fact: `Promise.all` fails fast on the first rejection, while `Promise.allSettled` waits for every promise to finish regardless of success or failure, giving you the status of each individually -- useful when partial success (some data loaded, some didn't) is an acceptable outcome, unlike here where all three pieces are presumably needed together.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is construct validity in research, and how is it different from the validity concept discussed earlier (measuring the right thing)?",
+        response="""Construct validity specifically asks: does your operationalized measurement genuinely capture the underlying abstract concept ("construct") you claim it measures? It's a more precise version of the general validity question -- specifically focused on the gap between an abstract idea (like "motivation" or "engagement") and the concrete thing you actually measured to represent it.
+
+A concrete example: if you operationalize "student engagement" as "number of forum posts," construct validity asks whether forum posting genuinely reflects engagement, or whether it might actually reflect something else entirely -- comfort with writing, personality traits like extroversion, or simply having more free time. A student could be deeply engaged with course material while rarely posting, and posting frequently without being especially engaged.
+
+Establishing construct validity often involves checking whether your measure correlates appropriately with other measures it theoretically should relate to (convergent validity), and doesn't correlate with measures it shouldn't (discriminant validity). This is a genuinely difficult, often underexamined part of research design -- it's much easier to operationalize a concept than to rigorously verify that your operationalization actually captures what you intended.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is internal validity versus external validity in a study's design?",
+        response="""Internal validity is about whether your study design actually supports the causal claim you're making -- did the intervention really cause the observed effect, or could something else explain it? External validity is about whether your findings generalize beyond your specific study's sample and setting to the broader population or other contexts.
+
+A tightly controlled lab experiment with random assignment to treatment and control groups tends to have strong internal validity (you can be fairly confident the intervention caused the effect, since confounding factors were controlled for) but potentially weaker external validity (does this artificial setting reflect real-world conditions?). A large-scale field study across diverse real-world settings might have the opposite trade-off -- strong external validity, but weaker internal validity if it's harder to rule out alternative explanations for what you observed.
+
+These two often trade off against each other, which is why no single study design is universally "best" -- the right balance depends on your specific research question. If you're trying to establish that an effect exists at all, internal validity matters more. If you're trying to argue a finding applies broadly in real-world practice, external validity becomes the bigger concern.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What does 'saturation' mean in qualitative research, and how do I know when I've reached it?",
+        response="""Saturation is the point at which collecting additional data (more interviews, more observations) stops revealing genuinely new themes or insights -- new data starts confirming and reinforcing what you've already found, rather than adding anything substantially new.
+
+In practice, researchers often track this by noting whether each additional interview is still surfacing new codes or themes during analysis. If your last several interviews haven't introduced anything you haven't already seen, that's a practical signal you may have reached saturation for your current research question.
+
+This matters for justifying your sample size in qualitative research, where there's no formulaic sample size calculation the way there often is in quantitative work. Rather than justifying "20 interviews" with a statistical power calculation, a qualitative study justifies its sample size by demonstrating that saturation was reached -- new data stopped adding meaningfully to the analysis. Worth being honest in your methodology section about whether you formally tracked this, or estimated it based on general judgment -- claiming saturation without describing how you actually assessed it reads as less rigorous than it could.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether providing students with automated code style feedback (formatting, naming conventions) alongside functional correctness feedback affects long-term code quality habits. Comparing 130 students receiving both types of feedback to 130 receiving only functional correctness feedback, the combined-feedback group maintained better code style in a follow-up assignment three months later, with no difference in functional correctness between the two groups at any point."',
+        response='Researchers compared students who got feedback on both whether their code worked correctly and how well-formatted and readable it was, to students who only got feedback on whether it worked. Three months later, the group that got both types of feedback still had noticeably better code style habits -- though both groups were equally good at getting their code to actually work correctly throughout.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether requiring a brief planning document before starting a coding assignment, outlining the intended approach, affects time-to-completion and final code quality. Comparing 100 students required to submit a plan first to 100 who could start coding immediately, planning-first students completed assignments 18% faster on average, with no measurable difference in final code quality between the two groups."',
+        response='This study tested whether making students write a short plan before starting a coding assignment -- rather than jumping straight into writing code -- changed how long it took them to finish and how good the final result was. Students who planned first finished 18% faster on average, even though the final code quality ended up about the same either way, suggesting the planning step saved time without costing quality.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates whether students who use an integrated development environment with real-time error highlighting develop different debugging strategies than students using a plain text editor with separate compilation. Comparing 70 students in each condition over a semester, IDE users resolved simple syntax errors faster, while plain-editor users developed stronger systematic debugging habits for complex logic errors specifically."',
+        response='Researchers compared students who coded using a modern editor that highlights errors as you type to students using a plain text editor where you only find out about errors by compiling separately. Students with the fancier editor fixed simple typo-style errors faster -- but students using the plain editor actually developed stronger systematic debugging skills for more complex logic problems, since they had to work harder to track down issues on their own.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine whether students who explain their code to a non-technical family member as a study technique perform differently on conceptual exam questions than students who only study alone. Comparing 90 students who explained concepts to a non-technical person weekly to 90 who studied independently, the explanation group scored 16% higher on conceptual exam questions specifically, with no difference on purely syntax-based questions."',
+        response="This study tested whether explaining programming concepts to a family member who doesn't code -- as a weekly study habit -- helped students understand the material better than studying alone. Students who did this scored 16% higher specifically on exam questions that tested conceptual understanding, though there was no difference on questions that just tested knowing the correct syntax, suggesting the explaining helped build deeper understanding rather than just memorization.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between a class method and a static method in Python?",
+        response="""```python
+class Student:
+    school = "Starford"
+
+    @classmethod
+    def change_school(cls, new_school):
+        cls.school = new_school
+
+    @staticmethod
+    def is_valid_grade(grade):
+        return 0 <= grade <= 100
+```
+
+A `@classmethod` receives the class itself (`cls`) as its first argument, not a specific instance -- it's used when a method needs to work with class-level data (like `school` here, shared across all students) rather than one particular object's data. A `@staticmethod` receives neither `self` nor `cls` -- it's a plain function that happens to live inside the class because it's logically related, but needs no access to the class or any instance at all.
+
+A practical way to tell them apart: if the method needs to read or change something shared across the whole class, use `@classmethod`. If it's just a utility function that's thematically related to the class but doesn't touch any class or instance data, use `@staticmethod`.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+    yield SFTExample(
+        instruction="What is memoization, and how is it different from just caching in general?",
+        response="""Memoization is a specific form of caching applied to function calls -- storing a function's return value keyed by its input arguments, so calling it again with the same arguments returns the stored result instantly instead of recomputing it.
+
+```python
+def memoize(func):
+    cache = {}
+    def wrapper(n):
+        if n not in cache:
+            cache[n] = func(n)
+        return cache[n]
+    return wrapper
+
+@memoize
+def slow_square(n):
+    print(f"Computing square of {n}")
+    return n * n
+
+slow_square(5)  # prints "Computing square of 5", returns 25
+slow_square(5)  # returns 25 instantly, no print -- served from cache
+```
+
+General caching can apply to anything (a database query result, an API response); memoization specifically means caching a pure function's output based on its inputs. It only works correctly for functions that always return the same output for the same input (no randomness, no dependence on external state) -- memoizing a function that returns different results for identical inputs would silently return stale, incorrect results.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I define an Enum in Python, and why use one instead of just plain strings?",
+        response="""```python
+from enum import Enum
+
+class Status(Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
+def process(status):
+    if status == Status.APPROVED:
+        print("Proceeding")
+```
+
+An `Enum` defines a fixed, named set of valid values. Compare this to using plain strings directly (`if status == "approved":`), which has a real weakness: nothing stops a typo like `"aproved"` from silently passing through as a valid-looking value that never matches anything, with no error raised anywhere.
+
+With an `Enum`, `Status.APROVED` (typo) would raise an `AttributeError` immediately, since it doesn't exist -- catching the mistake at the point it's written rather than as a silent bug discovered much later. Enums also make valid values self-documenting: `Status.__members__` lists every valid option in one place, rather than valid strings being scattered informally across comments or documentation.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is a dataclass in Python, and how does it save time compared to writing a regular class?",
+        response="""```python
+from dataclasses import dataclass
+
+@dataclass
+class Student:
+    name: str
+    grade: int
+    email: str = ""
+
+s = Student("Omol", 85)
+print(s)  # Student(name='Omol', grade=85, email='')
+```
+
+`@dataclass` automatically generates several methods a regular class would need written by hand: `__init__` (accepting each field as a parameter), `__repr__` (a readable printed representation, shown above), and `__eq__` (so two instances with the same field values compare as equal with `==`). Writing the equivalent regular class means manually writing all of that boilerplate yourself:
+```python
+class Student:
+    def __init__(self, name, grade, email=""):
+        self.name = name
+        self.grade = grade
+        self.email = email
+    def __repr__(self):
+        return f"Student(name={self.name!r}, grade={self.grade!r}, email={self.email!r})"
+    # plus __eq__, if you need it
+```
+`@dataclass` is specifically useful for classes that are mostly just structured data (like this `Student`), rather than classes with a lot of custom behavior -- for those, the boilerplate savings matter less relative to the actual logic you're writing.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I use `collections.defaultdict` to avoid checking whether a key exists before appending to it?",
+        response="""```python
+from collections import defaultdict
+
+groups = defaultdict(list)
+students = [("A", "Omol"), ("B", "Sara"), ("A", "Andrew")]
+
+for grade, name in students:
+    groups[grade].append(name)
+
+print(dict(groups))  # {"A": ["Omol", "Andrew"], "B": ["Sara"]}
+```
+
+A regular dictionary raises `KeyError` if you try to `.append()` to a key that doesn't exist yet, which normally means checking first:
+```python
+if grade not in groups:
+    groups[grade] = []
+groups[grade].append(name)
+```
+`defaultdict(list)` eliminates that check entirely -- the first time any key is accessed, it's automatically created with an empty list (or whatever the given factory function produces) before your code even runs, so `.append()` always has something valid to work with. `defaultdict(int)` is another common pattern, useful for counting, since accessing a missing key gives you `0` to start incrementing from instead of a `KeyError`.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this code raise an AttributeError when trying to call a method that clearly exists on the class?
+
+```python
+class Student:
+    def get_average(self):
+        return sum(self.grades) / len(self.grades)
+
+s = Student()
+s.grades = [85, 92, 78]
+print(s.get_average())
+```
+
+Error: AttributeError: 'Student' object has no attribute 'grades'""",
+        response="""This error is actually misleading relative to what the code shown does -- as written, `s.grades = [85, 92, 78]` is set right before calling `get_average()`, so this specific sequence should work. The real, more common version of this bug happens when `get_average()` is called *before* `grades` has been set on that particular instance at all -- for example, if `Student` has no `__init__` setting a default `grades` value, and something calls `get_average()` on a freshly created student before any grades were ever assigned.
+
+The fix is to give every instance a starting value in `__init__`, so the attribute always exists from the moment the object is created:
+```python
+class Student:
+    def __init__(self):
+        self.grades = []
+
+    def get_average(self):
+        if not self.grades:
+            return 0
+        return sum(self.grades) / len(self.grades)
+```
+Relying on some other code to set an attribute *after* creating an object, before using it, is fragile -- any code path that skips that step (even accidentally) crashes. Setting sensible defaults in `__init__` means every instance is always in a valid, usable state from the moment it exists.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this list comprehension raise a NameError instead of building the filtered list?
+
+```python
+students = [{"name": "Omol", "passed": True}, {"name": "Sara", "passed": False}]
+passed_names = [s["name"] for s in students if passed]
+```""",
+        response="""`passed` on its own isn't defined anywhere -- the loop variable is `s`, and the actual boolean value lives at `s["passed"]`, not in a standalone variable called `passed`. Python looks for a variable named `passed` in the surrounding scope, doesn't find one, and raises `NameError: name 'passed' is not defined`.
+
+Fixed version, referencing the actual key on `s`:
+```python
+passed_names = [s["name"] for s in students if s["passed"]]
+```
+This is an easy typo to make specifically because `passed` reads like a natural English word describing what you're filtering for -- but Python has no idea what you mean by it unless it's an actual defined variable or, as corrected here, a lookup on the loop variable itself. Whenever a comprehension's filter condition references something that isn't the loop variable (or derived from it), double-check it's actually defined somewhere accessible.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is a mixed-methods research design, and what are the common ways of actually integrating the quantitative and qualitative parts, rather than just running them side by side?",
+        response="""A mixed-methods design deliberately combines quantitative and qualitative data within a single study, specifically because the combination answers the research question better than either alone -- not just because more data feels more thorough.
+
+Three common integration structures:
+1. **Explanatory sequential** -- quantitative data collected first, then qualitative data (often interviews) used to help explain surprising or unclear quantitative findings. "Why did this subgroup respond so differently?"
+2. **Exploratory sequential** -- qualitative data collected first, used to identify themes or develop a survey instrument, then quantitative data tests how widespread those themes are across a larger sample.
+3. **Convergent** -- both types of data collected around the same time, independently, then compared to see whether they tell a consistent story or reveal a genuine discrepancy worth investigating.
+
+The real integration work happens in how you *discuss* the combined findings -- a common weakness is presenting quantitative results in one section and qualitative results in a completely separate section, with no real connection drawn between them. True integration means your discussion actively uses each type of data to illuminate the other, not just reports both side by side.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is a case study as a research method, and when is it actually the right choice rather than a broader study across many participants?",
+        response="""A case study is an in-depth examination of one instance -- a single organization, event, community, or individual -- studied intensively rather than as one data point among many. It's the right choice specifically when the "how" or "why" of a complex, real-world phenomenon matters more than establishing how common something is across a population.
+
+A case study makes sense when: the phenomenon is genuinely rare or unique (studying one specific successful program's implementation in unusual detail), when you need deep contextual understanding that a survey couldn't capture, or as an early exploratory step before a larger study, to identify what factors and questions are actually worth investigating more broadly later.
+
+The trade-off, worth stating honestly in your own writing: a case study's findings are specific to that case, and shouldn't be presented as automatically generalizable to other contexts. A well-written case study makes a clear, bounded claim -- "in this specific organization, under these specific conditions, this is what happened and why" -- rather than implying the finding necessarily applies elsewhere without further investigation.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether allowing students to choose their own final project topic, versus assigning a fixed topic, affects both project quality and reported motivation. Comparing 130 students with topic choice to 130 assigned a fixed topic, choice students reported significantly higher motivation, though final grades showed no significant difference between the two groups."',
+        response='Researchers compared students who got to pick their own final project topic to students who were assigned a fixed topic. Students who had a choice reported feeling much more motivated about the project -- though when it came to actual grades, both groups ended up performing about the same.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether providing students access to an AI coding assistant during homework affects their independent problem-solving ability on unassisted exams. Comparing 200 students with AI assistant access to 200 without, assisted students completed homework 34% faster, but scored 9% lower on unassisted exam problems testing the same underlying concepts."',
+        response="This study looked at what happened when students had access to an AI coding assistant while doing homework. They finished homework 34% faster with the assistant -- but on exams where they had to solve similar problems without any help, students who'd used the assistant scored 9% lower, suggesting the help sped up homework without necessarily building the same independent problem-solving skill.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper evaluates whether students who participate in open-source contribution before graduation report different levels of confidence in professional coding environments during their first job. Comparing 95 graduates with pre-graduation open-source experience to 95 without, the open-source group reported significantly higher confidence navigating unfamiliar codebases in their first three months of employment."',
+        response="Researchers compared new graduates who had contributed to open-source projects before finishing their degree to those who hadn't, looking at how confident they felt in their first job. The graduates with open-source experience felt much more confident navigating unfamiliar code written by other people during their first few months at work.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine whether requiring students to estimate task completion time before starting an assignment, then comparing their estimate to actual time spent, improves time estimation accuracy over a semester. Comparing 80 students who practiced this estimation exercise weekly to 80 who did not, the practicing group\'s estimation accuracy improved by 47% by semester end, a skill instructors noted as valuable for later professional project planning."',
+        response='This study tested whether having students guess how long an assignment would take, then compare that guess to how long it actually took, helped them get better at estimating time over a semester. Students who practiced this every week improved their estimation accuracy by 47% by the end of the semester -- a skill that matters a lot later when estimating timelines for real professional projects.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether students who participate in a structured code-reading exercise (analyzing existing well-written code before writing their own) produce higher-quality code on subsequent assignments than students who only practice writing code. Comparing 110 students doing code-reading exercises to 110 practicing only writing, the code-reading group\'s subsequent assignments scored 13% higher on code organization specifically, with no difference in functional correctness."',
+        response='Researchers tested whether having students spend time reading and analyzing well-written existing code, before writing their own, improved the quality of the code they later wrote. Students who did these reading exercises scored 13% higher specifically on how well-organized their own later code was -- though both groups were equally good at making their code actually work correctly.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who use spaced repetition flashcard tools to review programming syntax and concepts show different long-term retention than students using traditional re-reading of notes. Comparing 90 students in each condition, the spaced-repetition group retained 38% more concept knowledge on a test given two months after the course ended, despite reporting similar total study time."',
+        response='This study compared students who used spaced repetition flashcards to review programming concepts against students who just re-read their notes. Two months after the course ended, the flashcard group remembered 38% more of the material -- even though both groups reported spending roughly the same total amount of time studying, suggesting how you study matters as much as how much you study.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates whether students who work through programming exercises in a randomized order, rather than the textbook\'s original sequential order, show different problem-solving flexibility on novel problems. Comparing 75 students in each condition, the randomized-order group scored 21% higher on problems requiring them to combine concepts from different chapters, though scored slightly lower on problems matching a single chapter\'s specific technique."',
+        response='Researchers compared students who practiced programming exercises in the order a textbook presented them to students who practiced the same exercises in random order instead. Students who practiced in random order did 21% better on problems that required combining ideas from different chapters -- though they did slightly worse on problems that just tested one specific technique in isolation, suggesting mixed-up practice builds more flexible problem-solving at a small cost to narrow technique mastery.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+    yield SFTExample(
+        instruction="How do I use the `@property` decorator in Python, and what problem does it actually solve?",
+        response="""```python
+class Circle:
+    def __init__(self, radius):
+        self.radius = radius
+
+    @property
+    def area(self):
+        return 3.14159 * self.radius ** 2
+
+c = Circle(5)
+print(c.area)  # 78.54 -- accessed like an attribute, not called like a method
+```
+
+`@property` lets a method be accessed with plain attribute syntax (`c.area`), not method-call syntax (`c.area()`), while still running actual code every time it's accessed. This matters because it lets you start with a plain attribute and later convert it into computed logic without breaking any code that already uses it -- if `area` had originally been a normal stored attribute and you later needed to compute it dynamically, converting it to a `@property` keeps `c.area` working identically for everyone using the class, with no change needed on their end.
+
+Properties can also have a matching setter (`@area.setter`) if you want assignment (`c.area = 10`) to trigger custom logic too, like validation -- rejecting a negative radius, for instance -- rather than blindly accepting whatever value is assigned.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What are ARIA labels in HTML, and when do I actually need them?",
+        response="""ARIA (Accessible Rich Internet Applications) attributes provide extra information to assistive technologies, like screen readers, when the visual markup alone doesn't convey what an element means or does.
+
+```html
+<button aria-label="Close dialog">×</button>
+```
+
+Here, the visible button just shows "×" -- meaningless to a screen reader on its own. `aria-label="Close dialog"` tells assistive technology what the button actually does, since the visual symbol alone doesn't communicate that.
+
+The general rule: prefer real semantic HTML first (a `<button>` rather than a `<div>` styled to look like one, since real buttons already communicate their role automatically). Reach for ARIA attributes specifically to fill in gaps semantic HTML alone can't cover -- icon-only buttons, custom interactive widgets without a natural HTML equivalent, or dynamic content changes a screen reader wouldn't otherwise notice. Overusing ARIA on elements that are already semantically clear can actually make things more confusing, not less, so it's a targeted tool, not something to sprinkle everywhere by default.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I write a CSS media query to change the layout on small screens, like phones?",
+        response="""```css
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+@media (max-width: 600px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+}
+```
+
+`@media (max-width: 600px)` wraps a block of CSS that only applies when the browser's viewport is 600 pixels wide or narrower -- typically phone-sized screens. Here, the default is a 3-column grid, but on narrow screens, it switches to a single column, which usually reads far better on a small screen than three cramped columns would.
+
+This "mobile-first" alternative pattern is also common: write the simple, single-column styles as the default (no media query needed), then use `min-width` media queries to add complexity for larger screens:
+```css
+.container {
+    grid-template-columns: 1fr; /* mobile default */
+}
+@media (min-width: 600px) {
+    .container {
+        grid-template-columns: 1fr 1fr 1fr; /* larger screens */
+    }
+}
+```
+Both approaches work; mobile-first is often considered better practice since it means phones (increasingly the majority of traffic) get simple, minimal CSS by default, rather than overriding a more complex desktop layout.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is database normalization, and why would I deliberately split data across multiple tables instead of keeping it all in one?",
+        response="""Normalization organizes data to minimize redundancy -- avoiding storing the same piece of information in multiple places, which risks it going out of sync if one copy gets updated but another doesn't.
+
+Un-normalized example, storing everything in one table:
+```
+enrollments: student_name, student_email, course_name, course_instructor
+```
+If a student's email changes, you'd need to update it in every single row where that student appears -- miss one, and now your data disagrees with itself about that student's actual email.
+
+Normalized version splits this into separate tables:
+```
+students: id, name, email
+courses: id, name, instructor
+enrollments: student_id, course_id
+```
+Now each student's email exists in exactly one place. Updating it means changing one row, and every enrollment automatically reflects the correct, current email through the relationship (`student_id`), rather than needing to be manually kept in sync across many duplicated rows. This trade-off isn't free -- normalized data usually requires `JOIN`s to reassemble a full picture, which has its own performance cost -- but for most applications, the consistency benefit is well worth that cost.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this dictionary comprehension raise a TypeError instead of building the lookup table?
+
+```python
+students = [{"id": 1, "name": "Omol"}, {"id": 2, "name": "Sara"}]
+lookup = {student for student in students}
+```""",
+        response="""`{student for student in students}` uses curly braces, but with only one expression per item (`student`) rather than a `key: value` pair -- that syntax actually builds a *set*, not a dictionary. Since `student` here is a dictionary, and dictionaries aren't hashable (a required property for set membership), this raises `TypeError: unhashable type: 'dict'`.
+
+The fix is providing an actual key and value, using dictionary comprehension syntax:
+```python
+lookup = {student["id"]: student["name"] for student in students}
+# {1: "Omol", 2: "Sara"}
+```
+The visual similarity between set comprehensions (`{x for x in ...}`) and dict comprehensions (`{k: v for x in ...}`) is exactly what makes this an easy typo -- missing the `:` silently changes what kind of collection you're building, rather than raising an error at the point of the actual mistake. If you want the full objects preserved, not flattened, keying by ID with the full dict as the value also works: `{student["id"]: student for student in students}`.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this recursive function work for small inputs but crash for larger ones with a RecursionError?
+
+```python
+def factorial(n):
+    if n == 0:
+        return 1
+    return n * factorial(n - 1)
+
+print(factorial(3000))
+```""",
+        response="""The function itself is logically correct -- it has a proper base case and eventually terminates. The problem is that Python has a default recursion depth limit (typically 1000), and computing `factorial(3000)` requires 3000 nested function calls, which exceeds that limit before the recursion can complete.
+
+For genuinely large inputs like this, an iterative version avoids the recursion depth entirely:
+```python
+def factorial(n):
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+    return result
+```
+This computes the exact same result without ever needing more than one function call's worth of stack space, since there's no recursion at all -- just a loop.
+
+More generally: recursion is often more elegant to read and write, but it comes with real limits on how deep it can go, and each recursive call uses actual memory on the call stack. For problems where the "depth" scales with a potentially large input size, an iterative approach (or an increased recursion limit, if genuinely necessary and safe) is usually the more robust choice.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I handle missing data in a dataset -- what are my actual options, and how do I decide between them?",
+        response="""Missing data needs an explicit decision, not silent ignoring -- how you handle it can genuinely change your results, sometimes significantly.
+
+A few common approaches, with real trade-offs:
+1. **Listwise deletion** -- drop any row with missing data in a relevant field. Simple, but if missingness isn't random (say, lower-income participants are more likely to skip an income question), this can bias your remaining sample.
+2. **Mean/median imputation** -- fill missing values with the average of what's observed. Simple, but can understate the real variability in your data.
+3. **Multiple imputation** -- a more sophisticated statistical technique that estimates missing values based on relationships with other variables, done multiple times to reflect genuine uncertainty about what the missing value actually was.
+
+Before choosing, it's worth asking *why* data is missing -- data missing completely at random is far less concerning than data missing for a reason connected to the outcome you're studying (a survey where people who feel most stressed are also the ones most likely to skip a stress-related question, for instance). Whatever method you choose, report both how much data was missing and how you handled it -- silently imputing missing values without disclosing it undermines a reader's ability to evaluate your findings honestly.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I decide whether to remove an outlier from my dataset, rather than just deleting anything that looks unusual?",
+        response="""An outlier is unusual, but "unusual" alone isn't a reason to delete it -- some outliers are genuine, meaningful data points (a real, unusually high performer), while others are data entry errors or measurement problems (someone accidentally typing an extra zero). Treating these two cases the same way is a common mistake.
+
+A more careful process:
+1. **Investigate before removing.** Is there a plausible explanation this is an error (impossible value, like a negative age) versus a genuine extreme case?
+2. **If it's a genuine data point, consider whether it belongs in your analysis at all**, based on your actual research question -- not just whether it "looks weird" on a chart.
+3. **If you do remove or adjust outliers, report it explicitly** -- how many, on what basis, and ideally show your key results both with and without them, so a reader can judge whether your conclusion depends heavily on that decision.
+
+The real danger with outlier removal is that it's tempting to remove data points specifically because they don't fit your expected pattern, which can artificially inflate how strong your finding looks. A rule applied consistently and stated upfront (like "removing values more than 3 standard deviations from the mean") is far more defensible than removing data points case-by-case based on whether they happen to support your hypothesis.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether students who maintain a public coding blog documenting their learning process show different job application response rates than students without one. Comparing 120 students with an active blog to 120 without, blog-maintaining students received recruiter outreach messages at a rate 3.1 times higher, though self-reported technical skill was similar between the two groups."',
+        response="Researchers compared computer science students who kept a public blog documenting what they were learning to students who didn't. Students with an active blog got contacted by recruiters more than three times as often -- even though both groups reported having similar technical skill levels, suggesting the blog itself made a real difference in visibility, not just underlying ability.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students taught using real-world messy datasets, rather than clean textbook examples, in an introductory data analysis course show different confidence when encountering unfamiliar real datasets after the course. Comparing 100 students taught with messy real-world data to 100 taught with clean textbook data, the messy-data group reported significantly higher confidence handling new real datasets, despite slower initial progress through course material."',
+        response='This study compared students taught data analysis using messy, real-world datasets to students taught with clean, tidy textbook examples. Students who practiced with messy data felt much more confident handling new, unfamiliar real datasets afterward -- even though they moved through the course material more slowly at first because messy data is harder to work with.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates whether requiring students to write their own test cases before receiving instructor-provided tests affects their understanding of edge cases in programming assignments. Comparing 85 students who wrote tests first to 85 who received instructor tests immediately, the write-first group identified 29% more edge cases in a subsequent unrelated assignment, suggesting a transferable skill rather than assignment-specific learning."',
+        response="Researchers tested whether having students write their own test cases before seeing the instructor's tests helped them get better at spotting edge cases in general. Students who wrote their own tests first identified 29% more edge cases on a completely different, later assignment -- suggesting they'd actually learned a transferable skill, not just memorized answers for one specific assignment.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine whether students who receive feedback within 24 hours of submission show different revision engagement than students receiving feedback after one week, holding feedback content constant. Comparing 140 students receiving fast feedback to 140 receiving delayed feedback on identical assignments, fast-feedback students were 52% more likely to actually read and act on detailed comments, based on tracked engagement with the feedback document."',
+        response='This study looked at whether how quickly students got feedback on their work -- within a day versus after a week -- affected whether they actually engaged with it, even when the feedback content itself was identical. Students who got fast feedback were 52% more likely to actually read and act on the detailed comments, suggesting that speed of feedback matters almost as much as its quality for whether students actually use it.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study evaluates whether pairing students with a slightly more experienced peer mentor, rather than a same-level study partner, affects problem-solving persistence when stuck on a difficult programming problem. Comparing 90 students paired with a more experienced mentor to 90 paired with a same-level partner, mentor-paired students persisted 41% longer on unsolved problems before giving up or seeking additional help."',
+        response='Researchers compared students who worked with a slightly more experienced peer mentor to students paired with someone at the same skill level, looking at how they handled getting stuck on a hard problem. Students paired with the more experienced mentor kept trying 41% longer before giving up or asking for more help, suggesting having someone slightly ahead of you nearby helps you push through difficulty rather than give up early.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether providing students with a checklist of common beginner mistakes, to review before submitting an assignment, reduces the frequency of those specific mistakes compared to a group given a general reminder to review their work. Comparing 130 students given the specific checklist to 130 given a general review reminder, checklist students made 44% fewer of the listed common mistakes, with no difference in mistakes not covered by the checklist."',
+        response="This study tested whether giving students a specific checklist of common beginner mistakes to review before submitting an assignment actually reduced those mistakes, compared to just telling students generally to review their work. Students with the specific checklist made 44% fewer of exactly those listed mistakes -- though it made no difference at all for other mistakes that weren't on the checklist, suggesting the checklist worked by directly targeting known problem areas rather than improving overall carefulness.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper examines whether students who alternate between two programming languages throughout a course show different conceptual transfer ability than students who learn a single language exclusively. Comparing 70 students learning two languages in parallel to 70 learning one language deeply, the two-language group scored higher on questions requiring them to identify which underlying programming concepts were language-independent versus language-specific."',
+        response="Researchers compared students who learned two programming languages side by side throughout a course to students who focused deeply on just one language. The students learning two languages at once were better at recognizing which programming concepts were truly universal ideas versus which were just specific quirks of one particular language -- a kind of understanding that's harder to develop when you've only ever seen concepts expressed one way.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+    yield SFTExample(
+        instruction="How do I use `itertools.groupby` to group a list of items by a shared attribute?",
+        response="""```python
+from itertools import groupby
+
+students = [
+    {"name": "Omol", "grade": "A"},
+    {"name": "Sara", "grade": "B"},
+    {"name": "Andrew", "grade": "A"},
+]
+students.sort(key=lambda s: s["grade"])  # groupby requires sorted input
+
+for grade, group in groupby(students, key=lambda s: s["grade"]):
+    names = [s["name"] for s in group]
+    print(f"{grade}: {names}")
+```
+
+`groupby` only groups *consecutive* matching items -- it doesn't scan the whole list looking for all matches the way a dictionary-building approach would, which is exactly why the list must be sorted by the grouping key first. If you skip the sort, items with the same grade but separated by a different grade in between get split into separate groups instead of one combined group.
+
+For many everyday cases, building a dictionary manually (as shown in an earlier example) is simpler and doesn't require pre-sorting:
+```python
+from collections import defaultdict
+groups = defaultdict(list)
+for s in students:
+    groups[s["grade"]].append(s["name"])
+```
+`groupby` is more specialized -- useful specifically when working with data that's already naturally sorted or streamed, where building a full dictionary in memory first isn't necessary or desirable.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is the purpose of `.env.example` files that show up in some repositories alongside a gitignored `.env`?",
+        response="""`.env.example` is a template showing which environment variables a project needs, with placeholder or dummy values -- committed to the repository, unlike the real `.env` file, which stays gitignored since it holds actual secrets.
+
+```
+# .env.example
+SANADI_API_KEY=your-api-key-here
+SANADI_JWT_SECRET=your-jwt-secret-here
+SANADI_ALLOWED_ORIGINS=http://localhost:3000
+```
+
+Anyone cloning the project sees immediately which variables they need to set, without any real secrets being exposed in the repository's history. The typical workflow: copy `.env.example` to `.env`, then fill in real values. This solves a genuine, common problem -- without this file, a new contributor has no way to know a project even *needs* certain environment variables until the app crashes on startup complaining about a missing one, which is a much worse way to discover the requirement than reading it directly in a template file.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What are npm scripts, and how does running `npm run dev` actually know what to do?",
+        response="""npm scripts are named shortcuts for commands, defined in a project's `package.json`:
+
+```json
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "test": "jest"
+  }
+}
+```
+
+`npm run dev` looks up `"dev"` in this `scripts` section and runs whatever command is defined there -- in this case, `next dev`. This matters because the actual underlying command can be long or project-specific, while the shortcut name stays simple and consistent across projects: `npm run dev` starts development mode whether the actual tool underneath is Next.js, Vite, or something else entirely, as long as the project defines a `dev` script.
+
+A few script names are common enough to have shorthand -- `npm start` and `npm test` work without the word `run`, for historical reasons, while every other custom script name needs the full `npm run <name>` form. This is why you've been running `npm run dev` rather than `npm dev` throughout this project.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this async function return a Promise object instead of the actual data, even though it looks like it should return the data directly?
+
+```javascript
+async function getStudentName() {
+    return "Omol";
+}
+
+const name = getStudentName();
+console.log(name); // Promise {<fulfilled>: 'Omol'} -- not "Omol" directly
+```""",
+        response="""Any function marked `async` *always* returns a Promise, regardless of what you `return` inside it -- this isn't optional or conditional, it's how `async` functions work by definition. `return "Omol"` inside an `async` function doesn't hand back the string directly to the caller; it resolves the automatically-created Promise with that value.
+
+To actually get the plain value out, you need `await`:
+```javascript
+async function printName() {
+    const name = await getStudentName();
+    console.log(name); // "Omol"
+}
+```
+`await` can only be used inside another `async` function (or at the top level in modern JavaScript modules) -- it's what unwraps the Promise and gives you the actual resolved value. This is a genuinely common point of confusion when first learning `async`/`await`: marking a function `async` changes its return type fundamentally, even for functions that don't appear to do anything asynchronous internally.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this SQL query return duplicate student rows instead of one row per student?
+
+```sql
+SELECT students.name, enrollments.course
+FROM students
+JOIN enrollments ON students.id = enrollments.student_id;
+```
+
+A student enrolled in 3 courses appears 3 times in the results.""",
+        response="""This is actually correct, expected behavior for a `JOIN`, not a bug -- but it's a common misunderstanding of what a join actually produces. A `JOIN` returns one row for every *matching pair* between the two tables, not one row per student. A student enrolled in 3 courses genuinely has 3 matching rows in `enrollments`, so the join correctly produces 3 result rows for that student, one per course.
+
+If you actually want one row per student, with their courses combined, you need to aggregate:
+```sql
+SELECT students.name, GROUP_CONCAT(enrollments.course) AS courses
+FROM students
+JOIN enrollments ON students.id = enrollments.student_id
+GROUP BY students.id;
+```
+`GROUP_CONCAT` (the exact function name varies by database -- `STRING_AGG` in some) combines all matching course values into a single comma-separated string per student, paired with `GROUP BY` to collapse the multiple rows into one per student. Which version you actually want -- one row per enrollment, or one row per student with courses combined -- depends entirely on what you're using the result for.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is a conflict of interest disclosure in research, and when am I actually required to include one?",
+        response="""A conflict of interest disclosure states any relationship or circumstance that could reasonably be seen as influencing your research's objectivity -- funding sources, financial relationships with an organization your research evaluates, or personal relationships with study participants that could bias your interpretation.
+
+The standard isn't "did this actually bias my results" (which is often genuinely hard to know about yourself) -- it's "could a reasonable reader wonder whether this influenced the findings." If your study evaluates a company's product and that company funded your research, disclosing this lets readers weigh your findings with that context in mind, rather than assuming complete independence they'd naturally expect otherwise.
+
+A simple disclosure statement, even when there's genuinely nothing to disclose, is standard practice: "The authors declare no conflicts of interest" or "This research was funded by [organization], which had no role in study design, data analysis, or the decision to publish." When in doubt about whether something counts as worth disclosing, the safer choice is almost always to disclose it -- an unnecessary disclosure costs little, while an undisclosed real conflict, if discovered later, seriously damages trust in the entire body of work.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is grey literature in research, and should I actually cite it in an academic paper?",
+        response="""Grey literature refers to research and reports produced outside traditional peer-reviewed academic publishing -- government reports, NGO reports, conference proceedings, theses, white papers, and similar sources that haven't gone through formal peer review.
+
+It's not automatically lower quality than peer-reviewed work, and it's not automatically off-limits to cite -- but it does carry different, generally weaker quality-control guarantees, since it hasn't been through the same independent review process. Whether it's appropriate to cite depends heavily on context: a government statistics report or an NGO's field data might be the *only* available source for certain practical, real-world information that academic journals haven't covered yet, particularly for emerging or applied topics.
+
+A reasonable practice: use grey literature when it's genuinely the best or only available source for a specific factual claim, cite it clearly as what it is (not represented as peer-reviewed when it isn't), and where possible, note in your own writing that a specific claim rests on non-peer-reviewed evidence, especially if it's central to your argument rather than peripheral supporting context. Checking your specific field's or supervisor's conventions on grey literature is worth doing before relying heavily on it, since acceptance varies meaningfully by discipline.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether students who present their capstone projects to a panel of external industry professionals, rather than only to course instructors, report different perceived project value. Comparing 100 students presenting to industry panels to 100 presenting only to instructors, industry-panel students rated their project experience as significantly more valuable for career preparation, though final grades were assigned identically by course instructors regardless of audience."',
+        response='Researchers compared students who presented their final capstone projects to a panel of real industry professionals to students who only presented to their course instructors. Students who presented to industry professionals felt their project experience was much more valuable for their career -- even though their actual grades were determined the same way by instructors either way.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether students who track their own coding practice time using a visible personal dashboard show different consistency in daily practice than students without such tracking. Comparing 90 students using a practice-tracking dashboard to 90 without one, dashboard users practiced on 34% more days over an eight-week period, with the effect strongest in the first two weeks before gradually diminishing."',
+        response='This study tested whether giving students a personal dashboard to track their own daily coding practice actually helped them practice more consistently. Students using the dashboard practiced on 34% more days over eight weeks compared to students without one -- though the effect was strongest in the first two weeks and gradually faded afterward, suggesting the novelty of tracking may have driven some of the early motivation boost.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper evaluates whether requiring students to submit a brief post-mortem reflection after a failed or buggy project affects their approach to risk-taking in subsequent projects. Comparing 75 students required to write post-mortems to 75 who were not, post-mortem students attempted more technically ambitious approaches in later projects, with no significant difference in overall project completion rates."',
+        response="Researchers tested whether having students write a short reflection after a project that failed or had major bugs changed how they approached later projects. Students who wrote these reflections took on more ambitious technical approaches in their next projects -- and importantly, this didn't come at the cost of actually finishing their projects, since completion rates stayed about the same either way.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine whether students who learn to read compiler error messages through a dedicated short tutorial show different independent debugging speed than students who learn through trial and error alone. Comparing 110 students given the tutorial to 110 without it, tutorial students resolved compiler errors 39% faster on average during a subsequent timed exercise, with the largest improvement on errors involving type mismatches specifically."',
+        response='This study tested whether a short, dedicated tutorial on how to actually read and understand compiler error messages helped students debug faster, compared to students who just learned through trial and error on their own. Students who got the tutorial resolved compiler errors 39% faster on a later timed exercise -- with the biggest improvement specifically on errors related to mismatched data types.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study investigates whether students working on projects with clearly defined, incremental milestones show different completion rates than students given only a final deadline for the same overall project. Comparing 130 students with incremental milestones to 130 with only a final deadline, milestone students had an 88% completion rate compared to 61% for final-deadline-only students, with the gap widest among students who had historically struggled with time management."',
+        response='Researchers compared students given a project broken into smaller milestones with their own deadlines to students given only one final deadline for the whole project. Students with incremental milestones completed their projects at a rate of 88%, compared to just 61% for students who only had a final deadline -- and this gap was even bigger among students who had a history of struggling with time management.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who receive feedback framed around specific next actions (\'add error handling for empty input\') rather than general evaluative comments (\'needs more robustness\') show different revision quality. Comparing 100 students receiving action-framed feedback to 100 receiving general evaluative feedback, action-framed students made revisions that directly addressed the noted issue 76% of the time, compared to 41% for general feedback."',
+        response="This study compared two ways of giving feedback on code: specific actionable suggestions versus general evaluative comments. Students who got specific, action-based feedback like 'add error handling for empty input' actually addressed that exact issue in their revision 76% of the time -- compared to only 41% for students who got vaguer feedback like 'needs more robustness,' suggesting specificity matters a lot for whether feedback actually gets acted on.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper examines whether students who work on a shared, persistent group codebase across an entire semester develop different collaboration skills than students who work on separate short-term group projects. Comparing 60 students in a semester-long shared codebase model to 60 in traditional short-term group projects, the shared-codebase group reported significantly higher comfort working with unfamiliar existing code by semester end, a skill closely resembling real workplace conditions."',
+        response="Researchers compared students who worked together on one shared codebase that persisted across an entire semester to students who did separate, shorter group projects throughout the term. The students working on the long-term shared codebase felt much more comfortable working with code that other people had written by the end of the semester -- a skill that closely mirrors what it's actually like working on a real software team.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether requiring students to estimate their own confidence level alongside each exam answer affects their study behavior on a subsequent exam. Comparing 95 students who rated their confidence on each answer to 95 who did not, confidence-rating students spent 26% more subsequent study time specifically on topics where they had rated their confidence as low but answered incorrectly, compared to a control group\'s more evenly distributed study time."',
+        response="This study tested whether having students rate how confident they felt about each exam answer, in addition to just answering it, changed how they studied afterward. Students who rated their confidence spent 26% more of their later study time specifically on topics where they'd felt confident but actually gotten wrong -- meaning the confidence ratings helped them target exactly the gaps in their understanding, rather than studying everything equally.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+    yield SFTExample(
+        instruction="How do I write a generator expression instead of a list comprehension, and why would I choose one over the other?",
+        response="""```python
+squares_list = [x**2 for x in range(1000000)]      # builds the whole list in memory now
+squares_gen = (x**2 for x in range(1000000))        # produces values one at a time, on demand
+```
+
+The only syntax difference is `[]` versus `()`, but the memory behavior is very different. The list comprehension computes and stores all million values immediately. The generator expression computes each value only when you actually ask for it (via a loop, or `next()`), and never holds the full sequence in memory at once.
+
+```python
+total = sum(x**2 for x in range(1000000))  # generator -- efficient, no full list built
+```
+Use a generator expression when you're consuming the values once, in sequence (like feeding them into `sum()` or a `for` loop), and don't need to access them by index or iterate multiple times. Use a list comprehension when you genuinely need the full list -- to index into it, iterate over it more than once, or pass it somewhere that specifically expects a list rather than any iterable.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I write a function with type hints in Python, and do they actually change how the code runs?",
+        response="""```python
+def calculate_average(grades: list[float]) -> float:
+    return sum(grades) / len(grades)
+```
+
+`grades: list[float]` and `-> float` are type hints -- they document what types the function expects and returns. Importantly, Python doesn't actually enforce these at runtime by default; calling `calculate_average("not a list")` won't be blocked by the type hint itself, it'll just fail later when the function tries to use it as a list.
+
+So why bother? Type hints let your editor and tools like `mypy` catch type mismatches *before* running the code, by statically analyzing your code against the declared types. They also make function signatures self-documenting -- `grades: list[float]` tells anyone reading the code exactly what's expected, without needing to read the function body or trust a comment that might be outdated. For a solo project, hints are optional convenience; for any codebase with more than one contributor, they meaningfully reduce the "what does this function actually expect" guesswork.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What are CSS custom properties (CSS variables), and how do they help with maintaining a consistent design?",
+        response="""```css
+:root {
+    --primary-color: #111111;
+    --spacing-unit: 8px;
+}
+
+.button {
+    background-color: var(--primary-color);
+    padding: var(--spacing-unit);
+}
+
+.card {
+    border-color: var(--primary-color);
+    margin: calc(var(--spacing-unit) * 2);
+}
+```
+
+`--primary-color` and `--spacing-unit`, defined once on `:root`, can be reused anywhere via `var(--primary-color)`. If the brand color needs to change later, updating it in that one `:root` declaration updates every single place it's used throughout the stylesheet, instead of hunting down and replacing the same hex code scattered across dozens of rules.
+
+This is similar in spirit to avoiding magic numbers in regular code -- a hardcoded `#111111` repeated in fifty places is fragile and error-prone to update; a named variable referenced fifty times is a one-line change. CSS custom properties can also be changed dynamically with JavaScript, or overridden differently within a specific section of a page, which a plain hardcoded value can't do.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function silently ignore the second argument no matter what's passed?
+
+```python
+def create_user(name, role="student", role="admin"):
+    return {"name": name, "role": role}
+```""",
+        response="""This is actually a `SyntaxError` in real Python -- `role` is listed as a parameter name twice, and Python doesn't allow duplicate parameter names in a function definition at all. It would fail immediately when the module loads, before the function is ever called, with `SyntaxError: duplicate argument 'role' in function definition`.
+
+This specific mistake usually happens from copy-pasting or editing a function signature carelessly -- perhaps intending to change the default value of `role` but accidentally leaving both the old and new parameter declarations in place:
+```python
+def create_user(name, role="admin"):  # correct -- one role parameter, new default
+    return {"name": name, "role": role}
+```
+Whenever editing a function signature, it's worth reading the full parameter list back afterward to confirm each parameter name appears exactly once -- Python will catch an exact duplicate like this with a clear error, but it's still worth catching before running the code at all.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this JavaScript comparison behave unexpectedly, treating two seemingly equal arrays as different?
+
+```javascript
+const a = [1, 2, 3];
+const b = [1, 2, 3];
+console.log(a === b); // false
+```""",
+        response="""Same underlying reason as the earlier Python `is` versus `==` example: `===` in JavaScript checks reference equality for objects and arrays -- whether two variables point to the *exact same* object in memory -- not whether their contents look the same. `a` and `b` are two separate array objects that happen to hold identical values, so `a === b` is `false`.
+
+To compare contents, you need a different approach -- JavaScript has no single built-in operator for deep array equality:
+```javascript
+console.log(JSON.stringify(a) === JSON.stringify(b)); // true -- compares as strings
+```
+This works for simple cases but has real limits -- it depends on key/element order matching exactly, and doesn't handle more complex nested structures elegantly. For robust deep equality checks, a library function (like `_.isEqual` from Lodash) is generally more reliable than a homemade comparison, especially once objects and arrays get more deeply nested.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is action research, and how is it different from traditional academic research methods?",
+        response="""Action research is conducted by practitioners studying and improving their own practice in real time, in a cyclical process: act, observe the results, reflect, adjust, and act again. It blurs the traditional line between "researcher" and "the people being studied" -- a teacher studying and iteratively improving their own classroom's outcomes is a classic example.
+
+This differs from traditional academic research in a few real ways: the goal is often direct, immediate practical improvement in a specific context, not necessarily generalizable knowledge for a broader field. The researcher is typically an active participant, not a neutral outside observer -- which is a deliberate feature of the method, not a limitation to apologize for, though it does require being explicit about that involvement rather than pretending to a false objectivity.
+
+Action research is well-suited when your goal is genuinely to improve a specific, real situation you're personally part of -- and less suited when your goal is to establish a claim you want to generalize confidently to other contexts you're not directly involved in.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is a quasi-experimental design, and why would a researcher use one instead of a true randomized experiment?",
+        response="""A true experiment randomly assigns participants to treatment and control groups. A quasi-experimental design compares groups that already exist or were assigned by some non-random process -- comparing two existing school classes, or comparing outcomes before and after a policy change, without the ability to randomly assign who experiences the intervention.
+
+Researchers use quasi-experimental designs when true random assignment isn't ethically or practically possible. You generally can't randomly assign which students get a scholarship, which region gets a new health policy, or which company adopts a new practice -- these situations happen in the real world for reasons outside a researcher's control, and studying them at all means working with the groups as they naturally occur.
+
+The real cost is weaker internal validity -- since groups weren't randomly assigned, there's more room for other pre-existing differences between the groups to explain an observed effect, rather than the intervention itself. Careful quasi-experimental design tries to minimize this (matching similar groups, controlling statistically for known differences), but it can never fully replace the confidence a true random assignment provides.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether displaying a class-wide anonymized distribution of quiz scores (without individual comparison) affects student study effort compared to no distribution shown at all. Comparing 100 students shown the anonymized distribution to 100 not shown it, distribution-shown students reported 22% more subsequent study time, with the effect concentrated among students who scored below the median."',
+        response='Researchers tested whether showing students an anonymous chart of how the whole class scored on a quiz -- without identifying individuals -- changed how much they studied afterward. Students who saw the distribution reported studying 22% more afterward, and this effect was mostly driven by students who had scored below the class median, suggesting seeing where they stood motivated extra effort.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who annotate their own code with comments explaining their reasoning, before submitting, show different scores on questions testing their own understanding of that code weeks later. Comparing 85 students required to annotate their reasoning to 85 who were not, annotation students scored 31% higher when asked to explain their own submitted code four weeks after submission."',
+        response="This study tested whether having students write comments explaining their own reasoning while coding helped them remember and understand their own code better weeks later. Students who annotated their reasoning scored 31% higher when asked, four weeks afterward, to explain what their own code did and why -- suggesting the act of writing out their reasoning helped it stick in a way just writing the code alone didn't.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates whether requiring students to predict their exam score before receiving results, then reflecting on any gap between prediction and actual performance, improves calibration accuracy on subsequent exams. Comparing 120 students doing this prediction-reflection exercise to 120 who did not, the exercise group\'s score predictions became 43% more accurate by the course\'s third exam, compared to no significant improvement in the control group."',
+        response="Researchers tested whether having students predict their own exam score beforehand, then reflect on how far off they were once they got the real result, helped them get better at accurately judging their own performance over time. Students who did this exercise became 43% more accurate at predicting their scores by the third exam of the course, while students who didn't do the exercise showed no real improvement at all.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine whether students taught to use a systematic debugging checklist (check inputs, check assumptions, check edge cases, in order) resolve bugs faster than students using an unstructured trial-and-error approach. Comparing 95 students trained on the checklist method to 95 using their own approach, checklist-trained students resolved a standardized set of test bugs 27% faster on average, with the largest speed advantage on bugs involving incorrect assumptions about input data."',
+        response='This study compared students taught a specific, structured checklist for debugging -- checking inputs, then assumptions, then edge cases in order -- to students who just used whatever approach felt natural to them. The students trained on the checklist resolved a standard set of test bugs 27% faster on average, with the biggest advantage on bugs caused by incorrect assumptions about the input data.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study evaluates whether students who work through programming problems using pseudocode planning before writing actual code show different final code correctness than students who code directly without a planning step. Comparing 105 students required to write pseudocode first to 105 coding directly, pseudocode-first students had 24% fewer logic errors in their final code, with no significant difference in total time spent."',
+        response="Researchers tested whether having students plan out their approach in pseudocode before writing actual code led to fewer errors, compared to students who just started coding directly. Students who planned in pseudocode first ended up with 24% fewer logic errors in their final code -- and importantly, this planning step didn't actually take any extra total time overall.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether students given access to previous semesters\' anonymized common mistake patterns, specific to each assignment, make fewer of those same documented mistakes. Comparing 130 students given assignment-specific common mistake summaries to 130 without them, students with the summaries made 38% fewer of the specifically documented mistakes, though overall assignment scores showed a smaller, non-significant improvement."',
+        response="This study tested whether showing students a summary of common mistakes previous students made on the exact same assignment helped them avoid those same mistakes. Students who saw the mistake summaries made 38% fewer of those specific documented errors -- though their overall assignment scores only improved slightly, suggesting avoiding known pitfalls didn't fully translate into a big overall grade boost.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper examines whether students who complete a brief metacognitive check-in (rating their own understanding) at the midpoint of a lecture show different end-of-lecture comprehension than students without the check-in. Comparing 140 students with a midpoint check-in to 140 without one, check-in students scored 17% higher on an end-of-lecture comprehension quiz, with instructors also reporting more mid-lecture clarifying questions from the check-in group."',
+        response='Researchers tested whether pausing partway through a lecture to have students rate how well they were understanding the material improved their overall comprehension by the end. Students who did this mid-lecture check-in scored 17% higher on a quiz given right after the lecture -- and instructors also noticed these students asked more clarifying questions during the lecture itself, suggesting the check-in helped students notice confusion early enough to actually address it.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who participate in cross-institutional virtual study groups, connecting with students from partner universities, report different exposure to alternative problem-solving approaches than students in single-institution study groups. Comparing 60 students in cross-institutional groups to 60 in single-institution groups, cross-institutional students reported encountering significantly more varied solution approaches to the same problems, correlating with higher self-reported adaptability in later technical interviews."',
+        response='This study compared students who joined virtual study groups with students from other partner universities to students who only studied with classmates from their own school. Students in the cross-institutional groups reported seeing a much wider variety of approaches to solving the same problems -- and this was linked to them feeling more adaptable later on during technical job interviews.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+
 
 def split_and_write(examples: list[SFTExample], out_dir: Path, eval_fraction: float = 0.1) -> None:
     random.seed(42)
