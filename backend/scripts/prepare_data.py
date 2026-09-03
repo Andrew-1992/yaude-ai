@@ -456,135 +456,6 @@ This shows your commit history, most recent first, with the full commit hash, au
         difficulty="intermediate",
     )
     yield SFTExample(
-        instruction="I'm building a small portfolio project. Write a function that returns only even numbers from a list.",
-        response="""```python
-def evens(numbers):
-    return [n for n in numbers if n % 2 == 0]
-```
-
-This uses a list comprehension: it walks through `numbers`, and for each one keeps it only if `n % 2 == 0` — meaning dividing by 2 leaves no remainder, which is the definition of even. The comprehension is just a compact way to write a loop that builds a new list, and it's the idiomatic Python style for this kind of filtering rather than a manual for-loop with `.append()`.""",
-        task_type=TaskType.CODE_GENERATION,
-        language=Language.ENGLISH,
-        source="synthetic",
-        difficulty="intermediate",
-    )
-
-    yield SFTExample(
-        instruction="I'm debugging a student project. How do you make a controlled text input in React?",
-        response="""```jsx
-const [name, setName] = useState("");
-
-<input value={name} onChange={e => setName(e.target.value)} />
-```
-
-"Controlled" means React's state — not the DOM — is the source of truth for the input's value. Every keystroke fires `onChange`, which updates `name` in state, and the input's `value` is always set from that same state. That round-trip is what makes it "controlled": if you set `value` without `onChange`, the input becomes read-only, since nothing ever updates the state that `value` is reading from — that's the most common bug people hit here.""",
-        task_type=TaskType.CODE_EXPLANATION,
-        language=Language.ENGLISH,
-        source="synthetic",
-        difficulty="intermediate",
-    )
-
-    yield SFTExample(
-        instruction="I'm building a small portfolio project. Write a function that checks whether a value exists in a list.",
-        response="""```python
-def contains(items, value):
-    return value in items
-```
-
-The `in` operator does a membership check — it scans `items` until it finds a match or reaches the end. Worth knowing: for a list, this is O(n) — it can check every element in the worst case. If you're checking membership repeatedly against the same collection, converting it to a `set` first makes each check O(1) on average, which matters once the list gets large.""",
-        task_type=TaskType.CODE_GENERATION,
-        language=Language.ENGLISH,
-        source="synthetic",
-        difficulty="intro",
-    )
-
-    yield SFTExample(
-        instruction="What is a database index?",
-        response="""An index is an auxiliary data structure — commonly a B-tree — that lets the database find rows matching a condition without scanning the entire table. For example, an index on a `students.age` column lets a query like `WHERE age > 20` jump straight to the relevant rows instead of checking every row in the table.
-
-The trade-off: indexes speed up reads but slow down writes, since every `INSERT` or `UPDATE` has to also update the index. They also take up storage. Because of that, indexes should be added based on your actual query patterns — indexing every column "just in case" usually costs more than it helps.""",
-        task_type=TaskType.CODE_EXPLANATION,
-        language=Language.ENGLISH,
-        source="synthetic",
-        difficulty="intermediate",
-    )
-
-    yield SFTExample(
-        instruction="I'm practicing programming for a university assignment. Write a function that removes falsy values from an array.",
-        response="""```javascript
-function compact(array) {
-    return array.filter(Boolean);
-}
-```
-
-`Boolean` used this way acts as the filter's test function — for each element, `filter` keeps it only if `Boolean(element)` is `true`. In JavaScript, the "falsy" values are `false`, `0`, `""` (empty string), `null`, `undefined`, and `NaN` — everything else, including `"0"` (a non-empty string) and empty arrays/objects, is truthy and gets kept.""",
-        task_type=TaskType.CODE_GENERATION,
-        language=Language.ENGLISH,
-        source="synthetic",
-        difficulty="intermediate",
-    )
-
-    yield SFTExample(
-        instruction="I'm building a small portfolio project. Write a function that returns the length of a string.",
-        response="""```python
-def length(text):
-    return len(text)
-```
-
-`len()` is a built-in that works on strings, lists, and other collections because they each implement a `__len__` method internally — `len(text)` is really calling `text.__len__()` behind the scenes. Wrapping it in your own function like this is mostly useful if you want a consistent name across your codebase, or plan to add extra logic (like handling `None`) later.""",
-        task_type=TaskType.CODE_GENERATION,
-        language=Language.ENGLISH,
-        source="synthetic",
-        difficulty="intro",
-    )
-
-    yield SFTExample(
-        instruction="I'm practicing programming for a university assignment. How do you center items using Flexbox?",
-        response="""```css
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-```
-
-`display: flex` turns on flexbox layout for the container's direct children. From there, `justify-content` controls alignment along the main axis (horizontal, by default) and `align-items` controls the cross axis (vertical, by default) — setting both to `center` centers content in both directions. If you rotate the layout with `flex-direction: column`, the two axes swap, so `justify-content` then controls vertical alignment instead.""",
-        task_type=TaskType.CODE_EXPLANATION,
-        language=Language.ENGLISH,
-        source="synthetic",
-        difficulty="intro",
-    )
-
-    yield SFTExample(
-        instruction="What does SELECT do in SQL?",
-        response="""`SELECT` is the core statement for reading data from a table:
-
-```sql
-SELECT name, email
-FROM students;
-```
-
-This returns the `name` and `email` columns for every row in `students`. You can list specific columns like this, or use `SELECT *` to get every column — though listing exact columns is usually better practice, since it's clearer what the query actually needs and doesn't break if the table's structure changes later.""",
-        task_type=TaskType.CODE_EXPLANATION,
-        language=Language.ENGLISH,
-        source="synthetic",
-        difficulty="intro",
-    )
-
-    yield SFTExample(
-        instruction="I'm building a task management project. How do you inspect recent commits in git?",
-        response="""```
-git log
-```
-
-This shows your commit history, most recent first, with the full commit hash, author, date, and message for each one. For a quick scan, `git log --oneline` compresses each commit to a single line (short hash + message), which is usually more useful day-to-day. Two other flags worth knowing: `-n 5` limits it to the last 5 commits, and `--graph` draws the branch structure alongside the history, which helps when your history isn't a straight line.""",
-        task_type=TaskType.CODE_EXPLANATION,
-        language=Language.ENGLISH,
-        source="synthetic",
-        difficulty="intermediate",
-    )
-
-    yield SFTExample(
         instruction="I'm practicing programming for a university assignment. Write a query that returns students older than 20.",
         response="""```sql
 SELECT * FROM students WHERE age > 20;
@@ -6570,6 +6441,1723 @@ The real cost is weaker internal validity -- since groups weren't randomly assig
         language=Language.ENGLISH,
         source="synthetic",
         difficulty='advanced',
+    )
+
+    yield SFTExample(
+        instruction="How do I write a Python function that flattens a deeply nested list of arbitrary depth, not just one level?",
+        response="""```python
+def flatten(nested):
+    result = []
+    for item in nested:
+        if isinstance(item, list):
+            result.extend(flatten(item))
+        else:
+            result.append(item)
+    return result
+
+print(flatten([1, [2, 3, [4, 5, [6]]], 7]))  # [1, 2, 3, 4, 5, 6, 7]
+```
+
+This uses recursion to handle any depth of nesting, unlike the earlier single-level flatten. For each item, it checks whether that item is itself a list -- if so, it recursively flattens *that* sublist first, then adds its results. If the item isn't a list, it's added directly. `result.extend(...)` merges the recursive call's results into the outer list, rather than `.append()`, which would nest them as a single sub-list instead of merging them flat.
+
+The base case here is implicit: a list with no nested lists inside it simply appends every item directly, with no further recursive calls needed, naturally ending the recursion once there's nothing left to flatten.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="How do I use Python's `Counter` to find the most common items in a list?",
+        response="""```python
+from collections import Counter
+
+words = ["python", "sql", "python", "javascript", "python", "sql"]
+counts = Counter(words)
+
+print(counts.most_common(2))  # [("python", 3), ("sql", 2)]
+```
+
+`Counter(words)` builds a dictionary-like object counting occurrences of each item automatically, in one step -- equivalent to the manual frequency-dictionary pattern shown earlier, but built directly into Python's standard library. `.most_common(n)` returns the `n` most frequent items as a list of `(item, count)` tuples, sorted from most to least common, saving you from writing your own sorting logic on top of the counts.
+
+Call `.most_common()` with no argument to get every item, sorted by frequency, rather than a limited top-N -- useful when you want the complete ranked list rather than just the top few.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between a shallow copy and a deep copy in Python?",
+        response="""```python
+import copy
+
+original = {"name": "Omol", "grades": [85, 90]}
+shallow = original.copy()
+deep = copy.deepcopy(original)
+
+shallow["grades"].append(100)
+print(original["grades"])  # [85, 90, 100] -- changed! shallow copy shared the nested list
+```
+
+A shallow copy creates a new outer container, but the objects *inside* it (like the `grades` list) are still the same shared objects as the original -- modifying a nested mutable object through the copy also affects the original, since there's really only one `grades` list being referenced by both.
+
+A deep copy recursively copies every nested object too, so the copy is genuinely independent all the way down:
+```python
+deep["grades"].append(200)
+print(original["grades"])  # still [85, 90, 100] -- unaffected, deep copy was fully independent
+```
+For simple data with no nested mutable objects (like a dict of plain numbers and strings), a shallow copy and deep copy behave identically. The distinction only matters once mutable objects (lists, dicts) are nested inside other mutable objects -- exactly the situation that causes this kind of subtle, hard-to-spot bug.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does modifying a copy of this list also change the original, even though `.copy()` was used?
+
+```python
+original = [[1, 2], [3, 4]]
+copy_of_list = original.copy()
+copy_of_list[0].append(99)
+print(original)  # [[1, 2, 99], [3, 4]] -- unexpectedly changed
+```""",
+        response="""This is exactly the shallow-copy trap: `.copy()` creates a new outer list, but the inner lists (`[1, 2]` and `[3, 4]`) are the *same* objects referenced by both `original` and `copy_of_list` -- the copy only duplicated the outer container, not what's inside it. Calling `.append(99)` on `copy_of_list[0]` modifies that shared inner list directly, which is why the change shows up in `original` too.
+
+Fix by using a deep copy instead, when your data contains nested mutable structures:
+```python
+import copy
+original = [[1, 2], [3, 4]]
+copy_of_list = copy.deepcopy(original)
+copy_of_list[0].append(99)
+print(original)  # [[1, 2], [3, 4]] -- unaffected now
+```
+This is a genuinely common source of confusing bugs specifically because `.copy()` *sounds* like it should create full independence -- the fact that it only copies one level deep is easy to overlook until nested mutable data is involved.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this dictionary iteration crash with a RuntimeError instead of removing the expired entries?
+
+```python
+sessions = {"a": 100, "b": 5, "c": 200}
+for key in sessions:
+    if sessions[key] < 50:
+        del sessions[key]
+```""",
+        response="""Same root problem as the earlier list-mutation-during-iteration bug, applied to a dictionary: Python doesn't allow changing a dictionary's size while you're actively iterating over it. `del sessions[key]` removes an entry mid-loop, and Python detects this and raises `RuntimeError: dictionary changed size during iteration` to protect you from undefined, inconsistent behavior.
+
+Fix by building a list of keys to remove first, then deleting them after the iteration finishes:
+```python
+sessions = {"a": 100, "b": 5, "c": 200}
+keys_to_remove = [key for key in sessions if sessions[key] < 50]
+for key in keys_to_remove:
+    del sessions[key]
+```
+Or more concisely, build an entirely new dictionary instead of mutating the original in place:
+```python
+sessions = {key: value for key, value in sessions.items() if value >= 50}
+```
+As a general rule: never modify the size of a list, dict, or set while directly iterating over that same structure -- collect what needs to change first, then apply the changes afterward, or build a new structure rather than mutating the one you're looping over.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is a preprint, and what should I know before citing one in my own research?",
+        response="""A preprint is a research paper shared publicly before undergoing formal peer review -- researchers post their work to make it immediately available, rather than waiting the months (sometimes years) peer review can take. Preprint servers exist across many fields now, making early findings accessible faster than traditional publishing timelines allow.
+
+The key thing to know before citing one: a preprint hasn't been independently vetted the way a peer-reviewed publication has. It might be entirely solid, or it might contain errors or claims that wouldn't survive peer review -- there's no way to know without evaluating it yourself, since the usual external quality check hasn't happened yet.
+
+If you do cite a preprint, it's worth explicitly noting in your text that it's a preprint, not a peer-reviewed publication -- this is standard practice, not an unusual caveat, and lets your own readers weigh that source appropriately. It's also worth checking whether the preprint has since been formally published (many are, sometimes with revisions) -- citing the peer-reviewed version, once available, is generally preferable to citing the earlier preprint if both exist.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is a systematic review, and how is it different from a regular literature review section in a paper?",
+        response="""A regular literature review section, as part of a larger paper, selectively discusses relevant prior work to set up the paper's own contribution -- the selection process is often not explicitly documented and doesn't aim to be exhaustive. A systematic review is a distinct type of research output in itself, with a rigorous, explicitly documented methodology for finding and including *every* relevant study meeting defined criteria, not just a representative or convenient sample.
+
+A systematic review typically documents: the exact databases searched, the exact search terms used, explicit inclusion and exclusion criteria (why some found studies were excluded), and often a flow diagram showing how many studies were found, screened, and ultimately included. This documentation exists specifically so another researcher could, in principle, replicate the same search and arrive at the same set of included studies.
+
+This rigor matters because it directly addresses publication bias (discussed earlier) and selective citation -- a systematic review is a much stronger basis for claiming "the evidence on this topic shows X" than an informally selected literature review, precisely because its inclusion process is transparent and reproducible, not left to the author's individual judgment about what to include.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether students who participate in a structured \'explain it to a beginner\' exercise, writing an explanation of a concept for someone with no prior programming knowledge, show different depth of understanding than students who write technical notes for themselves. Comparing 90 students doing the beginner-explanation exercise to 90 writing standard technical notes, beginner-explanation students scored 21% higher on questions requiring them to identify conceptual misunderstandings in sample code."',
+        response="Researchers compared students who practiced explaining programming concepts as if teaching a complete beginner to students who just wrote regular technical notes for themselves. The students who practiced simplifying explanations for beginners scored 21% higher on questions that required spotting conceptual misunderstandings in someone else's code, suggesting that having to explain things simply builds a deeper kind of understanding.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether providing students with a visual diagram of program execution flow, alongside the actual code, improves comprehension of control flow concepts compared to code alone. Comparing 110 students given execution flow diagrams to 110 given code only, diagram-assisted students scored 26% higher on questions predicting program output for unfamiliar code, with the largest gap on code involving nested conditional logic."',
+        response='This study tested whether showing students a visual diagram of how a program actually executes, alongside the code itself, helped them understand control flow better than just showing the code alone. Students who saw the diagrams scored 26% higher on questions asking them to predict what unfamiliar code would output -- with the biggest advantage specifically on code involving nested if-statements, which tend to be genuinely harder to trace mentally.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates whether students who receive immediate automated feedback on code style violations, integrated directly into their editor, develop different long-term coding habits than students who only see style feedback during manual code review weeks later. Comparing 100 students with real-time style feedback to 100 with delayed manual feedback, real-time-feedback students showed 45% fewer style violations in a final project completed a full semester after the feedback tool was removed."',
+        response='Researchers compared students who got instant automated feedback on their code style right in their editor to students who only found out about style issues from a manual review weeks later. The students with instant feedback had 45% fewer style violations in a final project completed a whole semester later -- even after the automated feedback tool was taken away, suggesting the immediate feedback helped build a lasting habit rather than just a temporary fix.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine whether students taught using a spiral curriculum (revisiting core concepts with increasing complexity across the course) show different retention of foundational concepts than students taught with a linear curriculum covering each topic once in depth. Comparing 80 students in a spiral-curriculum course to 80 in a linear-curriculum course, spiral-curriculum students scored 19% higher on a foundational concepts test given at course completion, despite covering fewer total distinct topics."',
+        response='This study compared students taught with a spiral curriculum -- where core concepts get revisited multiple times with increasing complexity -- to students taught with a linear curriculum that covers each topic once in depth. The spiral-curriculum students scored 19% higher on a test of foundational concepts at the end of the course, even though their course actually covered fewer total distinct topics, suggesting the repeated revisiting helped the fundamentals stick better.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study evaluates whether students who work through programming challenges with an increasing difficulty curve, rather than randomly ordered difficulty, report different persistence and completion rates. Comparing 120 students with progressively increasing difficulty to 120 with randomly ordered difficulty, progressive-difficulty students completed 31% more challenges overall and reported significantly lower frustration ratings throughout."',
+        response='Researchers compared students who worked through coding challenges arranged from easiest to hardest to students who got the same challenges in random difficulty order. Students with the progressively increasing difficulty completed 31% more challenges overall and reported feeling much less frustrated throughout, suggesting that a sense of building momentum matters for both how much students finish and how they feel about the process.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether requiring students to identify which line of their own failing code they suspect is the problem, before receiving instructor help, affects how much they learn from that help session. Comparing 75 students required to make a prediction first to 75 who received help without predicting, prediction-first students were 52% more likely to correctly diagnose a similar bug independently on a later assignment."',
+        response='This study tested whether having students guess which line of their broken code was probably causing the problem, before asking an instructor for help, changed how much they actually learned from that help. Students who made a prediction first were 52% more likely to correctly diagnose a similar bug completely on their own on a later assignment, suggesting the act of guessing first made the help session teach a transferable skill rather than just fixing the immediate problem.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper examines whether students who use version control commit messages as a structured reflection tool (writing what changed and why for every commit) show different project organization skills than students who use minimal or no commit messages. Comparing 90 students required to write detailed commit messages to 90 with no such requirement, detailed-commit students\' final projects were rated significantly higher on overall code organization by independent graders unaware of the study condition."',
+        response="Researchers compared students required to write detailed git commit messages explaining what changed and why, throughout a project, to students who wrote minimal or no commit messages. Independent graders, who didn't know which students were in which group, rated the detailed-commit-message students' final projects as significantly better organized -- suggesting that the discipline of explaining your changes as you go actually improves how you structure the project overall.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who participate in structured \'code golf\' exercises (solving problems with minimal code) alongside standard assignments show different code conciseness habits in subsequent standard assignments, and whether this affects readability. Comparing 70 students doing code golf exercises to 70 without them, code-golf students wrote 24% shorter solutions on subsequent standard assignments, but independent readability ratings of their code were significantly lower than the control group\'s."',
+        response="This study tested whether practicing 'code golf' -- solving problems with the fewest possible lines of code -- as a side exercise changed how students wrote code on their regular assignments afterward. Students who practiced code golf did write 24% shorter code on their later regular assignments -- but when independent reviewers rated how readable that code was, the code-golf group scored notably lower, suggesting the drive for brevity came at a real cost to clarity.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+    yield SFTExample(
+        instruction="How do I write a Python function that safely converts a string to a number, returning a default value instead of crashing if it's not a valid number?",
+        response="""```python
+def safe_to_int(text, default=0):
+    try:
+        return int(text)
+    except (ValueError, TypeError):
+        return default
+
+print(safe_to_int("42"))     # 42
+print(safe_to_int("abc"))    # 0 -- invalid, falls back to default
+print(safe_to_int(None))     # 0 -- also handled, TypeError caught too
+```
+
+Catching both `ValueError` (raised for genuinely non-numeric text like `"abc"`) and `TypeError` (raised if `text` is `None` or some other non-string type entirely) covers the two realistic ways this conversion can fail. The `default` parameter lets callers choose what "invalid input" should mean for their specific use case -- `0` here, but a different default (like `None`, to distinguish "invalid" from "genuinely zero") might be more appropriate depending on context.
+
+This pattern -- wrap risky conversion in a small reusable helper -- is generally cleaner than scattering individual `try`/`except` blocks around every place you convert user input, especially once the same conversion logic is needed in several places throughout a codebase.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I check if two floating-point numbers are 'close enough' to be considered equal in Python, using a built-in tool rather than writing my own tolerance check?",
+        response="""```python
+import math
+
+a = 0.1 + 0.2
+b = 0.3
+
+print(math.isclose(a, b))  # True
+```
+
+`math.isclose()` handles the floating-point precision problem discussed earlier (`0.1 + 0.2` not exactly equaling `0.3`) using a sensible default relative tolerance, so you don't need to write and tune your own `abs(a - b) < some_threshold` check manually. It accepts optional `rel_tol` and `abs_tol` parameters if you need to adjust how strict the comparison is for your specific case:
+```python
+math.isclose(a, b, rel_tol=1e-9)
+```
+Using the built-in function over a hand-rolled tolerance check is generally preferable -- it's a well-tested, standard tool other developers reading your code will immediately recognize, rather than a custom comparison whose exact behavior they'd need to read and verify themselves.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between `==` and `.equals()`-style comparison across different languages, and why does Python only need `==`?",
+        response="""In some languages (like Java), `==` on objects checks reference identity (are these the same object in memory?), while a separate `.equals()` method checks logical value equality (do these represent the same value?) -- two genuinely different comparisons, requiring two different tools.
+
+Python handles this differently: `==` itself checks value equality by default for built-in types (numbers, strings, lists), and Python's `is` operator is the one that checks identity, as covered earlier. This means Python doesn't need a separate `.equals()` method the way Java does -- `==` already does the value-comparison job.
+
+For your own custom classes, `==`'s behavior is actually determined by whether you've defined a `__eq__` method -- without one, `==` falls back to identity comparison (equivalent to `is`) by default:
+```python
+class Point:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+```
+Without this `__eq__` method, two `Point` objects with identical `x`/`y` values would compare as unequal with `==`, since Python would just be checking whether they're the same object in memory -- defining `__eq__` explicitly tells Python what "equal" should actually mean for your class.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function return an incorrect count when checking for duplicate emails, even though the emails look identical?
+
+```python
+emails = ["Omol@Example.com", "omol@example.com", "sara@example.com"]
+unique_count = len(set(emails))
+print(unique_count)  # 3 -- but the first two are really the same email
+```""",
+        response="""`set()` compares strings exactly, character by character, including case -- `"Omol@Example.com"` and `"omol@example.com"` differ in capitalization, so Python treats them as two genuinely different strings, even though email addresses are conventionally treated as case-insensitive by mail systems in practice.
+
+Fix by normalizing case before comparing:
+```python
+emails = ["Omol@Example.com", "omol@example.com", "sara@example.com"]
+unique_count = len(set(email.lower() for email in emails))
+print(unique_count)  # 2 -- correctly recognizes the duplicate
+```
+This is a genuinely important pattern any time you're comparing user-provided text that has a conventional case-insensitive meaning -- emails, usernames on many platforms, file extensions. The comparison itself (`==` or `set()` deduplication) is working exactly as designed; the bug is really about not normalizing the data *before* comparing it, given what the data actually represents.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this password validation function accept a password that's clearly too short?
+
+```python
+def is_valid_password(password):
+    if len(password) > 8:
+        has_upper = any(c.isupper() for c in password)
+    return has_upper
+```
+
+Calling `is_valid_password("short")` returns unexpected behavior rather than clearly rejecting it.""",
+        response="""`has_upper` is only ever assigned *inside* the `if len(password) > 8:` block -- if the password is 8 characters or shorter, that line never runs, and `has_upper` was never defined at all. Calling `is_valid_password("short")` (5 characters, so the `if` is false) would actually raise `UnboundLocalError: local variable 'has_upper' referenced before assignment`, not silently accept the short password -- a crash, not a silent bypass, though the crash itself reveals a real logic gap in what the function was meant to check.
+
+The actual bug is that password length was never properly gated as its own condition:
+```python
+def is_valid_password(password):
+    if len(password) <= 8:
+        return False
+    return any(c.isupper() for c in password)
+```
+This checks length as an explicit early return, then separately checks for an uppercase letter, rather than tangling the two conditions together in a way that leaves `has_upper` undefined on one path. Whenever a variable is only assigned inside a conditional block but used outside that block, check whether every possible path through the function actually assigns it first.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is a data management plan in research, and why do many funders now require one before approving a grant?",
+        response="""A data management plan describes how a research project will handle its data throughout the project's life -- how it will be collected, stored securely, backed up, documented, and eventually shared or archived once the study is complete.
+
+Funders increasingly require this upfront, before any funding is granted, for a few concrete reasons: it forces researchers to think through data security and participant privacy protections before collection starts, rather than as an afterthought; it increases the odds that data will actually be usable and shareable after the project ends, rather than existing only in a format or location only the original researcher understands; and it supports the broader push toward reproducibility discussed earlier, since data that's properly documented and preserved can actually be reused or checked by others later.
+
+A basic data management plan typically covers: what data will be collected and in what format, where and how it will be stored during the project, who has access, how participant privacy is protected (especially important for anything involving personal identifying information), and what happens to the data after the project ends -- destroyed, archived, or shared openly, and under what conditions.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What are the FAIR data principles in research, and what do each of the four letters actually mean in practice?",
+        response="""FAIR stands for Findable, Accessible, Interoperable, and Reusable -- a set of guiding principles for how research data should be managed so it retains genuine value beyond the original study that produced it.
+
+**Findable** means the data has enough metadata and a persistent identifier that someone could actually locate it later, rather than it existing only as an unlabeled file on someone's personal computer. **Accessible** means there's a clear, documented way to actually obtain the data, even if access requires following a specific request process for privacy reasons -- accessible doesn't necessarily mean unrestricted, just that the path to access is clear and documented. **Interoperable** means the data uses standard, well-documented formats that other tools and researchers can actually work with, rather than a proprietary or undocumented format only the original software can open. **Reusable** means the data is documented well enough (what each column means, how it was collected, any known limitations) that someone else could genuinely understand and correctly use it, not just technically open the file.
+
+These principles matter practically because a huge amount of research data becomes effectively unusable within a few years of a project ending -- not because it was deleted, but because it was never documented or stored in a way that anyone besides the original researcher could actually make sense of.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether students who review and annotate peer code as part of coursework, before writing their own similar assignments, show different awareness of common design pitfalls. Comparing 100 students who reviewed peer code first to 100 who did not, peer-review students avoided 33% more of a documented set of common design pitfalls in their own subsequent work."',
+        response="Researchers tested whether having students review and comment on their classmates' code before writing a similar assignment themselves helped them avoid common design mistakes. Students who reviewed peer code first avoided 33% more of a known set of common pitfalls in their own later work, suggesting that seeing mistakes in someone else's code first helped students recognize and avoid the same patterns in their own.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who set specific, measurable weekly learning goals (rather than general intentions to \'study more\') show different course completion rates in self-paced online programming courses. Comparing 150 students setting specific weekly goals to 150 with only general intentions, specific-goal students had a course completion rate 37 percentage points higher."',
+        response="This study compared students in a self-paced online programming course who set specific, measurable weekly goals to students who only had a general intention to study more without specifics. Students with specific weekly goals completed the course at a rate 37 percentage points higher -- a big difference that suggests vague intentions to study more aren't nearly as effective as concrete, specific weekly targets.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates whether providing students with a glossary of technical terms embedded directly in assignment instructions, versus requiring students to look terms up independently, affects task initiation time and reported anxiety. Comparing 95 students given an embedded glossary to 95 without one, embedded-glossary students began working on assignments 41% faster and reported lower task-related anxiety on a standardized scale."',
+        response='Researchers tested whether embedding a glossary of technical terms directly in assignment instructions -- instead of making students look terms up themselves -- changed how quickly students got started and how anxious they felt. Students with the embedded glossary started working 41% faster and reported feeling less anxious about the task, suggesting that removing the friction of looking up unfamiliar terms had a real, measurable effect on both behavior and how students felt.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine whether students who use a \'rubber duck\' style AI chat tool -- one that only asks clarifying questions rather than providing direct answers -- show different independent problem-solving development than students using a tool that provides direct solutions. Comparing 90 students using the question-only tool to 90 using a direct-answer tool over a semester, question-only-tool students scored 22% higher on unassisted final exam problem-solving questions."',
+        response='This study compared students using an AI tool that only asked clarifying questions, forcing them to work through problems themselves, to students using a tool that gave direct answers. Over a semester, the students using the question-only tool scored 22% higher on problem-solving questions on their final exam, where they had no AI help at all -- suggesting that a tool designed to guide rather than answer directly builds stronger independent skills.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study evaluates whether students who receive a brief explanation of why an assignment\'s requirements matter, connected to real-world use cases, show different assignment engagement than students receiving only the technical requirements. Comparing 130 students given real-world context to 130 given requirements only, context-provided students spent 28% more time voluntarily exploring extensions beyond the minimum requirements."',
+        response="Researchers tested whether explaining why an assignment's requirements actually mattered in real-world terms, rather than just listing the technical requirements, changed how engaged students were. Students who got the real-world context spent 28% more time voluntarily going beyond the minimum requirements to explore extra features, suggesting that understanding the 'why' behind an assignment genuinely increases motivation to go further with it.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether students taught to write commit messages following a specific conventional format (type, scope, description) show different ability to navigate an unfamiliar project\'s git history compared to students taught with no specific format guidance. Comparing 75 students trained on conventional commit format to 75 without formal training, format-trained students located a specific historical bug-introducing commit 58% faster when navigating an unfamiliar codebase\'s history."',
+        response="This study tested whether teaching students to write git commit messages in a specific standardized format -- type, scope, and description -- helped them later navigate an unfamiliar project's history more effectively. Students trained on this format found a specific bug-introducing commit in someone else's project history 58% faster than students with no formal training, suggesting that consistent commit message formatting makes project history genuinely more useful to search through later.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper examines whether students who practice technical communication by writing documentation for their own code, intended for a future maintainer, show different code structure choices than students who write code without a documentation requirement. Comparing 85 students required to write maintainer-facing documentation to 85 without this requirement, documentation-required students\' code was rated significantly higher on modularity by independent reviewers blind to the study condition."',
+        response="Researchers compared students required to write documentation for their code, aimed at a future person who'd need to maintain it, to students with no documentation requirement at all. Independent reviewers who didn't know which group was which rated the documented-code group's actual code structure as significantly more modular and well-organized, suggesting that writing for a future reader changes how students structure their code in the first place, not just how well it's explained afterward.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who track and reflect on their own most frequent error types across a semester show different error frequency in a final comprehensive project. Comparing 100 students who tracked personal error patterns to 100 who did not, error-tracking students showed a 36% reduction in their own previously most-frequent error type by the final project, with no significant change in other, non-tracked error types."',
+        response="This study tested whether having students track which specific mistakes they made most often throughout a semester, and reflect on those patterns, helped reduce those same mistakes later. Students who tracked their own error patterns reduced their previously most common mistake by 36% in their final project -- though this improvement was specific to the exact error types they'd tracked, with no real change in other kinds of mistakes they hadn't been paying attention to.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+    yield SFTExample(
+        instruction="How do I use Python's `functools.reduce` to combine a list into a single value, and when should I use it instead of a plain loop?",
+        response="""```python
+from functools import reduce
+
+numbers = [1, 2, 3, 4, 5]
+product = reduce(lambda acc, n: acc * n, numbers)
+print(product)  # 120 -- 1*2*3*4*5
+```
+
+`reduce` applies a function cumulatively to items in a sequence, carrying an accumulated result forward -- here, each step multiplies the running total (`acc`) by the next number. It's equivalent to:
+```python
+product = 1
+for n in numbers:
+    product *= n
+```
+Honestly, for a simple case like this, the plain loop (or Python's built-in `sum()`/`math.prod()` for exactly this kind of task) is usually more readable than `reduce` with a lambda. `reduce` becomes more genuinely useful for less common combining operations that don't have a dedicated built-in -- if you find yourself reaching for `reduce` frequently for common operations, it's worth checking whether Python already has a more direct built-in for that specific case first.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between `.map()`, `.filter()`, and `.reduce()` conceptually, even across different languages that all have some version of these three?",
+        response="""These three represent three distinct, common shapes of data transformation, and most modern languages provide some version of all three (Python has list comprehensions, `filter()`, and `functools.reduce`; JavaScript has `.map()`, `.filter()`, `.reduce()` directly as array methods).
+
+**`map`** transforms each element into something else, one-to-one -- input and output have the same number of elements, just changed. **`filter`** removes elements that don't match a condition -- output has the same or fewer elements, unchanged in value, just a subset. **`reduce`** combines all elements down into a single value -- many elements in, one result out.
+
+Recognizing which shape a task actually needs helps pick the right tool immediately: "convert each price to include tax" is a `map`. "Keep only the students who passed" is a `filter`. "Calculate the total of all prices" is a `reduce`. Many real tasks chain several of these together -- filter first, then map, then reduce -- which is often clearer than one large loop trying to do all three things in a single pass.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function return a negative average when all the grades are positive numbers?
+
+```python
+def get_average(grades):
+    total = 0
+    count = 0
+    for grade in grades:
+        total += grade
+        count -= 1
+    return total / count
+```""",
+        response="""`count -= 1` decrements `count` on every iteration instead of incrementing it -- `count` starts at `0` and goes negative with each grade processed, ending at a negative number equal to the negative of the grade count. Dividing a positive `total` by a negative `count` produces a negative result, even though every individual grade was positive.
+
+This is very likely a simple typo -- `-=` instead of `+=` -- easy to type by accident and easy to miss on a quick read, since both look similar and the code still runs without crashing, just producing a wrong (and here, obviously implausible) result.
+```python
+def get_average(grades):
+    total = 0
+    count = 0
+    for grade in grades:
+        total += grade
+        count += 1
+    return total / count
+```
+A negative average for a set of positive numbers is a strong, immediately visible signal something is wrong -- when you see an obviously implausible result like this, checking each individual operator (`+=` vs `-=`, `<` vs `>`) in the relevant code is often faster than assuming the bug is somewhere more complex.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this API endpoint return stale data even after the underlying record was updated?
+
+```python
+cache = {}
+
+def get_student(student_id):
+    if student_id in cache:
+        return cache[student_id]
+    student = db.query(f"SELECT * FROM students WHERE id = {student_id}")
+    cache[student_id] = student
+    return student
+
+def update_student(student_id, new_data):
+    db.execute(f"UPDATE students SET ... WHERE id = {student_id}")
+```""",
+        response="""`update_student` writes the change directly to the database, but never touches `cache` -- so the next call to `get_student` for that same ID finds the old, now-outdated value still sitting in the cache and returns it, never realizing the underlying data has actually changed. This is a real, common instance of the "caching staleness" trade-off mentioned earlier: caching improves speed but introduces exactly this risk if not handled carefully.
+
+Fix by explicitly invalidating (removing) the cached entry whenever the underlying data changes:
+```python
+def update_student(student_id, new_data):
+    db.execute(f"UPDATE students SET ... WHERE id = {student_id}")
+    cache.pop(student_id, None)  # remove stale entry so next read fetches fresh data
+```
+`.pop(student_id, None)` removes the entry if present, and does nothing (rather than crashing) if it wasn't cached in the first place. The general principle: any code path that changes data needs to also know about, and properly invalidate, any cache that might be holding a now-outdated copy of that same data -- caching and the corresponding invalidation logic have to be maintained together, not just the caching half alone.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between a Type I error and simply making a mistake in your analysis -- how do reviewers tell the two apart?",
+        response="""A Type I error (discussed earlier -- a false positive) is an inherent statistical possibility even in a correctly-run study: even with perfect methodology, there's always some chance of concluding an effect is real when it's actually due to chance, which is exactly why significance thresholds exist as a probabilistic acknowledgment of this risk. A mistake in analysis is a genuine error in how the study or analysis was actually conducted -- using the wrong statistical test, a coding error in your analysis script, or misreading your own output.
+
+The distinction matters for how a finding should be treated. A Type I error is an accepted, quantified risk of any properly-run study -- it doesn't mean anything was done wrong, just that the specific result happened to be a false positive, statistically expected to occur some known percentage of the time. A genuine mistake means the study's actual conclusions may be unreliable regardless of statistical theory, because something in the process itself was done incorrectly.
+
+Reviewers typically distinguish these by checking your actual methodology and analysis code (where available) for genuine errors, separately from evaluating whether your statistical approach and reported uncertainty are appropriate given the inherent Type I/Type II trade-offs of your chosen methods. Being transparent about your actual analysis process -- sharing code, being specific about exact procedures -- is what allows this distinction to be checked at all, rather than trusting your conclusions on faith.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is a meta-analysis, and how is it different from a systematic review?",
+        response="""A systematic review (covered earlier) rigorously identifies and synthesizes existing studies on a question, typically summarized in prose. A meta-analysis goes a step further: it statistically combines the actual numerical results from multiple studies into a single, more precise combined estimate -- essentially treating multiple separate studies as if they were one larger, pooled study.
+
+This matters because a single study might have too small a sample to detect a real but modest effect confidently, while combining several similar studies' data can reveal a real pattern that no individual study had quite enough statistical power to establish on its own.
+
+Not every systematic review can become a meta-analysis -- combining results statistically requires the underlying studies to have measured things in comparable enough ways (similar outcome measures, similar populations) that pooling them actually makes sense. If included studies are too different from each other in method or measurement, forcing a statistical combination can produce a misleading combined number that doesn't represent any of the individual studies well -- in that case, a systematic review without a formal meta-analysis, just a careful narrative synthesis, is the more honest choice.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether students who participate in structured hackathon-style events during their studies report different comfort with ambiguous, open-ended technical requirements in later coursework. Comparing 90 students with hackathon participation to 90 without, hackathon-experienced students scored significantly higher on a task requiring them to define their own scope for a deliberately vague assignment prompt."',
+        response="Researchers compared students who had participated in hackathon-style events to students who hadn't, looking at how comfortable they were handling assignments with deliberately vague, open-ended requirements. The hackathon-experienced students did noticeably better at figuring out their own scope and approach when given an intentionally ambiguous assignment, suggesting hackathon experience builds comfort with the kind of open-ended problem-solving real projects often require.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who receive a short orientation to their course\'s online help forum, including norms for asking effective questions, use the forum differently than students receiving no such orientation. Comparing 130 students given the orientation to 130 without it, oriented students received helpful responses 44% faster on average, largely attributed to asking more specific, well-formed questions from the start."',
+        response="This study tested whether giving students a short orientation on how to ask good questions on their course's help forum changed how effectively they used it. Students who got the orientation received helpful responses 44% faster on average -- mostly because they asked more specific, well-formed questions from the beginning, rather than vague ones that took longer for others to understand and answer.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates whether students who work on assignments requiring integration with a partially undocumented existing codebase develop different code-reading strategies than students working exclusively on greenfield (from-scratch) projects. Comparing 70 students in each condition, undocumented-codebase students reported using systematic exploration strategies (tracing function calls, testing assumptions) significantly more often when starting new unfamiliar code later in the course."',
+        response="Researchers compared students who had to work with an existing, partially undocumented codebase to students who only ever built projects entirely from scratch. Students who'd worked with the undocumented codebase later used much more systematic strategies -- like tracing through function calls and testing their assumptions -- when approaching new unfamiliar code, suggesting that grappling with messy real code built a transferable exploration skill.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine whether students who set up automated tests for their own code early in a project, rather than only at the end, show different total debugging time across the full project lifecycle. Comparing 100 students setting up tests early to 100 adding tests only near submission, early-testing students spent 29% less total time debugging across the whole project, despite spending more upfront time on initial test setup."',
+        response='This study compared students who wrote automated tests for their code early in a project to students who only added tests near the end, right before submission. Students who tested early spent 29% less total time debugging across the entire project -- even though they spent more time upfront setting up the tests, the early investment paid off by catching problems sooner rather than later.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study evaluates whether students who receive structured feedback specifically on their error message reading and interpretation, separate from general code review, show faster improvement in independent debugging speed. Comparing 85 students given error-message-specific coaching to 85 given only general code feedback, error-message-coached students reduced their average time-to-resolution for compiler errors by 33% over four weeks, compared to 12% in the control group."',
+        response='Researchers tested whether giving students feedback specifically on how they read and interpreted error messages, separate from general code feedback, sped up their debugging over time. Students who got this targeted coaching cut their average time to resolve compiler errors by 33% over four weeks, compared to only a 12% improvement for students who just got general code feedback -- suggesting that specifically teaching error-message literacy is more effective than general feedback alone.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether students who complete a brief self-assessment quiz before starting a new topic, identifying gaps in prerequisite knowledge, show different learning speed on the new topic compared to students who begin without this self-assessment step. Comparing 110 students doing prerequisite self-assessment to 110 without it, self-assessment students completed the new topic\'s exercises 24% faster, with instructors noting fewer prerequisite-related confusion questions during the unit."',
+        response="This study tested whether having students take a quick self-assessment quiz on prerequisite knowledge before starting a new topic -- to identify their own gaps -- helped them learn the new material faster. Students who did the self-assessment completed the new topic's exercises 24% faster, and instructors noticed fewer confused questions related to missing prerequisite knowledge during the unit, suggesting the self-assessment helped students identify and address gaps before they became a bigger problem.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper examines whether students who participate in cross-team code review exercises (reviewing a different team\'s project, not their own) develop different critical evaluation skills than students who only review their own team\'s code. Comparing 75 students doing cross-team review to 75 reviewing only their own team\'s work, cross-team-review students identified 41% more design issues when evaluating an unfamiliar sample project in a later assessment."',
+        response="Researchers compared students who reviewed a completely different team's code, versus only their own team's code, to see how it affected their critical evaluation skills. Students who did cross-team reviews identified 41% more design issues when later assessed on an unfamiliar sample project, suggesting that reviewing unfamiliar code -- rather than code you already know well -- builds a stronger, more transferable evaluation skill.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who receive a brief explanation of an algorithm\'s real-world applications before learning its implementation show different long-term recall of the algorithm\'s mechanics compared to students taught implementation first, with applications discussed afterward. Comparing 95 students taught applications-first to 95 taught implementation-first, applications-first students scored 18% higher on a mechanics-recall test given six weeks after the unit ended."',
+        response="This study compared students who learned about an algorithm's real-world uses before learning how it actually works, to students taught the implementation first and the applications afterward. Six weeks after the unit ended, students who'd heard about the real-world applications first scored 18% higher on a test of the algorithm's actual mechanics, suggesting that understanding why something matters before learning how it works helps the technical details stick better later.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study investigates whether students who are taught to write a one-sentence summary of what each function in their code does, before writing the function body, show different code clarity in later independent projects. Comparing 100 students taught this summary-first practice to 100 without it, summary-first students\' independent final projects were rated significantly clearer in function purpose by graders blind to the study condition, six months after the practice was taught."',
+        response="Researchers tested whether teaching students to write a one-sentence summary of what a function should do, before actually writing the function, led to clearer code later on. Six months after learning this practice, students who'd used it had final projects rated as significantly clearer in terms of what each function actually did, according to graders who didn't know which students had learned the technique -- suggesting the habit stuck and genuinely improved how students structured their code long after the original lesson.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+    yield SFTExample(
+        instruction="How do I check whether a key exists in a dictionary before using it, using the cleanest approach?",
+        response="""```python
+config = {"api_url": "https://api.example.com"}
+
+if "api_key" in config:
+    print(config["api_key"])
+else:
+    print("No API key configured")
+```
+
+`in` checks dictionary keys directly and is the clearest, most idiomatic way to check existence before conditionally acting on it. For the common case of "use this value if present, otherwise use a default," `.get()` (covered earlier) is usually more concise than a full `if`/`else`:
+```python
+api_key = config.get("api_key", "default-key")
+```
+Use the explicit `if "key" in dict:` form when you need genuinely different logic for the present-versus-missing cases (like printing a different message, as above), and `.get()` with a default when you just need a fallback value to use directly, without branching logic around it.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="How do I convert a list of dictionaries into a pandas-style table structure without using pandas, just plain Python?",
+        response="""```python
+students = [
+    {"name": "Omol", "grade": 85},
+    {"name": "Sara", "grade": 92},
+]
+
+# Print as a simple aligned table
+for student in students:
+    print(f"{student['name']:<10} {student['grade']:>5}")
+```
+
+`{student['name']:<10}` left-aligns the name within a 10-character field; `{student['grade']:>5}` right-aligns the grade within 5 characters -- the `<` and `>` control alignment direction, the number sets the minimum field width. This produces a simple, readable aligned table directly in the terminal, without needing an external library for a task this small.
+
+For genuinely larger datasets, or anything needing real tabular operations (filtering, sorting, aggregating across columns), a library like `pandas` becomes worth the dependency -- but for quick scripts or small datasets, plain Python with format specifiers like this is often sufficient and avoids adding a dependency for something this simple.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function raise a ZeroDivisionError intermittently, only for some inputs?
+
+```python
+def percentage_complete(done, total):
+    return (done / total) * 100
+
+print(percentage_complete(5, 10))  # 50.0, fine
+print(percentage_complete(0, 0))   # crashes
+```""",
+        response="""This isn't actually intermittent -- it fails every single time `total` is `0`, which makes mathematical sense: dividing by zero is undefined, and Python raises `ZeroDivisionError` rather than returning some arbitrary value like `0` or `infinity`. The function happens to work for every input where `total` isn't zero, which can make it feel intermittent if `total=0` is a rare but real case in your actual data (like a student with zero total assignments yet).
+
+Fix by explicitly handling that case before attempting the division:
+```python
+def percentage_complete(done, total):
+    if total == 0:
+        return 0
+    return (done / total) * 100
+```
+What "correct" behavior actually means for a `0/0` case depends on your application -- returning `0` (nothing to complete, so 0% complete) is one reasonable choice; returning `None` to signal "not applicable" might be more honest in another context. Either way, the fix is deciding explicitly what should happen, rather than letting the math crash and force an unhandled error onto whoever calls this function.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this React component re-render infinitely, even though useEffect has a dependency array this time?
+
+```jsx
+function StudentList() {
+    const [students, setStudents] = useState([]);
+    const options = { sortBy: "name" };
+
+    useEffect(() => {
+        fetchStudents(options).then(data => setStudents(data));
+    }, [options]);
+
+    return <ul>{students.map(s => <li key={s.id}>{s.name}</li>)}</ul>;
+}
+```""",
+        response="""`options` is a plain object literal, recreated fresh on *every single render* -- even though its contents (`{ sortBy: "name" }`) never actually change, it's a genuinely new object in memory each time, and React's dependency comparison checks reference equality, not deep content equality. Since `options` is "different" (a new object) on every render, `useEffect` sees its dependency as changed every time and re-runs, which triggers another render, which creates yet another new `options` object, and the cycle continues indefinitely.
+
+Fix by moving the object outside the component (if it's genuinely constant) or memoizing it:
+```jsx
+const DEFAULT_OPTIONS = { sortBy: "name" };  // created once, outside the component
+
+function StudentList() {
+    const [students, setStudents] = useState([]);
+
+    useEffect(() => {
+        fetchStudents(DEFAULT_OPTIONS).then(data => setStudents(data));
+    }, []);
+
+    return <ul>{students.map(s => <li key={s.id}>{s.name}</li>)}</ul>;
+}
+```
+This is a subtler version of the empty-dependency-array bug from earlier -- the array wasn't actually empty this time, but the dependency it listed was recreated fresh every render anyway, which has the same practical effect. Object and array literals defined directly inside a component's body are a common, easy-to-miss source of this exact problem.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between attrition and non-response in a longitudinal study, and why does the distinction matter for interpreting results?",
+        response="""Attrition specifically refers to participants who started your study but dropped out before it finished -- they gave you some data, then stopped. Non-response refers to eligible people who never participated at all, or who skipped specific questions throughout. Both create missing data, but they arise from different points in the process and can bias your findings in different ways.
+
+Attrition is a particular concern in longitudinal studies (discussed earlier) because *why* someone dropped out often connects directly to your research question. If you're studying student persistence in a program, and the students who dropped out of your study were disproportionately the ones who also dropped out of the program itself, your final analysis of "who persisted" is now working with a systematically biased remaining sample -- the very phenomenon you're studying caused some of your missing data.
+
+Reporting attrition rates explicitly, and ideally comparing early characteristics of those who dropped out versus those who stayed (if you have any baseline data on them), helps a reader judge whether attrition likely biased your findings in a particular direction, rather than leaving this as an invisible, unexamined gap in an otherwise polished-looking final analysis.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What does 'matching' mean in the context of a quasi-experimental study design, and how does it help address the lack of random assignment?",
+        response="""Matching pairs participants in a treatment group with similar participants in a comparison group, based on relevant characteristics (age, prior performance, background), specifically to make the two groups more comparable when true random assignment wasn't possible.
+
+If you're studying a voluntary tutoring program's effect on grades, students who chose to attend tutoring likely already differ from those who didn't -- perhaps more motivated, or already struggling more. Directly comparing tutored and non-tutored students risks attributing a difference to tutoring itself when it's really about pre-existing differences between who chose to participate.
+
+Matching addresses this by pairing each tutored student with a similar non-tutored student -- similar prior grades, similar demographic background -- so the comparison is between genuinely similar individuals, differing mainly in whether they received tutoring. This strengthens internal validity relative to an unmatched comparison, though it's worth being honest that matching can only control for characteristics you actually measured and matched on -- it can't account for unmeasured differences (like underlying motivation) that might still differ systematically between groups despite matching on the variables you did measure.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether students who receive a brief tutorial on reading official language documentation, before being directed to it as a primary resource, use documentation more effectively than students directed to documentation without such a tutorial. Comparing 100 students given the tutorial to 100 without it, tutorial students located correct information in official documentation 47% faster on a standardized set of lookup tasks."',
+        response='Researchers tested whether teaching students specifically how to read and navigate official programming language documentation helped them use it more effectively later. Students who got this tutorial found correct information in the documentation 47% faster on a set of standardized lookup tasks, suggesting that documentation literacy itself is a skill worth teaching directly, not something students just figure out on their own.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who work through a structured exercise identifying the time and space complexity of their own submitted code show different algorithm choice patterns in later assignments. Comparing 90 students doing complexity self-analysis to 90 without it, self-analysis students chose measurably more efficient algorithms on 34% more subsequent assignments where an efficient approach was relevant."',
+        response="This study tested whether having students analyze the time and space complexity of their own code, as a specific exercise, changed what algorithms they chose on later assignments. Students who did this self-analysis exercise chose more efficient algorithms on 34% more of their later assignments where efficiency actually mattered, suggesting that reflecting on your own code's complexity builds better instincts for choosing efficient approaches going forward.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates whether students who participate in structured \'rubber duck\' verbal debugging sessions with a non-judgmental listener show reduced debugging time compared to students debugging silently alone. Comparing 80 students in each condition on a matched set of debugging tasks, verbal-debugging students resolved bugs 26% faster on average, with the effect strongest on bugs involving incorrect assumptions rather than simple typos."',
+        response='Researchers compared students who talked through their debugging process out loud to a listener, versus students debugging completely silently and alone. The students who talked it through resolved bugs 26% faster on average -- and this benefit was strongest specifically for bugs caused by incorrect assumptions, rather than simple typos, suggesting that verbalizing your reasoning helps most with catching flawed thinking rather than just careless mistakes.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine whether students who receive a structured introduction to reading stack traces, with annotated real examples, show different independent error resolution speed than students who learn to read stack traces through unstructured trial and error. Comparing 95 students given structured stack trace training to 95 without it, trained students correctly identified the root cause line in a stack trace 51% more often on a standardized assessment."',
+        response='This study tested whether a structured lesson on how to actually read a stack trace -- the error output showing where a program crashed -- with annotated real examples, helped students more than learning through unstructured trial and error. Students who got the structured training correctly identified the actual root cause line in a stack trace 51% more often on a standardized test, suggesting this is a skill that benefits from being explicitly taught rather than picked up informally.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study evaluates whether students who use a personal error log, recording each bug encountered along with its cause and fix, show different repeat-error rates across a semester compared to students without such a log. Comparing 110 students maintaining an error log to 110 without one, error-log students showed a 39% reduction in repeating the exact same category of error across the semester."',
+        response='Researchers tested whether having students keep a personal log of every bug they encountered, along with its cause and how they fixed it, reduced how often they made the same mistakes again. Students who kept this error log had a 39% reduction in repeating the same category of error across the semester, suggesting that actively recording and reviewing your own mistakes helps prevent them from becoming a recurring pattern.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether students who practice explaining algorithmic time complexity using everyday, non-technical analogies show different ability to explain complexity concepts to a general audience in a later assessment. Comparing 85 students practicing analogy-based explanation to 85 practicing standard technical explanation only, analogy-practicing students scored significantly higher when later asked to explain a complexity concept to a simulated non-technical audience."',
+        response="This study compared students who practiced explaining algorithm complexity using everyday analogies to students who only practiced standard technical explanations. When later asked to explain a complexity concept to a simulated non-technical audience, the students who'd practiced analogies did significantly better, suggesting that practicing plain-language explanation is itself a skill that needs deliberate practice, not something that automatically follows from understanding the technical concept.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper examines whether students who receive a short lesson on common cognitive biases in debugging (such as confirmation bias when testing a hypothesis about a bug\'s cause) show different debugging accuracy on ambiguous bug scenarios. Comparing 75 students given the cognitive bias lesson to 75 without it, bias-aware students were 32% less likely to prematurely conclude they\'d found the correct root cause when testing an ambiguous scenario with multiple plausible causes."',
+        response="Researchers tested whether teaching students about common cognitive biases that affect debugging -- like the tendency to only look for evidence confirming your first guess -- changed how accurately they debugged tricky, ambiguous bugs. Students who learned about these biases were 32% less likely to jump to a premature, incorrect conclusion about a bug's cause when the scenario had multiple plausible explanations, suggesting that awareness of your own thinking patterns can genuinely improve debugging accuracy.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who set up a personal coding environment identical to what\'s used in professional settings (proper version control, linting, testing framework) from the start of their studies show different first-job onboarding speed than students who only encounter professional tooling for the first time at their job. Comparing 60 graduates with early professional-tooling exposure to 60 without it, early-exposure graduates reported reaching full productivity at their first job 3 weeks faster on average."',
+        response="This study compared graduates who'd set up and used professional-grade coding tools -- proper version control, code linting, testing frameworks -- from early in their studies, to graduates who only encountered these tools for the first time once they started their job. The graduates with early exposure reported reaching full productivity at their new job about 3 weeks faster on average, suggesting that familiarity with professional tooling itself, not just coding skill, meaningfully affects how quickly someone can ramp up in a real job.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study investigates whether students who are taught to distinguish between symptoms and root causes when describing a bug (using a structured \'what I see\' versus \'what\'s actually wrong\' framework) resolve bugs with fewer wasted fix attempts than students without this framework. Comparing 100 students taught the framework to 100 without it, framework-trained students needed 28% fewer incorrect fix attempts before resolving each bug correctly."',
+        response="Researchers tested whether teaching students to explicitly separate 'what symptom am I seeing' from 'what's actually causing it' -- using a structured framework -- helped them debug more efficiently. Students trained on this framework needed 28% fewer incorrect fix attempts before actually solving each bug, suggesting that clearly distinguishing symptoms from root causes helps students avoid guessing at fixes that don't address the real underlying problem.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+    yield SFTExample(
+        instruction="How do I write a Python function that removes duplicate items from a list while preserving their original order?",
+        response="""```python
+def remove_duplicates(items):
+    seen = set()
+    result = []
+    for item in items:
+        if item not in seen:
+            seen.add(item)
+            result.append(item)
+    return result
+
+print(remove_duplicates([3, 1, 3, 2, 1, 4]))  # [3, 1, 2, 4]
+```
+
+This tracks which items have already been added using a `set` (for fast O(1) membership checks), while building the actual result as a list to preserve the original order items first appeared in. This solves a real limitation of the earlier `list(set(items))` approach for deduplication -- that method drops duplicates but doesn't guarantee any particular order, since sets aren't ordered.
+
+For Python 3.7+, `dict.fromkeys(items)` (shown in an earlier example) achieves the same order-preserving deduplication in one line, since dictionaries now preserve insertion order -- both approaches are valid; this explicit loop version is more readable if you're not already familiar with the `dict.fromkeys()` trick.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I write a function that finds the intersection of two lists -- items present in both?",
+        response="""```python
+def intersection(list_a, list_b):
+    return list(set(list_a) & set(list_b))
+
+print(intersection([1, 2, 3, 4], [3, 4, 5, 6]))  # [3, 4] (order may vary)
+```
+
+`&` between two sets computes their intersection directly -- items present in both. Converting each list to a set first is what makes this operation possible (and fast); sets support this kind of operation natively, while plain lists don't have a built-in intersection operator.
+
+Worth knowing: converting to a set means duplicate values within either original list collapse to one, and the result's order isn't guaranteed to match either input list's original order, since sets are unordered. If you need to preserve the order of one specific list while filtering to only shared items, a list comprehension is more appropriate:
+```python
+def intersection_ordered(list_a, list_b):
+    set_b = set(list_b)
+    return [item for item in list_a if item in set_b]
+```
+This keeps `list_a`'s original order while still getting the speed benefit of checking membership against a set rather than repeatedly scanning `list_b` as a plain list.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function return `True` for a password that clearly doesn't meet the stated requirements?
+
+```python
+def is_strong_password(password):
+    has_digit = any(c.isdigit() for c in password)
+    has_upper = any(c.isupper() for c in password)
+    has_lower = any(c.islower() for c in password)
+    return has_digit or has_upper or has_lower
+
+print(is_strong_password("abc"))  # True -- but this has no digit or uppercase
+```""",
+        response="""The function uses `or` between the three checks, meaning it returns `True` if *any single one* of the three conditions is met -- and `"abc"` does contain lowercase letters, satisfying `has_lower`, which is enough to make the whole `or` expression `True` even though the password is missing a digit and an uppercase letter entirely.
+
+If the actual intent was requiring *all three* conditions, `and` is what was needed instead:
+```python
+def is_strong_password(password):
+    has_digit = any(c.isdigit() for c in password)
+    has_upper = any(c.isupper() for c in password)
+    has_lower = any(c.islower() for c in password)
+    return has_digit and has_upper and has_lower
+
+print(is_strong_password("abc"))    # False -- correctly rejected
+print(is_strong_password("Abc123")) # True -- has all three
+```
+Mixing up `and` and `or` is a genuinely common logic bug specifically because both produce a valid, running boolean result -- there's no error to alert you, just a condition that's silently more permissive (with `or`) or more restrictive (with `and`) than actually intended. Reading the requirement back in plain English -- "must have a digit AND an uppercase AND a lowercase" -- and matching that word-for-word to the code's actual logic is a good habit for catching this class of bug.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this pagination code sometimes show the same student twice across two pages?
+
+```python
+def get_page(students, page_number, page_size=10):
+    start = page_number * page_size
+    end = start + page_size
+    return students[start:end]
+```
+
+Calling `get_page(students, 0)` then `get_page(students, 1)` shows student at index 10 in both results.""",
+        response="""Looking at this carefully, this specific code is actually correct -- `get_page(students, 0)` returns indices 0-9, and `get_page(students, 1)` returns indices 10-19, with no overlap between them. If a duplicate is genuinely showing up in both pages, the more likely cause is `students` itself changing between the two calls (a new student inserted at the start of the list between the two fetches, shifting every existing student's index by one), not a bug in the slicing logic itself.
+
+This points to a broader, real issue with offset-based pagination on data that can change between page requests: if the underlying list changes between fetching page 0 and page 1, the raw index-based `start`/`end` slicing can genuinely produce duplicates or skipped items, since "index 10" doesn't necessarily refer to the same student anymore. Real production APIs often use "cursor-based" pagination instead -- referencing "give me everything after student ID X" rather than "give me index 10 to 20" -- specifically because it's more robust against the underlying data changing between page requests.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between a research question and a hypothesis, and do I need both?",
+        response="""A research question is open-ended, framed as a question you're investigating: "Does mobile banking adoption differ based on network reliability?" A hypothesis is a specific, testable prediction about what you expect to find, usually framed as a statement: "Households with less reliable network access will show lower mobile banking adoption rates."
+
+Whether you need both depends on your study type. Quantitative studies testing a specific predicted relationship typically state an explicit hypothesis, since the statistical test itself is built around testing that specific prediction (recall the null hypothesis discussed earlier). Exploratory or qualitative studies often work from a research question alone, without a specific predicted answer, since the goal is genuinely open exploration rather than testing a predetermined expectation.
+
+A useful check: if you can already state a specific, falsifiable prediction about what you expect to find and why, write it as a hypothesis alongside your research question -- it sharpens your study design and analysis plan. If your study is genuinely exploratory and you don't have a specific prediction (which is a legitimate research approach, not a weaker one), a well-stated research question alone is entirely appropriate, and forcing a hypothesis you don't actually have would misrepresent your study's actual goal.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What does it mean for a research finding to be 'robust,' and how do researchers actually check for this?",
+        response="""A robust finding holds up under reasonable variations in how the analysis was done -- different but defensible choices in your analytical approach still point to roughly the same conclusion. A fragile finding only appears when analyzed one very specific way, and disappears or reverses under small, reasonable changes to the analysis.
+
+A common way to check robustness is a "sensitivity analysis" -- deliberately rerunning your analysis with different reasonable choices (excluding potential outliers versus keeping them, using a slightly different statistical model, adjusting how a variable was operationalized) and checking whether your core conclusion changes. If the finding holds across these variations, that's real evidence of robustness. If it only appears under one specific set of analytical choices, that's a warning sign the original finding might be more fragile than it first appeared -- potentially the result of choices that happened to produce a positive-looking result, rather than a genuinely reliable pattern in the data.
+
+Reporting a sensitivity analysis, even briefly, strengthens a paper considerably -- it pre-empts a skeptical reader's natural question ("would this still hold if you'd done it slightly differently?") by actually answering it, rather than leaving the reader to wonder.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether students who complete a brief self-reflection on their emotional response to receiving critical code review feedback show different subsequent engagement with future feedback. Comparing 90 students doing emotional-response reflection to 90 without it, reflection students were 43% more likely to actually implement suggested changes from their next round of feedback."',
+        response='Researchers tested whether having students briefly reflect on how they emotionally reacted to receiving critical feedback on their code changed how they engaged with feedback afterward. Students who did this reflection exercise were 43% more likely to actually implement suggested changes the next time they got feedback, suggesting that processing the emotional reaction to criticism helps students engage with it more constructively rather than dismissing it.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students taught to write descriptive variable names using a specific naming convention framework show different code readability ratings compared to students given only general \'use descriptive names\' guidance. Comparing 100 students taught the specific framework to 100 given general guidance, framework-trained students\' code received significantly higher readability scores from independent reviewers on an unrelated later assignment."',
+        response="This study compared students taught a specific, structured framework for naming variables descriptively to students who just got general advice to 'use descriptive names.' On a later, unrelated assignment, the students trained on the specific framework had their code rated as significantly more readable by independent reviewers, suggesting that concrete, structured guidance works better than vague general advice for building this particular habit.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates whether students who practice reading and predicting the output of unfamiliar code snippets, without running them, show different debugging accuracy than students who only practice writing their own code. Comparing 85 students doing code-reading prediction exercises to 85 practicing only writing, prediction-practice students identified the correct bug location 37% more often on a set of unfamiliar debugging challenges."',
+        response="Researchers compared students who practiced reading unfamiliar code and predicting what it would output, without running it, to students who only practiced writing their own code. The students who practiced this reading-and-predicting exercise correctly identified the bug's actual location 37% more often when faced with unfamiliar debugging challenges, suggesting that reading code carefully is a distinct skill worth practicing on its own, separate from writing code.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine whether students who receive feedback that explicitly separates \'what you did well\' from \'what needs improvement,\' rather than blended feedback, show different motivation and revision behavior. Comparing 130 students receiving separated feedback to 130 receiving blended feedback covering the same points, separated-feedback students reported higher motivation and made 19% more substantive revisions to flagged issues."',
+        response='This study compared students who got feedback with clearly separated sections for what they did well versus what needed improvement, to students who got the same points blended together in one narrative. Students who got the separated feedback reported feeling more motivated and made 19% more substantive revisions to the issues that were flagged, suggesting that how feedback is structured -- not just its content -- affects how students respond to it.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study evaluates whether students who are taught to write a brief \'assumptions\' section before starting a data analysis task show different awareness of how their analytical choices affected their results. Comparing 75 students writing an assumptions section first to 75 without this requirement, assumptions-first students were significantly more likely to correctly identify how a specific analytical choice could have changed their results when later questioned."',
+        response='Researchers tested whether having students write down their assumptions before starting a data analysis task made them more aware of how their choices shaped their results. Students who wrote this assumptions section first were much better able to correctly explain, when later questioned, how a specific analytical choice could have changed their results -- suggesting the exercise built genuine awareness of the analysis process, not just documentation for its own sake.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether students who use a structured pre-submission checklist covering common oversight categories (edge cases, error handling, naming) show different first-time assignment pass rates than students without such a checklist. Comparing 140 students using the checklist to 140 without it, checklist-using students had a first-submission pass rate 26 percentage points higher."',
+        response='This study compared students who used a structured checklist before submitting assignments -- covering things like edge cases, error handling, and naming -- to students without one. Students using the checklist had a first-submission pass rate 26 percentage points higher, suggesting that a simple structured reminder of common oversight categories catches a meaningful number of avoidable mistakes before submission.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper examines whether students who practice explaining their code choices in terms of trade-offs (why this approach over an alternative) show different critical thinking scores on a later open-ended design assessment. Comparing 90 students practicing trade-off explanation to 90 practicing standard code explanation only, trade-off-practice students scored 24% higher on a later assessment requiring justification of design decisions among multiple valid options."',
+        response='Researchers compared students who practiced explaining their code by discussing the trade-offs of their chosen approach versus alternatives, to students who just practiced explaining what their code did. On a later assessment requiring students to justify design decisions among several valid options, the trade-off-practicing group scored 24% higher, suggesting that practicing comparative reasoning specifically builds stronger critical thinking about design choices.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who receive a short lesson on interpreting warning messages (as distinct from errors) show different code quality outcomes than students who are only taught to address hard errors that stop execution. Comparing 100 students taught to address warnings to 100 taught to address only blocking errors, warning-aware students\' final projects had 31% fewer latent bugs identified during independent code review."',
+        response="This study tested whether teaching students to pay attention to warning messages -- not just the hard errors that actually stop their code from running -- led to better code overall. Students taught to address warnings had 31% fewer hidden bugs found during independent code review of their final projects, suggesting that warnings often flag real problems that don't show up as an obvious crash but still matter for code quality.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study investigates whether students who work through a structured exercise distinguishing \'necessary complexity\' from \'accidental complexity\' in their own code show different code simplification behavior on subsequent revisions. Comparing 80 students doing this complexity-distinction exercise to 80 without it, exercise-trained students reduced unnecessary code complexity by 33% more when asked to revise a working but overly complicated solution."',
+        response="Researchers tested whether teaching students to distinguish between complexity that's genuinely necessary to solve a problem and complexity that's just accidental clutter helped them simplify their own code better. When asked to revise an overly complicated but working solution, students who'd done this exercise reduced unnecessary complexity 33% more than students who hadn't, suggesting that explicitly naming this distinction helps students recognize and cut unnecessary complexity in their own work.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+    yield SFTExample(
+        instruction="How do I write a Python function that groups a list of numbers into 'buckets' based on ranges, like grouping exam scores into grade bands?",
+        response="""```python
+def grade_band(score):
+    if score >= 90:
+        return "A"
+    elif score >= 80:
+        return "B"
+    elif score >= 70:
+        return "C"
+    elif score >= 60:
+        return "D"
+    else:
+        return "F"
+
+scores = [95, 82, 71, 45, 88]
+bands = [grade_band(s) for s in scores]
+print(bands)  # ["A", "B", "C", "F", "B"]
+```
+
+The order of the `if`/`elif` checks matters here, same principle as the earlier FizzBuzz example -- checking from highest threshold down to lowest means each score is correctly caught by the first (highest) threshold it actually qualifies for. If the checks were written in the opposite order (lowest threshold first), every score above 60 would incorrectly match the first, lowest check before ever reaching the higher ones.
+
+Combined with a `Counter` (from earlier), this pattern lets you build a full grade distribution easily:
+```python
+from collections import Counter
+distribution = Counter(grade_band(s) for s in scores)
+```""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I write a function that checks whether a string is a valid palindrome, ignoring spaces, punctuation, and case?",
+        response="""```python
+import re
+
+def is_palindrome(text):
+    cleaned = re.sub(r'[^a-zA-Z0-9]', '', text).lower()
+    return cleaned == cleaned[::-1]
+
+print(is_palindrome("A man, a plan, a canal: Panama"))  # True
+```
+
+`re.sub(r'[^a-zA-Z0-9]', '', text)` removes every character that isn't a letter or digit -- the `^` inside the brackets means "not," so this pattern matches anything that *isn't* alphanumeric and replaces it with an empty string, stripping spaces and punctuation. `.lower()` then normalizes case, so "A" and "a" compare as equal. From there, it's the same reverse-and-compare technique as the earlier simple palindrome example, just applied to genuinely messy real-world input instead of a single clean word.
+
+This is a good example of how a "simple" problem (checking a palindrome) often has most of its real complexity in cleaning the input, not in the core logic itself -- the actual palindrome check is one line; getting the input into a comparable form takes the rest.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function raise a StopIteration error instead of returning a default value when no match is found?
+
+```python
+students = [{"name": "Omol", "id": 1}, {"name": "Sara", "id": 2}]
+result = next(s for s in students if s["id"] == 99)
+```""",
+        response="""`next()` retrieves the next item from a generator or iterator -- here, a generator expression filtering for a matching student. When there's no matching item at all, there's nothing for `next()` to return, and it raises `StopIteration` rather than silently returning `None` or some other placeholder, since Python has no way to know what an appropriate "nothing found" value should be without being told.
+
+Fix by providing a default as `next()`'s second argument:
+```python
+result = next((s for s in students if s["id"] == 99), None)
+print(result)  # None -- no crash
+```
+The default (`None` here, but could be any fallback value) is returned instead of raising an error when the generator is exhausted with no match found. This is a genuinely easy mistake to make since `next()` without a default works perfectly fine as long as a match always exists -- the bug only surfaces once you hit a real case where nothing matches, which might not show up during casual testing with data that happens to always contain a match.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this CSS rule not apply, even though the class name is spelled correctly in both the HTML and CSS?
+
+```html
+<div class="student-card">Omol</div>
+```
+
+```css
+.student_card {
+    border: 1px solid black;
+}
+```""",
+        response="""The class name in the HTML uses a hyphen (`student-card`), but the CSS selector uses an underscore (`student_card`) -- these are two different strings as far as CSS is concerned, so the selector simply doesn't match the element at all, and no error is raised anywhere to indicate the mismatch.
+
+Fix by making them match exactly:
+```css
+.student-card {
+    border: 1px solid black;
+}
+```
+CSS class name mismatches like this are a common source of "why isn't my style applying" confusion, specifically because there's no error message pointing at the problem -- the browser just silently doesn't apply a rule that doesn't match anything, the same way a Python dictionary lookup with a slightly wrong key silently returns nothing rather than crashing. When a CSS rule seems to have no effect at all, comparing the exact class name spelling (including hyphens versus underscores) between the HTML and CSS is one of the first things worth checking.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="What is a pilot study, and what specifically should I be checking for when I run one before my main study?",
+        response="""A pilot study is a small-scale trial run of your study design, conducted before the full study, specifically to catch problems while they're still cheap to fix -- before you've invested the time and resources of running the complete study.
+
+Concrete things worth checking in a pilot: do your survey questions actually make sense to real participants, or do people interpret them differently than you intended? Does your data collection process work smoothly in practice, not just in theory? Is your estimated time-per-participant realistic? Are you actually recruiting participants at the rate you assumed you would, or is your sampling plan more difficult in practice than expected?
+
+A pilot study doesn't need a large sample -- even 5-10 participants can reveal genuine problems with your instrument or process that would otherwise only become apparent once you're deep into full data collection, when fixing them is far more costly. Worth being honest in your final write-up about having run a pilot and what, if anything, you changed as a result -- it's a sign of careful preparation, not something to hide as though your study design emerged fully formed on the first attempt.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What does it mean to 'operationalize' versus 'conceptualize' a variable, and why does getting this order right matter for writing a clear methodology?",
+        response="""Conceptualizing a variable means defining what you mean by it in abstract, theoretical terms -- what does "student engagement" mean as a concept? Operationalizing (discussed earlier) means turning that concept into something concretely measurable. The order matters: conceptualize first, then operationalize based on that clear conceptual definition -- not the reverse.
+
+A common weakness in student research writing is operationalizing first, almost by convenience -- "I'll measure engagement as forum posts, since that data is easy to get" -- without first clearly stating what "engagement" conceptually means and checking whether forum posts genuinely represent that concept well. This risks a mismatch between what you claim to be studying and what you're actually measuring, discovered only after data collection when it's too late to fix.
+
+A clear methodology section states both steps explicitly, in order: "We conceptualize engagement as active cognitive and behavioral investment in course material. This was operationalized as: forum post frequency, assignment submission timing relative to deadline, and video lecture completion rate." This makes your reasoning traceable -- a reader can independently judge whether your operational measures genuinely capture your stated concept, rather than having to trust that judgment was made carefully without seeing the reasoning itself.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether students who use collaborative real-time code editing tools during pair programming exercises show different communication patterns than students using traditional \'driver-navigator\' turn-taking with a single shared screen. Comparing 70 pairs using real-time collaborative editing to 70 pairs using traditional turn-taking, real-time-editing pairs showed 41% more simultaneous verbal discussion during coding, though final code quality was similar between the two groups."',
+        response='Researchers compared pairs of students using a real-time collaborative code editor, where both could type at once, to pairs using the traditional method of one person typing while the other watches and suggests. The pairs using real-time collaborative editing talked and discussed the problem together 41% more during coding -- though the final code quality ended up similar either way, suggesting the tool changed how they collaborated without necessarily changing the outcome.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who receive a structured introduction to reading open-source project contribution guidelines, before attempting their first contribution, show different contribution acceptance rates than students attempting contributions without this introduction. Comparing 60 students given the introduction to 60 without it, introduction-trained students had first-contribution pull requests accepted at a rate 2.4 times higher."',
+        response="This study tested whether teaching students how to properly read an open-source project's contribution guidelines, before making their first contribution, affected whether that contribution actually got accepted. Students who got this introduction had their first pull requests accepted at a rate 2.4 times higher than students who dove in without reading the guidelines carefully first, suggesting that understanding a project's specific expectations matters a lot for a successful first contribution.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates whether students who practice writing precise, falsifiable bug reports (specific steps to reproduce, expected versus actual behavior) show different collaboration efficiency when working with a partner to resolve reported bugs. Comparing 80 student pairs where one partner used structured bug reports to 80 pairs using informal descriptions, structured-report pairs resolved reported bugs 35% faster on average."',
+        response='Researchers compared pairs of students where one partner wrote precise, structured bug reports -- specific reproduction steps and expected versus actual behavior -- to pairs using informal, casual bug descriptions. The pairs using structured bug reports resolved the reported bugs 35% faster on average, suggesting that the discipline of writing a precise bug report saves real time for whoever has to actually fix it.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine whether students who are taught to distinguish between \'the code doesn\'t work\' and specific, precise problem descriptions when seeking help show different response quality and speed from teaching assistants. Comparing 100 students trained in precise problem description to 100 without such training, precisely-described help requests received substantive responses 58% faster from teaching assistants, based on logged help queue data."',
+        response="This study looked at whether teaching students to describe their coding problems precisely -- instead of just saying 'it doesn't work' -- changed how quickly teaching assistants could actually help them. Students trained to describe problems precisely got substantive help 58% faster, based on real help queue data, suggesting that a clear problem description saves real time for both the student and whoever is trying to help them.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study evaluates whether students taught to use a \'five whys\' root cause analysis technique for debugging (repeatedly asking why a symptom occurs to trace back to the underlying cause) show different bug recurrence rates on similar future bugs. Comparing 85 students trained on this technique to 85 without it, trained students had 29% fewer recurrences of structurally similar bugs across the remainder of the semester."',
+        response="Researchers tested whether teaching students the 'five whys' technique -- repeatedly asking why a problem occurred to trace back to its true root cause -- reduced how often they ran into similar bugs again later. Students trained on this technique had 29% fewer recurrences of structurally similar bugs for the rest of the semester, suggesting that tracing a bug back to its actual root cause, rather than just patching the visible symptom, prevents the same underlying problem from resurfacing.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether students who review their own code against a personal \'lessons learned\' document, updated after each assignment, show different mistake repetition rates than students without such a document. Comparing 95 students maintaining a personal lessons-learned document to 95 without one, document-maintaining students showed a 44% reduction in repeating previously identified personal mistake patterns."',
+        response="This study tested whether having students keep and regularly review a personal document of lessons learned from past assignments reduced how often they repeated their own previous mistakes. Students who maintained this document had a 44% reduction in repeating mistake patterns they'd already identified before, suggesting that actively reviewing your own documented lessons -- not just experiencing the mistake once -- is what actually helps it stick.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper examines whether students who practice technical writing by drafting API documentation for their own code show different code interface design quality than students who write code without a documentation-writing requirement. Comparing 70 students required to draft API documentation to 70 without this requirement, documentation-drafting students\' code interfaces were rated significantly more intuitive by independent evaluators unfamiliar with either group\'s code."',
+        response="Researchers compared students required to write API documentation for their own code to students with no documentation requirement, looking at the actual quality of how their code was designed to be used. Independent evaluators who didn't know which group was which rated the documentation-writing students' code interfaces as significantly more intuitive, suggesting that the act of writing documentation for how your code should be used actually improves the underlying design, not just the explanation of it.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who complete a structured exercise mapping out data flow through their program before implementation show different bug rates related to state management compared to students who begin implementation without this planning step. Comparing 90 students doing data-flow mapping to 90 coding directly, mapping students had 37% fewer state-related bugs in their final submitted code."',
+        response='This study tested whether having students map out how data flows through their program before writing any code reduced bugs related to program state, compared to students who just started coding directly. Students who did this data-flow mapping exercise had 37% fewer state-related bugs in their final code, suggesting that planning how data moves through a program before implementation helps prevent a specific, common category of bug.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study investigates whether students who receive training on writing effective code review comments (specific, actionable, respectful in tone) show different comment usefulness ratings from recipients compared to students without such training. Comparing 80 students trained in code review comment writing to 80 without training, trained students\' review comments were rated as significantly more useful by the students receiving them, based on blind ratings."',
+        response="Researchers tested whether teaching students how to write effective code review comments -- specific, actionable, and respectful in tone -- led to more useful feedback for the people receiving it. Based on blind ratings from the recipients, comments from students who'd received this training were rated as significantly more useful than comments from untrained students, suggesting that giving good feedback is itself a skill worth teaching directly, not something people naturally do well without guidance.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+    yield SFTExample(
+        instruction="How do I write a function that validates a list of student records, returning which ones are missing required fields?",
+        response="""```python
+def find_incomplete_records(students, required_fields):
+    incomplete = []
+    for student in students:
+        missing = [field for field in required_fields if field not in student]
+        if missing:
+            incomplete.append({"student": student, "missing_fields": missing})
+    return incomplete
+
+students = [
+    {"name": "Omol", "email": "omol@example.com"},
+    {"name": "Sara"},
+]
+result = find_incomplete_records(students, ["name", "email", "grade"])
+```
+
+For each student, an inner list comprehension checks which of the `required_fields` are actually missing from that record. If `missing` is non-empty (a truthy list), that student gets flagged along with exactly which fields it's missing -- more useful than just a pass/fail flag, since it tells you precisely what to fix.
+
+This pattern -- validate a batch of records and collect specific, actionable details about each failure -- is genuinely common in real data-processing code, whether validating user input, imported CSV rows, or API request bodies before further processing.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I write a function that safely retries a flaky operation a limited number of times, with a short pause between attempts?",
+        response="""```python
+import time
+
+def retry(func, max_attempts=3, delay=1):
+    last_error = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return func()
+        except Exception as e:
+            last_error = e
+            print(f"Attempt {attempt} failed: {e}")
+            if attempt < max_attempts:
+                time.sleep(delay)
+    raise last_error
+
+result = retry(lambda: fetch_data_from_flaky_api())
+```
+
+`retry` takes any zero-argument function and attempts to call it up to `max_attempts` times, pausing `delay` seconds between failures. If every attempt fails, it re-raises the last error rather than silently giving up -- the caller still finds out something genuinely went wrong, rather than getting back a misleading success or a vague generic failure.
+
+This is a general-purpose wrapper you can reuse around any operation prone to transient failures -- a flaky network call, a database connection that occasionally times out -- without duplicating the retry loop logic at every single call site throughout your codebase.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function's output change every time it's called, even with the same input?
+
+```python
+import random
+
+def assign_group(student_id, groups=["A", "B", "C"]):
+    return random.choice(groups)
+
+print(assign_group(101))  # different result every call
+```""",
+        response="""This is actually working exactly as written -- `random.choice(groups)` deliberately picks a random element every time it's called, with no connection to `student_id` at all. The function's name and parameter suggest it should assign students to groups *consistently* based on their ID, but the actual implementation never uses `student_id` in the logic whatsoever -- it's accepted as a parameter but silently ignored.
+
+If the intent was a consistent, ID-based (not random) assignment, the fix is to actually use the ID in the logic:
+```python
+def assign_group(student_id, groups=["A", "B", "C"]):
+    return groups[student_id % len(groups)]
+```
+`student_id % len(groups)` maps each ID to a group index consistently -- the same `student_id` always produces the same result, since modulo of the same input always gives the same output. This is a good example of a bug that isn't really a broken line of code -- the `random.choice` call works exactly as intended -- but a mismatch between what the function's name promises and what its actual implementation does.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function's docstring say it returns a sorted list, but the actual output isn't sorted?
+
+```python
+def get_top_students(students, n=5):
+    \"\"\"Returns the top n students sorted by grade, highest first.\"\"\"
+    return students[:n]
+```""",
+        response="""The function slices the first `n` students from the list, but never actually sorts anything -- it just takes whatever order the list happened to already be in. If `students` isn't already sorted by grade before being passed in, `get_top_students` returns the first `n` students in whatever arbitrary order they arrived in, which has nothing to do with their actual grades.
+
+The docstring makes a promise the code doesn't keep -- fixing it means actually sorting first:
+```python
+def get_top_students(students, n=5):
+    \"\"\"Returns the top n students sorted by grade, highest first.\"\"\"
+    sorted_students = sorted(students, key=lambda s: s["grade"], reverse=True)
+    return sorted_students[:n]
+```
+This is a genuinely dangerous category of bug -- the docstring documents intended behavior, and anyone calling this function reasonably trusts that documentation rather than re-reading the implementation every time. A docstring that doesn't match what the code actually does is often worse than no docstring at all, since it actively misleads rather than just leaving a gap. Whenever changing a function's actual behavior, updating its docstring to match is just as important as the code change itself.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between a research paper's abstract and its introduction, given both seem to summarize what the paper is about?",
+        response="""Both introduce the paper, but they serve different purposes and lengths. The abstract is a complete, standalone summary -- someone reading only the abstract should understand the study's question, method, key finding, and significance, without needing anything else. It's typically 150-250 words and often the only part many readers will actually read.
+
+The introduction is longer and serves a different job: it builds the case for why the study matters, situates it within existing research, and leads the reader step by step toward your specific research question -- it's persuasive and contextual, not just a compressed summary. A reader shouldn't need the abstract to understand the introduction; the introduction should work as a self-contained argument on its own, distinct from a longer version of the abstract's content.
+
+A common weakness in student writing is an introduction that's essentially just an expanded abstract, repeating the same points in the same order rather than actually building context and motivation. A useful check: does your introduction explain *why* your research question matters and what gap it fills, or does it just restate what you did and found (which belongs in the abstract, and later in the paper itself)?""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="How do I decide what to include in an appendix versus the main body of my paper?",
+        response="""The main body should contain everything necessary to understand and evaluate your core argument, on a single read-through, without needing to flip back and forth to supplementary material. The appendix holds material that supports or documents your work but would interrupt the main narrative's flow if included directly -- the full survey instrument, detailed supplementary tables, extended derivations, or raw data summaries.
+
+A useful test: if removing something from the main body would leave a reader confused about your core argument or unable to evaluate your key claims, it belongs in the body. If removing it would only affect a reader's ability to verify fine-grained details or reproduce your exact procedure, it likely belongs in an appendix instead, referenced from the body ("see Appendix A for the full survey instrument") rather than fully reproduced there.
+
+A common mistake is dumping large blocks of raw data or lengthy technical detail directly into the main body "to be thorough," which actually hurts readability rather than helping it -- appendices exist precisely so the main argument stays focused and readable, while supporting detail remains available for anyone who specifically wants to dig into it.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether students who complete a structured retrospective after each group project (what worked, what didn\'t, what to change) show different team collaboration ratings across a sequence of multiple group projects. Comparing 60 teams doing structured retrospectives to 60 teams without them, retrospective teams showed steadily improving collaboration ratings across projects, while non-retrospective teams showed no significant change."',
+        response='Researchers compared student teams that did a structured retrospective after each group project -- reflecting on what worked and what to change -- to teams that skipped this step. Teams that did the retrospectives showed steadily improving collaboration ratings with each new project, while teams without them showed no real improvement over time, suggesting that deliberate reflection is what actually drives improvement, not just repeated practice alone.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who are taught to write clear GitHub issue descriptions (steps to reproduce, expected behavior, environment details) before requesting help show different resolution time from peer helpers. Comparing 90 students trained in issue-writing to 90 without training, well-written issues were resolved by peers 46% faster on average."',
+        response='This study tested whether teaching students to write clear, detailed GitHub issues -- including reproduction steps and environment details -- before asking for help changed how quickly peers could actually resolve their problems. Well-written issues from trained students got resolved 46% faster on average, suggesting that a clearly written issue saves real time for whoever ends up helping, not just the person asking.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates whether students who practice reading and interpreting API documentation through structured exercises show different independence when integrating a new, unfamiliar third-party library. Comparing 75 students given structured documentation-reading practice to 75 without it, practiced students successfully integrated an unfamiliar library independently 63% more often, without requesting instructor help."',
+        response="Researchers compared students who got structured practice reading and interpreting API documentation to students without this practice, then had both groups try integrating an unfamiliar third-party library. Students who'd practiced reading documentation successfully integrated the new library on their own 63% more often, without needing to ask an instructor for help, suggesting that documentation literacy is a distinct, teachable skill that builds real independence.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We examine whether students who receive a brief lesson on distinguishing correlation from causation, applied specifically to their own data analysis projects, show different overreach in their own stated conclusions. Comparing 100 students given this applied lesson to 100 given only the general concept without applied practice, applied-lesson students were 41% less likely to state an unsupported causal claim in their own final project write-up."',
+        response='This study tested whether teaching students the difference between correlation and causation, applied directly to their own data projects rather than just as an abstract concept, changed how they wrote up their own conclusions. Students who got this applied practice were 41% less likely to make an unsupported causal claim in their final project write-up, suggesting that applying the concept to your own real work sticks better than learning it only in the abstract.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study evaluates whether students who are taught to write clear pull request descriptions summarizing their changes show different review turnaround time from instructors grading via pull request. Comparing 85 students trained in pull request writing to 85 without training, well-described pull requests received instructor feedback 39% faster on average."',
+        response='Researchers tested whether teaching students to write clear, informative pull request descriptions summarizing their changes affected how quickly instructors could review and grade their work. Well-described pull requests from trained students got feedback 39% faster on average, suggesting that a clear summary of what changed and why genuinely speeds up the review process for whoever has to evaluate it.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We investigate whether students who complete a short weekly self-check on their understanding of newly introduced terminology show different long-term retention of technical vocabulary across a semester. Comparing 110 students doing weekly terminology self-checks to 110 without them, self-check students scored 27% higher on a comprehensive terminology test given at course completion."',
+        response="This study tested whether having students do a short weekly self-check on new technical vocabulary they'd learned, throughout a semester, improved their long-term retention of those terms. Students who did the weekly self-checks scored 27% higher on a comprehensive terminology test at the end of the course, suggesting that regular, low-stakes self-testing throughout the semester beats hoping vocabulary sticks just from occasional exposure.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper examines whether students who practice articulating the business or user value of a technical feature, before implementing it, show different prioritization decisions when given multiple possible features to build within limited time. Comparing 65 students trained in value-articulation to 65 without training, trained students more frequently chose to implement higher-user-value features first, when time was insufficient to complete every planned feature."',
+        response='Researchers compared students who practiced explicitly articulating the actual user or business value of a technical feature, before building it, to students without this practice. When faced with more features to build than time allowed, students trained to think about value first more often chose to prioritize the higher-value features, suggesting that explicitly practicing this kind of reasoning changes how students make real prioritization decisions under time pressure.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='advanced',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who receive structured practice identifying which parts of an error message are relevant versus boilerplate noise show different time-to-diagnosis on unfamiliar errors. Comparing 90 students given this structured practice to 90 without it, practiced students correctly identified the relevant portion of an unfamiliar error message 49% faster on a standardized assessment."',
+        response='This study tested whether teaching students to distinguish the genuinely relevant part of an error message from surrounding boilerplate noise helped them diagnose unfamiliar errors faster. Students who got this structured practice correctly identified the relevant part of an unfamiliar error message 49% faster on a standardized test, suggesting that error messages contain a real skill-gap in reading comprehension that benefits from direct teaching, not just experience.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study investigates whether students who maintain a running list of open questions during a project, revisited and updated weekly, show different final project completeness than students without this practice. Comparing 100 students maintaining a weekly open-questions list to 100 without one, list-maintaining students\' final projects had 32% fewer unaddressed edge cases identified during grading."',
+        response='Researchers tested whether having students keep a running list of open questions during a project, updated weekly, led to more complete final projects. Students who maintained this list had 32% fewer unaddressed edge cases found in their final projects during grading, suggesting that actively tracking open questions throughout a project -- rather than only thinking about them once, early on -- helps prevent them from being forgotten by the end.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+    yield SFTExample(
+        instruction="How do I write a function that checks whether a list is sorted, without actually sorting it?",
+        response="""```python
+def is_sorted(items):
+    return all(items[i] <= items[i + 1] for i in range(len(items) - 1))
+
+print(is_sorted([1, 2, 2, 5]))  # True
+print(is_sorted([3, 1, 2]))     # False
+```
+
+`all()` checks every consecutive pair -- `items[i] <= items[i + 1]` -- and returns `True` only if that holds for every adjacent pair in the list, meaning nothing is ever followed by something smaller. `all()` short-circuits, stopping at the first `False` it finds rather than checking every remaining pair unnecessarily, so this is efficient even on a long list that fails early.
+
+This is a genuinely different, cheaper operation than sorting the list to check equality against the original -- `sorted(items) == items` also works, but it does real work building an entirely new sorted list just to answer a yes/no question, while `is_sorted` only needs to scan through once, comparing adjacent pairs directly.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function return an empty list instead of the expected filtered results?
+
+```python
+def get_passing_students(students):
+    passing = []
+    for student in students:
+        if student["grade"] >= 60:
+            passing = [student]
+    return passing
+```""",
+        response="""`passing = [student]` reassigns `passing` to a brand-new single-item list on every matching iteration, completely overwriting whatever was collected before -- rather than adding to the existing list. By the end of the loop, `passing` only ever contains the *last* matching student, not all of them; it's not empty exactly, but it's silently wrong, missing every match except the final one.
+
+Fix by appending rather than reassigning:
+```python
+def get_passing_students(students):
+    passing = []
+    for student in students:
+        if student["grade"] >= 60:
+            passing.append(student)
+    return passing
+```
+`.append()` adds to the existing list; `=` replaces it entirely. This is an easy typo to make when writing quickly, since both look like reasonable ways to "put a value into passing" -- but they do fundamentally different things, and the resulting bug (silently keeping only the last match) is much subtler than a crash, since the function still runs and returns something that looks plausible at a glance.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between a research summary written for a policy brief and one written for a general news audience?",
+        response="""Both simplify academic findings for a non-specialist audience, but they serve different purposes and emphasize different things. A policy brief is written for decision-makers who need to act on the information -- it leads with concrete, actionable recommendations, and typically includes enough methodological detail (sample size, confidence in the finding) for a policymaker to judge how much weight the finding should carry in a real decision.
+
+A general news summary is written for broad public understanding, without an expectation the reader will act on it directly -- it emphasizes what's interesting or relevant to people's everyday lives, and generally includes much less methodological detail, since most readers aren't evaluating it as a basis for a decision.
+
+A useful distinction: a policy brief answers "what should I, a decision-maker, do based on this?" while a news summary answers "what does this mean for people in general, and why might they care?" The same underlying finding might be written up quite differently for each audience -- a policy brief on a study about tutoring effectiveness would emphasize implementation cost and scale; a news piece might emphasize the human story of the students involved.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether students who set explicit personal deadlines earlier than the official assignment deadline show different final submission quality than students relying only on the official deadline. Comparing 120 students setting self-imposed earlier deadlines to 120 relying on the official deadline alone, self-deadline students submitted work rated significantly higher in polish and completeness, despite no external enforcement of their personal deadline."',
+        response='Researchers compared students who set their own personal deadline earlier than the official one to students who just worked toward the official deadline alone. Even though nobody was actually enforcing the personal deadlines, students who set them submitted noticeably more polished and complete work, suggesting that self-imposed earlier deadlines create real, effective pressure even without any outside enforcement.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intro',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who practice writing clear commit messages using a template (\'what changed, why, any side effects\') show different code archaeology speed when investigating an old unfamiliar codebase months later. Comparing 70 students using the template to 70 with no message structure, template-trained students located the reason behind a specific historical code change 54% faster when investigating an unfamiliar old project."',
+        response="This study tested whether students who practiced writing commit messages with a structured template -- what changed, why, and any side effects -- could later navigate an old, unfamiliar codebase's history more effectively. Students trained on the template located the reason behind a specific past code change 54% faster than students with no structured message habit, suggesting that consistent commit message discipline pays off specifically when someone has to understand old code later.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This paper investigates whether students who receive a short lesson connecting common programming errors to their real-world consequences (a null pointer error causing a real system outage, for example) show different care and attention to error handling in their own code. Comparing 85 students given this real-world-consequence lesson to 85 given only abstract technical explanation, consequence-aware students included 28% more explicit error handling in a subsequent independent project."',
+        response='Researchers tested whether teaching students about real-world consequences of common programming errors -- like a specific type of bug that caused an actual system outage -- changed how carefully they handled errors in their own code afterward. Students who got this real-world context included 28% more explicit error handling in a later independent project, suggesting that connecting abstract technical concepts to real consequences makes students take error handling more seriously in their own work.',
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction="How do I write a function that returns the second-to-last item in a list without knowing its length in advance?",
+        response="""```python
+def second_to_last(items):
+    if len(items) < 2:
+        return None
+    return items[-2]
+
+print(second_to_last([1, 2, 3, 4]))  # 3
+```
+
+Negative indices count from the end of the list: `-1` is the last item, `-2` is the second-to-last, and so on. This works regardless of the list's actual length, since Python resolves `-2` relative to wherever the end actually is, rather than needing you to calculate `len(items) - 2` yourself. The length check upfront handles the edge case of a list with 0 or 1 items, where there's no valid "second-to-last" item to return.""",
+        task_type=TaskType.CODE_GENERATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intro",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this function raise an IndexError when checking for an empty cart, even though it looks like it should handle that case?
+
+```python
+def get_last_item(cart):
+    if cart == []:
+        return None
+    return cart[-1]
+
+print(get_last_item(()))  # crashes
+```""",
+        response="""The check `cart == []` only catches an empty *list* specifically -- but `()` is an empty *tuple*, not a list, so `cart == []` is `False` even though the tuple is genuinely empty. The function proceeds to `cart[-1]`, which raises `IndexError: tuple index out of range` on an empty tuple.
+
+Fix by checking for emptiness in a way that works regardless of the specific container type:
+```python
+def get_last_item(cart):
+    if not cart:
+        return None
+    return cart[-1]
+```
+`not cart` is `True` for any empty sequence -- empty list, empty tuple, empty string -- since Python treats empty containers as falsy in a boolean context. This is more robust than checking equality against one specific empty-container literal like `[]`, which only matches that exact type.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="intermediate",
+    )
+
+    yield SFTExample(
+        instruction="What is the purpose of a Dockerfile, and what does a basic one for a Python web app actually do line by line?",
+        response="""A Dockerfile defines a repeatable recipe for building a container image -- a self-contained package including your code, its dependencies, and the environment needed to run it, so it behaves identically regardless of what machine it actually runs on.
+
+```dockerfile
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["uvicorn", "scripts.serve:app", "--host", "0.0.0.0", "--port", "7860"]
+```
+
+`FROM` starts from a base image (a minimal Python installation here). `WORKDIR` sets the working directory inside the container. `COPY requirements.txt .` copies just that one file first, then `RUN pip install` installs dependencies -- done in this specific order (before copying the rest of the code) so Docker can reuse this step from cache on future builds if only your code changed, not your dependencies, meaningfully speeding up rebuilds. `CMD` defines what actually runs when the container starts.
+
+This matters for exactly the "works on my machine" problem discussed earlier with environment variables -- a Docker container bundles the entire runtime environment, not just the code, so it behaves the same on your machine, a teammate's machine, or a cloud server.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is a WebSocket, and how is it fundamentally different from a normal HTTP request?",
+        response="""A normal HTTP request is a one-shot exchange: the client asks, the server answers, and the connection closes. A WebSocket opens a persistent, two-way connection that stays open, allowing either side to send messages to the other at any time, without needing to start a new request each time.
+
+This matters for anything needing real-time updates -- a live chat, a collaborative document, a live sports score. With plain HTTP, achieving something similar means the client repeatedly polling ("has anything changed yet? has anything changed yet?"), wasting requests and introducing delay. A WebSocket lets the server push a message the instant something happens, with no polling needed at all -- conceptually similar to the webhook pattern discussed earlier, but for an ongoing, bidirectional conversation rather than a single one-time notification.
+
+The trade-off: WebSockets require the server to maintain an open connection per connected client, which uses more server resources than stateless HTTP requests that open and close quickly. For anything that doesn't genuinely need real-time, bidirectional communication, plain HTTP requests remain the simpler, more resource-efficient choice.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is continuous integration (CI), and what does it actually check when a pull request is opened?",
+        response="""Continuous integration means automatically building and testing code every time changes are proposed, rather than only manually, occasionally, or right before a release. When a pull request is opened, a CI system typically runs automatically: installing dependencies, running the test suite, checking code style/linting, and sometimes building the project to confirm it compiles or bundles successfully.
+
+The real value: catching problems immediately, while the change is small and fresh in the author's mind, rather than discovering a break days or weeks later after several other changes have piled on top. A failing CI check on a pull request is a clear, automated signal -- "don't merge this yet" -- that doesn't depend on a human remembering to manually run the test suite before merging.
+
+A green (passing) CI check doesn't guarantee the code is bug-free -- it only confirms whatever was actually tested passed. Code with poor test coverage can pass CI while still containing real bugs in the untested parts, which is why CI is a valuable safety net, not a substitute for actually writing meaningful tests in the first place.""",
+        task_type=TaskType.CODE_EXPLANATION,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="""Why does this async function silently return `None` instead of the fetched data, even though the fetch itself succeeds?
+
+```javascript
+async function getGrades(studentId) {
+    fetch(`/api/students/${studentId}/grades`)
+        .then(response => response.json());
+}
+```""",
+        response="""There's no `return` statement anywhere in this function -- the `fetch(...).then(...)` chain runs and does its work, but nothing hands the result back to whoever called `getGrades()`. Since the function is `async` with no explicit `return`, it implicitly resolves to `undefined` (or `None`-equivalent), regardless of what the fetch itself actually returned internally.
+
+Fix by returning the result, either by returning the whole promise chain or using `await`:
+```javascript
+async function getGrades(studentId) {
+    const response = await fetch(`/api/students/${studentId}/grades`);
+    return response.json();
+}
+```
+This is a variant of the earlier "forgot to return" bug pattern, specific to async code: it's easy to write a `.then()` chain that does real work internally, and forget that the *function itself* still needs an explicit `return` to actually hand that result back to its caller -- the promise chain completing successfully doesn't automatically mean the function returns anything useful.""",
+        task_type=TaskType.CODE_DEBUGGING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+    yield SFTExample(
+        instruction="What is the difference between a research paper's 'implications' and its 'recommendations,' and do I need to write both?",
+        response="""Implications describe what a finding *means* more broadly -- theoretical or practical consequences of the result, stated in general terms. Recommendations are specific, actionable suggestions for what someone should actually *do* as a result. A finding can have implications without translating into a clean recommendation, and it's worth being honest when that's the case.
+
+Example: a finding that "mobile banking adoption is driven more by trust in reliability than by cost" has an implication (cost-focused interventions may be less effective than reliability-focused ones) and could support a recommendation (mobile banking providers should invest in visible reliability improvements and communicate them clearly to potential users).
+
+Not every study needs to produce a specific recommendation -- a purely exploratory or theoretical study might reasonably stop at implications, since translating research into a specific action often requires additional context (cost, feasibility, competing priorities) beyond what the study itself examined. Forcing a recommendation your data doesn't actually support, just to seem more useful or applied, is a real overreach worth avoiding -- it's more honest to state implications clearly and note that specific recommendations would require further practical investigation.""",
+        task_type=TaskType.RESEARCH_WRITING,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty="advanced",
+    )
+
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"This study examines whether students who receive a structured introduction to Docker and containerization, before their first team project requiring a shared development environment, report different environment-setup friction than students without this introduction. Comparing 70 students given the Docker introduction to 70 without it, introduced students reported spending 62% less time resolving \'works on my machine\' environment inconsistencies during their first team project."',
+        response="Researchers tested whether teaching students about Docker and containerization before their first group project -- where everyone needs the same working environment -- reduced setup problems. Students who got this introduction reported spending 62% less time dealing with 'it works on my machine but not yours' problems during their project, suggesting that understanding containerization tools genuinely helps avoid a common, frustrating source of team friction.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
+    )
+
+    yield SFTExample(
+        instruction='Summarize this abstract in plain language, in 2-3 sentences:\n\n"We evaluate whether students who set up automated CI checks (tests, linting) on their own personal projects show different code quality habits on assignments where CI is not required. Comparing 60 students with personal-project CI experience to 60 without it, CI-experienced students\' non-CI assignments had 24% fewer style violations and 19% fewer failing edge cases, suggesting the habits transferred beyond the specific context where CI was set up."',
+        response="This study tested whether students who set up automated testing and style checks on their own personal coding projects developed better habits that carried over to assignments where those checks weren't required at all. Students with this personal-project CI experience had 24% fewer style violations and 19% fewer failing edge cases on their regular assignments, suggesting the habits they built using CI tools genuinely transferred to situations without those tools present.",
+        task_type=TaskType.RESEARCH_SUMMARY,
+        language=Language.ENGLISH,
+        source="synthetic",
+        difficulty='intermediate',
     )
 
 
